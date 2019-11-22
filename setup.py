@@ -4,15 +4,21 @@ from distutils.core import Extension
 try:
     import numpy as np
 except ImportError:
-    print("Numpy has to be installed in order to install utils2p.\n" +
-          "Please refer to the Numpy website for instructions on how to install it.\n")
+    print(
+        "Numpy has to be installed in order to install utils2p.\n"
+        + "Please refer to the Numpy website for instructions on how to install it.\n"
+    )
 
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 
-external = Extension("utils2p.external.tifffile._tifffile", sources=['utils2p/external/tifffile/tifffile.c'], include_dirs=[np.get_include()])
+external = Extension(
+    "utils2p.external.tifffile._tifffile",
+    sources=["utils2p/external/tifffile/tifffile.c"],
+    include_dirs=[np.get_include()],
+)
 
 
 setup(
@@ -26,5 +32,5 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/NeLy-EPFL/utils2p",
     install_requires=["pytest", "h5py"],
-    ext_modules = [external],
+    ext_modules=[external],
 )

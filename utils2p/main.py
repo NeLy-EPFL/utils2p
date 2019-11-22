@@ -350,7 +350,9 @@ def load_raw(path, metadata):
         byte_size / 2 / width / height / n_time_points / n_channels
     )  # divide by two because the values are of type short (16bit = 2byte)
 
-    assert not n_z % 1, "Size given in metadata does not match the size of the raw file."
+    assert (
+        not n_z % 1
+    ), "Size given in metadata does not match the size of the raw file."
     n_z = int(n_z)
 
     # number of z slices from meta data can be different because of flyback frames
@@ -400,7 +402,7 @@ def load_raw(path, metadata):
         stacks = concatenated
 
     if len(stacks) == 1:
-        return (np.squeeze(stacks[0]), )
+        return (np.squeeze(stacks[0]),)
     return tuple(np.squeeze(stacks))
 
 

@@ -14,7 +14,7 @@ import utils2p.errors
 from utils2p.external import tifffile
 
 
-data_dir = Path(__file__).resolve().parents[1]/"data"
+data_dir = Path(__file__).resolve().parents[1] / "data"
 
 
 @pytest.fixture
@@ -123,6 +123,7 @@ def metadata_obj(metadata_xml):
 
     return _metadata_obj
 
+
 @pytest.fixture
 def random_stack():
     """
@@ -140,10 +141,13 @@ def random_stack():
     img_stack : numpy array
         Random array.
     """
+
     def _random_stack(shape=(10, 50, 60)):
         img_stack = np.random.randint(0, 2 ** 14, shape, dtype=np.uint16)
         return img_stack
+
     return _random_stack
+
 
 @pytest.fixture
 def random_tif_file(tmpdir, random_stack):
@@ -164,12 +168,15 @@ def random_tif_file(tmpdir, random_stack):
     random_stack : numpy array
         Matrix of the stack.
     """
+
     def _random_tif_file(shape=(10, 50, 60)):
         file_path = tmpdir.join("img_stack.tif")
         img_stack = random_stack(shape)
         tifffile.imsave(str(file_path), img_stack)
         return file_path, img_stack
+
     return _random_tif_file
+
 
 @pytest.fixture
 def random_raw_file(tmpdir, random_stack, metadata_obj):
@@ -201,32 +208,60 @@ def random_raw_file(tmpdir, random_stack, metadata_obj):
     images : tuple of numpy arrays
         Each element of the tuple is the acquired stack for a different channel.
     """
-    def _random_raw_file(area_mode=0, shape=(50, 60), timepoints=10, channels=("ChanA", "ChanB"), n_z=1, flyback_frames=0):
+
+    def _random_raw_file(
+        area_mode=0,
+        shape=(50, 60),
+        timepoints=10,
+        channels=("ChanA", "ChanB"),
+        n_z=1,
+        flyback_frames=0,
+    ):
         if area_mode == 2 or area_mode == 3:
             new_n_y_pixels = shape[0] / n_z
-            assert not new_n_y_pixels % 1, "Invalid test parameter. For kymograph and line the y values has to be divisible by the number of z steps."
+            assert (
+                not new_n_y_pixels % 1
+            ), "Invalid test parameter. For kymograph and line the y values has to be divisible by the number of z steps."
             new_n_y_pixels = int(new_n_y_pixels)
             shape = (new_n_y_pixels, shape[1])
 
-        img_stacks = np.zeros((timepoints, n_z + flyback_frames, len(channels)) + shape, dtype=np.uint16)
+        img_stacks = np.zeros(
+            (timepoints, n_z + flyback_frames, len(channels)) + shape, dtype=np.uint16
+        )
         for t in range(timepoints):
             for i in range(len(channels)):
-                img_stacks[t, :n_z, i] = random_stack((n_z, ) + shape)
-        metadata_for_raw = metadata_obj(timepoints=timepoints, x_pixels=shape[1], y_pixels=shape[0], channels=channels, n_z=n_z, area_mode=area_mode)
+                img_stacks[t, :n_z, i] = random_stack((n_z,) + shape)
+        metadata_for_raw = metadata_obj(
+            timepoints=timepoints,
+            x_pixels=shape[1],
+            y_pixels=shape[0],
+            channels=channels,
+            n_z=n_z,
+            area_mode=area_mode,
+        )
         file_path = tmpdir.join("Image_0001_0001.raw")
         sequence = img_stacks.flatten()
         out = bytearray(len(sequence) * 2)
         struct.pack_into(f"<{len(sequence)}H", out, 0, *sequence)
         with open(file_path, "xb") as f:
             f.write(out)
-        return file_path, metadata_for_raw, tuple((np.squeeze(img_stacks[:, :n_z, i]) for i in range(len(channels))))
+        return (
+            file_path,
+            metadata_for_raw,
+            tuple((np.squeeze(img_stacks[:, :n_z, i]) for i in range(len(channels)))),
+        )
+
     return _random_raw_file
+
 
 @pytest.fixture
 def random_z_stack(tmpdir, random_stack, metadata_obj):
     """
     """
-    def _random_z_stack(shape=(50, 60), timepoints=10, channels=("ChanA", "ChanB"), n_z=5):
+
+    def _random_z_stack(
+        shape=(50, 60), timepoints=10, channels=("ChanA", "ChanB"), n_z=5
+    ):
         z_stack = random_stack((timepoints, n_z, len(channels)) + shape)
         for c, channel in enumerate(channels):
             for step in range(n_z):
@@ -234,9 +269,17 @@ def random_z_stack(tmpdir, random_stack, metadata_obj):
                     name = f"{channel}_0001_0001_{step + 1:04}_{t + 1:04}.tif"
                     path = tmpdir.join(name)
                     tifffile.imsave(str(path), z_stack[t, step, c])
-        metadata = metadata_obj(y_pixels=shape[0], x_pixels=shape[1], timepoints=timepoints, channels=channels, n_z=n_z)
+        metadata = metadata_obj(
+            y_pixels=shape[0],
+            x_pixels=shape[1],
+            timepoints=timepoints,
+            channels=channels,
+            n_z=n_z,
+        )
         return tmpdir, metadata, z_stack
+
     return _random_z_stack
+
 
 @pytest.mark.parametrize("timepoints", [0, 1, 10])
 def test_get_n_time_points(metadata_obj, timepoints):
@@ -347,101 +390,130 @@ def test_load_img(random_tif_file):
     assert np.allclose(utils2p.load_img(file_path), img_stack)
 
 
-@pytest.mark.parametrize("area_mode,shape,timepoints,channels,n_z,flyback_frames", [
-    (0, (50, 60), 1, ("ChanA", ), 1, 0), 
-    (0, (50, 60), 1, ("ChanA", ), 1, 3), 
-    (0, (50, 60), 1, ("ChanA", ), 2, 0), 
-    (0, (50, 60), 1, ("ChanA", ), 2, 3), 
-    (0, (50, 60), 1, ("ChanA", "ChanB"), 1, 0), 
-    (0, (50, 60), 1, ("ChanA", "ChanB"), 1, 3), 
-    (0, (50, 60), 1, ("ChanA", "ChanB"), 2, 0), 
-    (0, (50, 60), 1, ("ChanA", "ChanB"), 2, 3), 
-    (0, (50, 60), 8, ("ChanA", ), 1, 0), 
-    (0, (50, 60), 8, ("ChanA", ), 1, 3), 
-    (0, (50, 60), 8, ("ChanA", ), 2, 0), 
-    (0, (50, 60), 8, ("ChanA", ), 2, 3), 
-    (0, (50, 60), 8, ("ChanA", "ChanB"), 1, 0), 
-    (0, (50, 60), 8, ("ChanA", "ChanB"), 1, 3), 
-    (0, (50, 60), 8, ("ChanA", "ChanB"), 2, 0), 
-    (0, (50, 60), 8, ("ChanA", "ChanB"), 2, 3), 
-    (1, (50, 60), 1, ("ChanA", ), 1, 0), 
-    (1, (50, 60), 1, ("ChanA", ), 1, 3), 
-    (1, (50, 60), 1, ("ChanA", ), 2, 0), 
-    (1, (50, 60), 1, ("ChanA", ), 2, 3), 
-    (1, (50, 60), 1, ("ChanA", "ChanB"), 1, 0), 
-    (1, (50, 60), 1, ("ChanA", "ChanB"), 1, 3), 
-    (1, (50, 60), 1, ("ChanA", "ChanB"), 2, 0), 
-    (1, (50, 60), 1, ("ChanA", "ChanB"), 2, 3), 
-    (1, (50, 60), 8, ("ChanA", ), 1, 0), 
-    (1, (50, 60), 8, ("ChanA", ), 1, 3), 
-    (1, (50, 60), 8, ("ChanA", ), 2, 0), 
-    (1, (50, 60), 8, ("ChanA", ), 2, 3), 
-    (1, (50, 60), 8, ("ChanA", "ChanB"), 1, 0), 
-    (1, (50, 60), 8, ("ChanA", "ChanB"), 1, 3), 
-    (1, (50, 60), 8, ("ChanA", "ChanB"), 2, 0), 
-    (1, (50, 60), 8, ("ChanA", "ChanB"), 2, 3), 
-    (2, (50, 60), 1, ("ChanA", ), 1, 0), 
-    (2, (50, 60), 1, ("ChanA", ), 1, 3), 
-    (2, (50, 60), 1, ("ChanA", ), 2, 0), 
-    (2, (50, 60), 1, ("ChanA", ), 2, 3), 
-    (2, (50, 60), 1, ("ChanA", "ChanB"), 1, 0), 
-    (2, (50, 60), 1, ("ChanA", "ChanB"), 1, 3), 
-    (2, (50, 60), 1, ("ChanA", "ChanB"), 2, 0), 
-    (2, (50, 60), 1, ("ChanA", "ChanB"), 2, 3), 
-    (2, (50, 60), 8, ("ChanA", ), 1, 0), 
-    (2, (50, 60), 8, ("ChanA", ), 1, 3), 
-    (2, (50, 60), 8, ("ChanA", ), 2, 0), 
-    (2, (50, 60), 8, ("ChanA", ), 2, 3), 
-    (2, (50, 60), 8, ("ChanA", "ChanB"), 1, 0), 
-    (2, (50, 60), 8, ("ChanA", "ChanB"), 1, 3), 
-    (2, (50, 60), 8, ("ChanA", "ChanB"), 2, 0), 
-    (2, (50, 60), 8, ("ChanA", "ChanB"), 2, 3), 
-    (3, (50, 60), 1, ("ChanA", ), 1, 0), 
-    (3, (50, 60), 1, ("ChanA", ), 1, 3), 
-    (3, (50, 60), 1, ("ChanA", ), 2, 0), 
-    (3, (50, 60), 1, ("ChanA", ), 2, 3), 
-    (3, (50, 60), 1, ("ChanA", "ChanB"), 1, 0), 
-    (3, (50, 60), 1, ("ChanA", "ChanB"), 1, 3), 
-    (3, (50, 60), 1, ("ChanA", "ChanB"), 2, 0), 
-    (3, (50, 60), 1, ("ChanA", "ChanB"), 2, 3), 
-    (3, (50, 60), 8, ("ChanA", ), 1, 0), 
-    (3, (50, 60), 8, ("ChanA", ), 1, 3), 
-    (3, (50, 60), 8, ("ChanA", ), 2, 0), 
-    (3, (50, 60), 8, ("ChanA", ), 2, 3), 
-    (3, (50, 60), 8, ("ChanA", "ChanB"), 1, 0), 
-    (3, (50, 60), 8, ("ChanA", "ChanB"), 1, 3), 
-    (3, (50, 60), 8, ("ChanA", "ChanB"), 2, 0), 
-    (3, (50, 60), 8, ("ChanA", "ChanB"), 2, 3), 
-    ])    
-def test_load_raw(random_raw_file, area_mode, shape, timepoints, channels, n_z, flyback_frames):
-    file_path, metadata, img_stacks = random_raw_file(area_mode=area_mode, shape=shape, timepoints=timepoints, channels=channels, n_z=n_z, flyback_frames=flyback_frames)
+@pytest.mark.parametrize(
+    "area_mode,shape,timepoints,channels,n_z,flyback_frames",
+    [
+        (0, (50, 60), 1, ("ChanA",), 1, 0),
+        (0, (50, 60), 1, ("ChanA",), 1, 3),
+        (0, (50, 60), 1, ("ChanA",), 2, 0),
+        (0, (50, 60), 1, ("ChanA",), 2, 3),
+        (0, (50, 60), 1, ("ChanA", "ChanB"), 1, 0),
+        (0, (50, 60), 1, ("ChanA", "ChanB"), 1, 3),
+        (0, (50, 60), 1, ("ChanA", "ChanB"), 2, 0),
+        (0, (50, 60), 1, ("ChanA", "ChanB"), 2, 3),
+        (0, (50, 60), 8, ("ChanA",), 1, 0),
+        (0, (50, 60), 8, ("ChanA",), 1, 3),
+        (0, (50, 60), 8, ("ChanA",), 2, 0),
+        (0, (50, 60), 8, ("ChanA",), 2, 3),
+        (0, (50, 60), 8, ("ChanA", "ChanB"), 1, 0),
+        (0, (50, 60), 8, ("ChanA", "ChanB"), 1, 3),
+        (0, (50, 60), 8, ("ChanA", "ChanB"), 2, 0),
+        (0, (50, 60), 8, ("ChanA", "ChanB"), 2, 3),
+        (1, (50, 60), 1, ("ChanA",), 1, 0),
+        (1, (50, 60), 1, ("ChanA",), 1, 3),
+        (1, (50, 60), 1, ("ChanA",), 2, 0),
+        (1, (50, 60), 1, ("ChanA",), 2, 3),
+        (1, (50, 60), 1, ("ChanA", "ChanB"), 1, 0),
+        (1, (50, 60), 1, ("ChanA", "ChanB"), 1, 3),
+        (1, (50, 60), 1, ("ChanA", "ChanB"), 2, 0),
+        (1, (50, 60), 1, ("ChanA", "ChanB"), 2, 3),
+        (1, (50, 60), 8, ("ChanA",), 1, 0),
+        (1, (50, 60), 8, ("ChanA",), 1, 3),
+        (1, (50, 60), 8, ("ChanA",), 2, 0),
+        (1, (50, 60), 8, ("ChanA",), 2, 3),
+        (1, (50, 60), 8, ("ChanA", "ChanB"), 1, 0),
+        (1, (50, 60), 8, ("ChanA", "ChanB"), 1, 3),
+        (1, (50, 60), 8, ("ChanA", "ChanB"), 2, 0),
+        (1, (50, 60), 8, ("ChanA", "ChanB"), 2, 3),
+        (2, (50, 60), 1, ("ChanA",), 1, 0),
+        (2, (50, 60), 1, ("ChanA",), 1, 3),
+        (2, (50, 60), 1, ("ChanA",), 2, 0),
+        (2, (50, 60), 1, ("ChanA",), 2, 3),
+        (2, (50, 60), 1, ("ChanA", "ChanB"), 1, 0),
+        (2, (50, 60), 1, ("ChanA", "ChanB"), 1, 3),
+        (2, (50, 60), 1, ("ChanA", "ChanB"), 2, 0),
+        (2, (50, 60), 1, ("ChanA", "ChanB"), 2, 3),
+        (2, (50, 60), 8, ("ChanA",), 1, 0),
+        (2, (50, 60), 8, ("ChanA",), 1, 3),
+        (2, (50, 60), 8, ("ChanA",), 2, 0),
+        (2, (50, 60), 8, ("ChanA",), 2, 3),
+        (2, (50, 60), 8, ("ChanA", "ChanB"), 1, 0),
+        (2, (50, 60), 8, ("ChanA", "ChanB"), 1, 3),
+        (2, (50, 60), 8, ("ChanA", "ChanB"), 2, 0),
+        (2, (50, 60), 8, ("ChanA", "ChanB"), 2, 3),
+        (3, (50, 60), 1, ("ChanA",), 1, 0),
+        (3, (50, 60), 1, ("ChanA",), 1, 3),
+        (3, (50, 60), 1, ("ChanA",), 2, 0),
+        (3, (50, 60), 1, ("ChanA",), 2, 3),
+        (3, (50, 60), 1, ("ChanA", "ChanB"), 1, 0),
+        (3, (50, 60), 1, ("ChanA", "ChanB"), 1, 3),
+        (3, (50, 60), 1, ("ChanA", "ChanB"), 2, 0),
+        (3, (50, 60), 1, ("ChanA", "ChanB"), 2, 3),
+        (3, (50, 60), 8, ("ChanA",), 1, 0),
+        (3, (50, 60), 8, ("ChanA",), 1, 3),
+        (3, (50, 60), 8, ("ChanA",), 2, 0),
+        (3, (50, 60), 8, ("ChanA",), 2, 3),
+        (3, (50, 60), 8, ("ChanA", "ChanB"), 1, 0),
+        (3, (50, 60), 8, ("ChanA", "ChanB"), 1, 3),
+        (3, (50, 60), 8, ("ChanA", "ChanB"), 2, 0),
+        (3, (50, 60), 8, ("ChanA", "ChanB"), 2, 3),
+    ],
+)
+def test_load_raw(
+    random_raw_file, area_mode, shape, timepoints, channels, n_z, flyback_frames
+):
+    file_path, metadata, img_stacks = random_raw_file(
+        area_mode=area_mode,
+        shape=shape,
+        timepoints=timepoints,
+        channels=channels,
+        n_z=n_z,
+        flyback_frames=flyback_frames,
+    )
     loaded_stacks = utils2p.load_raw(file_path, metadata)
     for i in range(len(channels)):
         # For Kymograph recordings and Line recordings the z steps have to be concatenated along the vertical image axis.
         if (area_mode == 2 or area_mode == 3) and n_z > 1:
             if timepoints > 1:
-                list_of_arrays = [img_stacks[i][:, j] for j in range(img_stacks[i].shape[1])]
+                list_of_arrays = [
+                    img_stacks[i][:, j] for j in range(img_stacks[i].shape[1])
+                ]
             else:
-                list_of_arrays = [img_stacks[i][j] for j in range(img_stacks[i].shape[0])]
+                list_of_arrays = [
+                    img_stacks[i][j] for j in range(img_stacks[i].shape[0])
+                ]
             img_stack = np.concatenate(list_of_arrays, axis=-2)
         else:
             img_stack = img_stacks[i]
-        assert np.allclose(loaded_stacks[i], img_stack), f"Failed with parameters area_mode={area_mode}, shape={shape}, timepoints={timepoints}, channels={channels}, n_z={n_z}, flyback_frames={flyback_frames}."
+        assert np.allclose(
+            loaded_stacks[i], img_stack
+        ), f"Failed with parameters area_mode={area_mode}, shape={shape}, timepoints={timepoints}, channels={channels}, n_z={n_z}, flyback_frames={flyback_frames}."
 
 
 def test_load_z_stack():
-    metadata = utils2p.Metadata(data_dir/"mouse_kidney_z_stack/Experiment.xml")
-    loaded_z_stack = utils2p.load_z_stack(data_dir/"mouse_kidney_z_stack", metadata)
-    z_stack = np.load(data_dir/"mouse_kidney_z_stack/z_stack.npy")
-    assert np.allclose(loaded_z_stack, z_stack), "Failed to load mouse kidney z-stack correctly."
-    
-    metadata = utils2p.Metadata(data_dir/"mouse_kidney_time_series_z_stack/Experiment.xml")
-    loaded_z_stack = utils2p.load_z_stack(data_dir/"mouse_kidney_time_series_z_stack", metadata)
-    z_stack = np.load(data_dir/"mouse_kidney_time_series_z_stack/z_stack.npy")
-    assert np.allclose(loaded_z_stack, z_stack), "Failed to load mouse kidney time of z-stacks correctly."
+    metadata = utils2p.Metadata(data_dir / "mouse_kidney_z_stack/Experiment.xml")
+    loaded_z_stack = utils2p.load_z_stack(data_dir / "mouse_kidney_z_stack", metadata)
+    z_stack = np.load(data_dir / "mouse_kidney_z_stack/z_stack.npy")
+    assert np.allclose(
+        loaded_z_stack, z_stack
+    ), "Failed to load mouse kidney z-stack correctly."
+
+    metadata = utils2p.Metadata(
+        data_dir / "mouse_kidney_time_series_z_stack/Experiment.xml"
+    )
+    loaded_z_stack = utils2p.load_z_stack(
+        data_dir / "mouse_kidney_time_series_z_stack", metadata
+    )
+    z_stack = np.load(data_dir / "mouse_kidney_time_series_z_stack/z_stack.npy")
+    assert np.allclose(
+        loaded_z_stack, z_stack
+    ), "Failed to load mouse kidney time of z-stacks correctly."
 
 
-@pytest.mark.parametrize("shape", [(2,3,4), (3,4,2,4), (3,4,5,3,4), (5,6,7,4,5,3), (4,1,3,4)])
+@pytest.mark.parametrize(
+    "shape",
+    [(2, 3, 4), (3, 4, 2, 4), (3, 4, 5, 3, 4), (5, 6, 7, 4, 5, 3), (4, 1, 3, 4)],
+)
 def test_concatenate_z(random_stack, shape):
     stack = random_stack(shape)
     concatenated = utils2p.concatenate_z(stack)
@@ -449,8 +521,11 @@ def test_concatenate_z(random_stack, shape):
     assert concatenated.ndim == stack.ndim - 1
 
 
-@pytest.mark.parametrize("shape", [(2,3,4), (3,4,2,4), (3,4,5,3,4), (5,6,7,4,5,1), (4,1,3,4)])
+@pytest.mark.parametrize(
+    "shape",
+    [(2, 3, 4), (3, 4, 2, 4), (3, 4, 5, 3, 4), (5, 6, 7, 4, 5, 1), (4, 1, 3, 4)],
+)
 def test_save_img(tmpdir, random_stack, shape):
     stack = random_stack(shape)
-    utils2p.save_img(tmpdir/"stack.tif", stack)
-    assert os.path.isfile(tmpdir/"stack.tif")
+    utils2p.save_img(tmpdir / "stack.tif", stack)
+    assert os.path.isfile(tmpdir / "stack.tif")
