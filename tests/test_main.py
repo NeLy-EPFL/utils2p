@@ -281,6 +281,23 @@ def random_z_stack(tmpdir, random_stack, metadata_obj):
     return _random_z_stack
 
 
+@pytest.fixture
+def default_exp_dir(tmpdir):
+    tmpdir = Path(tmpdir)
+    tmpdir.joinpath("Untitled_001").mkdir()
+    tmpdir.joinpath("Untitled_001/Experiment.xml").touch()
+    tmpdir.joinpath("Untitled_001/Image_0001_0001.raw").touch()
+    tmpdir.joinpath("Untitled_001/ROIMask.raw").touch()
+    tmpdir.joinpath("Untitled_001/ROIs.xaml").touch()
+    tmpdir.joinpath("Untitled_001/ChanA_Preview.tif").touch()
+    tmpdir.joinpath("Untitled_001/ChanB_Preview.tif").touch()
+    tmpdir.joinpath("Untitled_001/jpeg/1x").mkdir(parents=True)
+    tmpdir.joinpath("sync001").mkdir()
+    tmpdir.joinpath("sync001/Episode001.h5").touch()
+    tmpdir.joinpath("sync001/ThorRealTimeDataSettings.xml").touch()
+    return tmpdir
+
+
 @pytest.mark.parametrize("timepoints", [0, 1, 10])
 def test_get_n_time_points(metadata_obj, timepoints):
     assert metadata_obj(timepoints=timepoints).get_n_time_points() == timepoints
@@ -529,3 +546,33 @@ def test_save_img(tmpdir, random_stack, shape):
     stack = random_stack(shape)
     utils2p.save_img(tmpdir / "stack.tif", stack)
     assert os.path.isfile(tmpdir / "stack.tif")
+
+
+def test_find_metadata_file(default_exp_dir):
+    directory = str(default_exp_dir)
+    assert utils2p.find_metadata_file(directory) == str(default_exp_dir.joinpath("Untitled_001/Experiment.xml"))
+    # create second Experiment.xml file
+    default_exp_dir.joinpath("Experiment.xml").touch()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_metadata_file(directory)
+    # delete all Experiment.xml files
+    default_exp_dir.joinpath("Experiment.xml").unlink()
+    default_exp_dir.joinpath("Untitled_001/Experiment.xml").unlink()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_metadata_file(directory)
+
+
+def test_find_sync_file(default_exp_dir):
+    directory = str(default_exp_dir)
+    print(utils2p.find_sync_file(directory))
+    print(str(default_exp_dir.joinpath("sync001/Episode001.h5")))
+    assert utils2p.find_sync_file(directory) == str(default_exp_dir.joinpath("sync001/Episode001.h5"))
+    # create second Episode001.h5 file
+    default_exp_dir.joinpath("Episode001.h5").touch()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_sync_file(directory)
+    # delete all Episode001.h5 files
+    default_exp_dir.joinpath("Episode001.h5").unlink()
+    default_exp_dir.joinpath("sync001/Episode001.h5").unlink()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_sync_file(directory)

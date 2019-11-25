@@ -9,6 +9,7 @@ import os
 import glob
 import xml.etree.ElementTree as ET
 import array
+from pathlib import Path
 
 import numpy as np
 
@@ -511,3 +512,53 @@ def save_img(
     else:
         # TODO add meta data like metadata={'xresolution':'4.25','yresolution':'0.0976','PixelAspectRatio':'43.57'}
         tifffile.imsave(path, img, imagej=imagej, metadata={})
+
+
+def find_metadata_file(directory):
+    """
+    This functions find the path to the metadata file
+    "Experiment.xml" created by ThorImage and returns it.
+    If multiple files with this name are found, it throws
+    and exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to metadata file.
+    """
+    file_names = list(Path(directory).rglob("*Experiment.xml"))
+    if len(file_names) > 1:
+        raise InputError(f"Could not identify metadata file unambiguously. Discovered {len(file_names)} metadata files in {directory}.")
+    elif len(file_names) == 0:
+        raise InputError(f"No metadata file found in {dir}")
+    return str(file_names[0])
+
+
+def find_sync_file(directory):
+    """
+    This functions find the path to the sync file
+    "Episode001.h5" created by ThorSync and returns it.
+    If multiple files with this name are found, it throws
+    and exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to sync file.
+    """
+    file_names = list(Path(directory).rglob("*Episode001.h5"))
+    if len(file_names) > 1:
+        raise InputError(f"Could not identify sync file unambiguously. Discovered {len(file_names)} sync files in {directory}.")
+    elif len(file_names) == 0:
+        raise InputError(f"No sync file found in {dir}")
+    return str(file_names[0])
