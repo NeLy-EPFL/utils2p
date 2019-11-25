@@ -550,7 +550,9 @@ def test_save_img(tmpdir, random_stack, shape):
 
 def test_find_metadata_file(default_exp_dir):
     directory = str(default_exp_dir)
-    assert utils2p.find_metadata_file(directory) == str(default_exp_dir.joinpath("Untitled_001/Experiment.xml"))
+    assert utils2p.find_metadata_file(directory) == str(
+        default_exp_dir.joinpath("Untitled_001/Experiment.xml")
+    )
     # create second Experiment.xml file
     default_exp_dir.joinpath("Experiment.xml").touch()
     with pytest.raises(utils2p.errors.InputError):
@@ -564,9 +566,9 @@ def test_find_metadata_file(default_exp_dir):
 
 def test_find_sync_file(default_exp_dir):
     directory = str(default_exp_dir)
-    print(utils2p.find_sync_file(directory))
-    print(str(default_exp_dir.joinpath("sync001/Episode001.h5")))
-    assert utils2p.find_sync_file(directory) == str(default_exp_dir.joinpath("sync001/Episode001.h5"))
+    assert utils2p.find_sync_file(directory) == str(
+        default_exp_dir.joinpath("sync001/Episode001.h5")
+    )
     # create second Episode001.h5 file
     default_exp_dir.joinpath("Episode001.h5").touch()
     with pytest.raises(utils2p.errors.InputError):
@@ -576,3 +578,19 @@ def test_find_sync_file(default_exp_dir):
     default_exp_dir.joinpath("sync001/Episode001.h5").unlink()
     with pytest.raises(utils2p.errors.InputError):
         utils2p.find_sync_file(directory)
+
+
+def test_find_raw_file(default_exp_dir):
+    directory = str(default_exp_dir)
+    assert utils2p.find_raw_file(directory) == str(
+        default_exp_dir.joinpath("Untitled_001/Image_0001_0001.raw")
+    )
+    # create second Image_0001_0001.raw file
+    default_exp_dir.joinpath("Image_0001_0001.raw").touch()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_raw_file(directory)
+    # delete all Image_0001_0001.raw files
+    default_exp_dir.joinpath("Image_0001_0001.raw").unlink()
+    default_exp_dir.joinpath("Untitled_001/Image_0001_0001.raw").unlink()
+    with pytest.raises(utils2p.errors.InputError):
+        utils2p.find_raw_file(directory)

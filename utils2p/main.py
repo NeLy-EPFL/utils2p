@@ -514,6 +514,33 @@ def save_img(
         tifffile.imsave(path, img, imagej=imagej, metadata={})
 
 
+def _find_file(directory, name, file_type):
+    """
+    This function finds a unique file with a given name in
+    in the directory.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+    name : str
+        Name of the file.
+
+    Returns
+    -------
+    path : str
+        Path to file.
+    """
+    file_names = list(Path(directory).rglob("*" + name))
+    if len(file_names) > 1:
+        raise InputError(
+            f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
+        )
+    elif len(file_names) == 0:
+        raise InputError(f"No {file_type} file found in {dir}")
+    return str(file_names[0])
+
+
 def find_metadata_file(directory):
     """
     This functions find the path to the metadata file
@@ -531,12 +558,7 @@ def find_metadata_file(directory):
     path : str
         Path to metadata file.
     """
-    file_names = list(Path(directory).rglob("*Experiment.xml"))
-    if len(file_names) > 1:
-        raise InputError(f"Could not identify metadata file unambiguously. Discovered {len(file_names)} metadata files in {directory}.")
-    elif len(file_names) == 0:
-        raise InputError(f"No metadata file found in {dir}")
-    return str(file_names[0])
+    return _find_file(directory, "Experiment.xml", "metadata")
 
 
 def find_sync_file(directory):
@@ -556,9 +578,24 @@ def find_sync_file(directory):
     path : str
         Path to sync file.
     """
-    file_names = list(Path(directory).rglob("*Episode001.h5"))
-    if len(file_names) > 1:
-        raise InputError(f"Could not identify sync file unambiguously. Discovered {len(file_names)} sync files in {directory}.")
-    elif len(file_names) == 0:
-        raise InputError(f"No sync file found in {dir}")
-    return str(file_names[0])
+    return _find_file(directory, "Episode001.h5", "synchronization")
+
+
+def find_raw_file(directory):
+    """
+    This functions find the path to the raw file
+    "Image_0001_0001.raw" created by ThorImage and returns it.
+    If multiple files with this name are found, it throws
+    and exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to raw file.
+    """
+    return _find_file(directory, "Image_0001_0001.raw", "raw")
