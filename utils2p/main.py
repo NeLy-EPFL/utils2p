@@ -537,7 +537,7 @@ def _find_file(directory, name, file_type):
             f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
         )
     elif len(file_names) == 0:
-        raise InputError(f"No {file_type} file found in {dir}")
+        raise InputError(f"No {file_type} file found in {directory}")
     return str(file_names[0])
 
 
