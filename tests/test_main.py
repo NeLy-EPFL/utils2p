@@ -298,6 +298,10 @@ def default_exp_dir(tmpdir):
     return tmpdir
 
 
+def test_get_metadata_value(metadata_obj):
+    assert metadata_obj().get_metadata_value("Wavelengths", "ChannelEnable", "Set") == "3"
+
+
 @pytest.mark.parametrize("timepoints", [0, 1, 10])
 def test_get_n_time_points(metadata_obj, timepoints):
     assert metadata_obj(timepoints=timepoints).get_n_time_points() == timepoints
