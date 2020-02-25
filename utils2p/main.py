@@ -439,7 +439,6 @@ def load_z_stack(path, metadata):
     channels = metadata.get_channels()
     paths = sorted(glob.glob(os.path.join(path, channels[0]) + "*.tif"))
     stacks = load_img(paths[0])
-    print(stacks.shape)
     if stacks.ndim == 5:
         return tuple([stacks[:, :, 0, :, :], stacks[:, :, 1, :, :]])
     return tuple([stacks[:, 0, :, :], stacks[:, 1, :, :]])
