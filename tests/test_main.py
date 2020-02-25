@@ -299,7 +299,9 @@ def default_exp_dir(tmpdir):
 
 
 def test_get_metadata_value(metadata_obj):
-    assert metadata_obj().get_metadata_value("Wavelengths", "ChannelEnable", "Set") == "3"
+    assert (
+        metadata_obj().get_metadata_value("Wavelengths", "ChannelEnable", "Set") == "3"
+    )
 
 
 @pytest.mark.parametrize("timepoints", [0, 1, 10])
@@ -322,6 +324,11 @@ def test_get_num_y_pixels(metadata_obj, y_pixels):
 )
 def test_get_are_mode(metadata_obj, area_mode, result):
     assert metadata_obj(area_mode=area_mode).get_area_mode() == result
+
+
+def test_wrong_get_area_mode(metadata_obj):
+    with pytest.raises(utils2p.errors.InvalidValueInMetaData):
+        metadata_obj(area_mode=5).get_area_mode()
 
 
 @pytest.mark.parametrize("n_z", [0, 1, 10])
@@ -544,12 +551,72 @@ def test_concatenate_z(random_stack, shape):
 
 @pytest.mark.parametrize(
     "shape",
-    [(2, 3, 4), (3, 4, 2, 4), (3, 4, 5, 3, 4), (5, 6, 7, 4, 5, 1), (4, 1, 3, 4)],
+    [
+        (3, 4),
+        (2, 3, 4),
+        (3, 4, 2, 4),
+        (3, 4, 5, 3, 4),
+        (5, 6, 7, 4, 5, 1),
+        (4, 1, 3, 4),
+    ],
 )
 def test_save_img(tmpdir, random_stack, shape):
     stack = random_stack(shape)
     utils2p.save_img(tmpdir / "stack.tif", stack)
     assert os.path.isfile(tmpdir / "stack.tif")
+
+    stack = random_stack(shape).astype(np.float64)
+    utils2p.save_img(tmpdir / "stack_float64.tif", stack)
+    assert os.path.isfile(tmpdir / "stack_float64.tif")
+
+    stack = random_stack(shape) > 0.5
+    utils2p.save_img(tmpdir / "stack_bool.tif", stack)
+    assert os.path.isfile(tmpdir / "stack_bool.tif")
+
+    r_stack = random_stack(shape)
+    g_stack = random_stack(shape)
+    b_stack = random_stack(shape)
+    stack = np.stack((r_stack, g_stack, b_stack), axis=len(shape))
+    utils2p.save_img(tmpdir / "stack_color.tif", stack, color=True)
+    assert os.path.isfile(tmpdir / "stack_color.tif")
+
+    r_stack = random_stack(shape)
+    g_stack = random_stack(shape)
+    b_stack = random_stack(shape)
+    stack = np.stack((r_stack, g_stack, b_stack), axis=len(shape))
+    utils2p.save_img(
+        tmpdir / "stack_not_full_dynamic.tif",
+        stack,
+        color=True,
+        full_dynamic_range=False,
+    )
+    assert os.path.isfile(tmpdir / "stack_not_full_dynamic.tif")
+
+    r_stack = random_stack(shape)
+    g_stack = random_stack(shape)
+    b_stack = random_stack(shape)
+    stack = np.stack((r_stack, g_stack, b_stack), axis=len(shape)).astype(np.float)
+    utils2p.save_img(
+        tmpdir / "stack_not_full_dynamic_float.tif",
+        stack,
+        color=True,
+        full_dynamic_range=False,
+    )
+    assert os.path.isfile(tmpdir / "stack_not_full_dynamic_float.tif")
+
+    with pytest.raises(utils2p.errors.InputError):
+        r_stack = random_stack(shape)
+        g_stack = random_stack(shape)
+        b_stack = random_stack(shape)
+        stack = np.stack((r_stack, g_stack, b_stack), axis=len(shape)).astype(
+            np.complex
+        )
+        utils2p.save_img(
+            tmpdir / "stack_not_full_dynamic_complex.tif",
+            stack,
+            color=True,
+            full_dynamic_range=False,
+        )
 
 
 def test_find_metadata_file(default_exp_dir):
@@ -598,3 +665,29 @@ def test_find_raw_file(default_exp_dir):
     default_exp_dir.joinpath("Untitled_001/Image_0001_0001.raw").unlink()
     with pytest.raises(utils2p.errors.InputError):
         utils2p.find_raw_file(directory)
+
+
+def test_load_optical_flow(tmpdir):
+    n_timepoints = 10
+    opt_flow_data = np.zeros((n_timepoints, 5), dtype=np.int)
+    opt_flow_data[:, 4] = np.arange(n_timepoints, dtype=np.int)
+    opt_flow_data[1, 0] = -1
+    opt_flow_data[3, 1] = 1
+    opt_flow_data[6, 2] = 2
+    opt_flow_data[9, 3] = -3
+
+    file_name = os.path.join(tmpdir, "OpFlow.txt")
+    np.savetxt(file_name, opt_flow_data, delimiter=",")
+
+    result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4)
+    assert len(result["sensor0"]["x"]) == n_timepoints
+    assert len(result["sensor0"]["y"]) == n_timepoints
+    assert len(result["sensor1"]["x"]) == n_timepoints
+    assert len(result["sensor1"]["y"]) == n_timepoints
+    assert result["sensor0"]["gain_x"] == 1
+    assert result["sensor0"]["gain_y"] == 2
+    assert result["sensor1"]["gain_x"] == 3
+    assert result["sensor1"]["gain_y"] == 4
+    assert len(result["vel_pitch"]) == n_timepoints
+    assert len(result["vel_yaw"]) == n_timepoints
+    assert len(result["vel_roll"]) == n_timepoints
