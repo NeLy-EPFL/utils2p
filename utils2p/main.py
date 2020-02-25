@@ -522,7 +522,7 @@ def save_img(
         tifffile.imsave(path, img, imagej=imagej)
     else:
         # TODO add meta data like metadata={'xresolution':'4.25','yresolution':'0.0976','PixelAspectRatio':'43.57'}
-        #tifffile.imsave(path, img, imagej=imagej, metadata={})
+        # tifffile.imsave(path, img, imagej=imagej, metadata={})
         raise NotImplemented("Saving of metadata is not yet implemented")
 
 
