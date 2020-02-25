@@ -207,7 +207,7 @@ class Metadata:
         if area_mode == "line" or area_mode == "kymograph":
             return (
                 float(self.get_metadata_value("ZStage", "stepSizeUM"))
-                * int(self.get_metadata_value("ZStage", "steps"))
+                * self.get_n_z()
                 / self.get_num_y_pixels()
             )
         return float(self.get_metadata_value("ZStage", "stepSizeUM"))
@@ -223,6 +223,18 @@ class Metadata:
         """
         return float(self.get_metadata_value("LSM", "dwellTime"))
 
+    def get_n_flyback_frames(self):
+        """
+        Returns the number of flyback frames.
+
+        Returns
+        -------
+        n_flyback : int
+            Number of flyback frames.
+        """
+        n_flyback = int(self.get_metadata_value("Streaming", "flybackFrames"))
+        return n_flyback
+
     def get_frame_rate(self):
         """
         Returns the frame rate for a given experiment metadata.
@@ -233,8 +245,8 @@ class Metadata:
             Dwell time for a pixel.
         """
         frame_rate_without_flybacks = float(self.get_metadata_value("LSM", "frameRate"))
-        flyback_frames = int(self.get_metadata_value("Streaming", "flybackFrames"))
-        number_of_slices = int(self.get_metadata_value("ZStage", "steps"))
+        flyback_frames = self.get_n_flyback_frames()
+        number_of_slices = self.get_n_z()
         return frame_rate_without_flybacks / (flyback_frames + number_of_slices)
 
     def get_width(self):
@@ -599,3 +611,63 @@ def find_raw_file(directory):
         Path to raw file.
     """
     return _find_file(directory, "Image_0001_0001.raw", "raw")
+
+
+def load_optical_flow(
+    path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float
+):
+    """
+    This function loads the optical flow data from
+    the file specified in path. By default it is
+    directly converted into ball rotation.
+    
+    Parameters
+    ----------
+    path : str
+        Path to file holding the optical flow data.
+    gain_0_x: float
+        Gain for the x direction of sensor 0.
+    gain_0_y: float
+        Gain for the y direction of sensor 0.
+    gain_1_x: float
+        Gain for the x direction of sensor 1.
+    gain_1_y: float
+        Gain for the y direction of sensor 1.
+
+    Returns
+    -------
+    data : dictionary
+        A dictionary with keys: 'sensor0', 'sensor1',
+        'time_stamps', 'vel_pitch', 'vel_yaw', 'vel_roll'.
+    """
+    raw_data = np.genfromtxt(path, delimiter=",")
+    data = {
+        "sensor0": {
+            "x": raw_data[:, 0],
+            "y": raw_data[:, 1],
+            "gain_x": gain_0_x,
+            "gain_y": gain_0_y,
+        },
+        "sensor1": {
+            "x": raw_data[:, 2],
+            "y": raw_data[:, 3],
+            "gain_x": gain_1_x,
+            "gain_y": gain_1_y,
+        },
+        "time_stamps": raw_data[:, 4],
+    }
+
+    data["vel_pitch"] = -(
+        data["sensor0"]["y"] * data["sensor0"]["gain_y"]
+        + data["sensor1"]["y"] * data["sensor1"]["gain_y"]
+    ) * np.cos(np.deg2rad(45))
+    data["vel_yaw"] = (
+        data["sensor0"]["x"] * data["sensor0"]["gain_x"]
+        + data["sensor1"]["x"] * data["sensor1"]["gain_x"]
+    ) / 2.0
+    data["vel_roll"] = (
+        data["sensor0"]["y"] * data["sensor0"]["gain_y"]
+        - data["sensor1"]["y"] * data["sensor1"]["gain_y"]
+    ) * np.sin(np.deg2rad(45))
+
+    return data
