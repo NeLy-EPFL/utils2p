@@ -275,3 +275,45 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
         indices_2p[i] = frame_counter[thor_sync_index]
 
     return indices_2p.astype(np.int)
+
+
+def reduce_during_2p_frame(frame_counter, values, function):
+    """
+    Reduces all values occuring during the acquisition of a
+    2-photon frame to a single value using the `function`
+    given by the user.
+
+    Parameters
+    ----------
+    frame_counter : numpy array
+        Processed frame counter.
+    values : numpy array
+        Values upsampled to the frequency of ThorSync,
+        i.e. 1D numpy array of the same length as
+        `frame_counter`.
+    function : function
+        Function used to reduce the value,
+        e.g. np.mean.
+
+    Returns
+    -------
+    reduced : numpy array
+        Numpy array with value for each 2p frame.
+    """
+    if len(frame_counter) != len(values):
+        raise ValueError("frame_counter and values need to have the same length.")
+    
+    reduced = np.ones(np.max(frame_counter) + 1) * np.nan
+    thor_sync_indices = tuple(edges(frame_counter, (0, np.inf))[0])
+    
+    starts = thor_sync_indices
+    stops = thor_sync_indices[1:] + (len(frame_counter),)
+    
+    if frame_counter[0] != -1:
+        starts = (0,) + starts
+        stops = (thor_sync_indices[0],) + stops
+
+    for i, (start, stop) in enumerate(zip(starts, stops)):
+        reduced[i] = function(values[start:stop])
+
+    return reduced
