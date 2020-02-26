@@ -3,6 +3,7 @@ This module provides unit tests for the functions provided in utils2p.synchroniz
 """
 
 import numpy as np
+import pytest
 
 import utils2p.synchronization
 
@@ -38,3 +39,6 @@ def test_reduce_during_2p_frame():
     output_mean = utils2p.synchronization.reduce_during_2p_frame(frame_counter, values, np.mean)
     expected_result_mean = np.array([1, 2.5, 4.5, 7.5])
     assert np.allclose(output_mean, expected_result_mean)
+
+    with pytest.raises(ValueError):
+        utils2p.synchronization.reduce_during_2p_frame(np.zeros(3), np.zeros(4), np.mean)
