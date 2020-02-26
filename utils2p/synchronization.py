@@ -295,7 +295,7 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     indices_2p : numpy array
         Corresponding 2p frame indices.
     """
-    thor_sync_indices = np.where(np.diff(cam_line))[0][1:] + 1
+    thor_sync_indices = edges(cam_line)[0]
 
     indices_2p = np.ones(len(beh_indices), dtype=np.int) * -1
 
