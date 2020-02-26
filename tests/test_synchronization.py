@@ -42,3 +42,10 @@ def test_reduce_during_2p_frame():
 
     with pytest.raises(ValueError):
         utils2p.synchronization.reduce_during_2p_frame(np.zeros(3), np.zeros(4), np.mean)
+
+
+def test_process_optical_flow_line():
+    raw_line = np.array([0, 0, 16, 16, 16, 0, 0, 0, 0, 0, 16, 16, 16, 16, 0])
+    expected = np.array([-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+    processed = utils2p.synchronization.process_optical_flow_line(raw_line)
+    assert np.allclose(expected, processed)

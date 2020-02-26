@@ -220,6 +220,37 @@ def process_stimulus_line(line):
     return processed_stimulus_line.astype(np.int)
 
 
+def process_optical_flow_line(line):
+    """
+    This function converts the optical flow line
+    into a step function. The value corresponds
+    to the index of optical flow value at this
+    time point. If the value is -1, no optical flow
+    value was recorded for this time point.
+
+    Parameters
+    ----------
+    line : numpy array
+        Line signal for h5 file.
+
+    Returns
+    -------
+    processed_optical_flow_line : numpy array
+        Array with monotonically increasing step
+        function.
+    """
+    processed_optical_flow_line = np.ones_like(line) * -1
+    rising_edges = edges(line, (0, np.inf))[0]
+    for i in range(0, len(rising_edges) - 1):
+        processed_optical_flow_line[
+            rising_edges[i] : rising_edges[i + 1]
+        ] = i
+    processed_optical_flow_line[rising_edges[-1] :] = (
+        processed_optical_flow_line[rising_edges[-1] - 1] + 1
+    )
+    return processed_optical_flow_line.astype(np.int)
+
+
 def crop_lines(mask, lines):
     """
     This function crops all lines based on a binary signal/mask.
