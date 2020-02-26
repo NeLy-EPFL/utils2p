@@ -30,13 +30,14 @@ def get_lines_from_h5_file(file_path, line_names):
     lines : tuple
         Line arrays in the same order as given in line_names.
     """
-    f = h5py.File(file_path, "r")
     lines = []
-    for name in line_names:
-        try:
-            lines.append(f["DI"][name][:].squeeze())
-        except KeyError:
-            lines.append(f["CI"][name][:].squeeze())
+    
+    with h5py.File(file_path, "r") as f:
+        for name in line_names:
+            try:
+                lines.append(f["DI"][name][:].squeeze())
+            except KeyError:
+                lines.append(f["CI"][name][:].squeeze())
     return tuple(lines)
 
 
