@@ -58,7 +58,6 @@ def get_times(length, freq):
         Times in seconds.
     """
     times = np.arange(0, length / freq, 1 / freq)
-    assert len(times) == length
     return times
 
 
