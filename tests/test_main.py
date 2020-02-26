@@ -1,5 +1,5 @@
 """
-This module provides unit test for the functions provided in utils2p.main.
+This module provides unit tests for the functions provided in utils2p.main.
 """
 
 import os.path
