@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome to utils2p’s documentation! &#8212; utils2p  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-utils2p-s-documentation">
+<h1>Welcome to utils2p’s documentation!<a class="headerlink" href="#welcome-to-utils2p-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-utils2p.main"></span><div class="section" id="core-module">
+<h2>Core module<a class="headerlink" href="#core-module" title="Permalink to this headline">¶</a></h2>
+<p>The functions in this module are essentials that can be directly imported using <cite>import utils2p</cite>.</p>
+<dl class="class">
+<dt id="utils2p.main.Metadata">
+<em class="property">class </em><code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for managing ThorImage metadata.</p>
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_area_mode">
+<code class="sig-name descname">get_area_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_area_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_area_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the area mode of a given experiment metadata, e.g.
+square, rectangle, line, kymograph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>area_mode</strong> – Area mode of experiment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_channels">
+<code class="sig-name descname">get_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retruns a tuple with the names of all channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>channels</strong> – Names of channels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_date_time">
+<code class="sig-name descname">get_date_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_date_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_date_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date and time of an experiment for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>date_time</strong> – Date and time of an experiment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_dwell_time">
+<code class="sig-name descname">get_dwell_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_dwell_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_dwell_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dwell time for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dwell_time</strong> – Dwell time for a pixel.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_frame_rate">
+<code class="sig-name descname">get_frame_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_frame_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_frame_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the frame rate for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dwell_time</strong> – Dwell time for a pixel.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_gainA">
+<code class="sig-name descname">get_gainA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_gainA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the gain of channel A for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>gainA</strong> – Gain of channel A.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_gainB">
+<code class="sig-name descname">get_gainB</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_gainB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the gain of channel B for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>gainB</strong> – Gain of channel B.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_metadata_value">
+<code class="sig-name descname">get_metadata_value</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_metadata_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_metadata_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a value from the metadata file ‘Experiment.xml’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – Arbitrary number of strings of tag from the xml file in the correct order.
+See examples.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>attribute or node</strong> – If the number of strings given in args leads to a leaf of the tree, the attribute,
+usually a dictionary is returned. Otherwise the node is returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string or ElementTree node</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n_time_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;Timelapse&#39;</span><span class="p">,</span><span class="s1">&#39;timepoints&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;LSM&#39;</span><span class="p">,</span><span class="s1">&#39;pixelX&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;LSM&#39;</span><span class="p">,</span><span class="s1">&#39;pixelY&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n_channels</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;Wavelengths&#39;</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_n_channels">
+<code class="sig-name descname">get_n_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_n_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of channels for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_channels</strong> – Number of channels in raw data file.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_n_flyback_frames">
+<code class="sig-name descname">get_n_flyback_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_flyback_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_n_flyback_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of flyback frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_flyback</strong> – Number of flyback frames.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_n_time_points">
+<code class="sig-name descname">get_n_time_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_time_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_n_time_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of time points for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_time_points</strong> – Number of time points.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_n_z">
+<code class="sig-name descname">get_n_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_n_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number for z slices for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_z</strong> – Number of z layers of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_num_x_pixels">
+<code class="sig-name descname">get_num_x_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_x_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_num_x_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the image width for a given experiment metadata,
+i.e. the number of pixels in the x direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>width</strong> – Width of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_num_y_pixels">
+<code class="sig-name descname">get_num_y_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_y_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_num_y_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the image height for a given experiment metadata,
+i.e. the number of pixels in the y direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>height</strong> – Width of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_pixel_size">
+<code class="sig-name descname">get_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixel size for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>pixel_size</strong> – Size of one pixel in um in x and y direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_power_reg1_start">
+<code class="sig-name descname">get_power_reg1_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_power_reg1_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_power_reg1_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the starting position of power regulator 1 for a given
+experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>reg1_start</strong> – Starting position of power regulator 1.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_width">
+<code class="sig-name descname">get_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returbns the image with in um for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>width</strong> – Width of FOV in um..</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_z_pixel_size">
+<code class="sig-name descname">get_z_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_z_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixel size in z direction for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>z_pixel_size</strong> – Distance covered in um along z direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.main.Metadata.get_z_step_size">
+<code class="sig-name descname">get_z_step_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.Metadata.get_z_step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the z step size for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>z_step_size</strong> – Distance covered in um along z direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.concatenate_z">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">concatenate_z</code><span class="sig-paren">(</span><em class="sig-param">stack</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#concatenate_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.concatenate_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate in z direction for area mode ‘line’ or ‘kymograph’,
+e.g. coronal section.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stack</strong> (<em>4D</em><em> or </em><em>6D numpy array</em>) – Stack that should be concatenated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stack</strong> – Concatenated stack.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>3D or 5D numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.find_metadata_file">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_metadata_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions find the path to the metadata file
+“Experiment.xml” created by ThorImage and returns it.
+If multiple files with this name are found, it throws
+and exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to metadata file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.find_raw_file">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_raw_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_raw_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_raw_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions find the path to the raw file
+“Image_0001_0001.raw” created by ThorImage and returns it.
+If multiple files with this name are found, it throws
+and exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to raw file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.find_sync_file">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_sync_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_sync_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_sync_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions find the path to the sync file
+“Episode001.h5” created by ThorSync and returns it.
+If multiple files with this name are found, it throws
+and exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to sync file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.load_img">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">load_img</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.load_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions loads an image from file and returns as a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – Path to image file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Image in form of numpy array.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.load_optical_flow">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">load_optical_flow</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">gain_0_x: float</em>, <em class="sig-param">gain_0_y: float</em>, <em class="sig-param">gain_1_x: float</em>, <em class="sig-param">gain_1_y: float</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_optical_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.load_optical_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads the optical flow data from
+the file specified in path. By default it is
+directly converted into ball rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to file holding the optical flow data.</p></li>
+<li><p><strong>gain_0_x</strong> (<em>float</em>) – Gain for the x direction of sensor 0.</p></li>
+<li><p><strong>gain_0_y</strong> (<em>float</em>) – Gain for the y direction of sensor 0.</p></li>
+<li><p><strong>gain_1_x</strong> (<em>float</em>) – Gain for the x direction of sensor 1.</p></li>
+<li><p><strong>gain_1_y</strong> (<em>float</em>) – Gain for the y direction of sensor 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> – A dictionary with keys: ‘sensor0’, ‘sensor1’,
+‘time_stamps’, ‘vel_pitch’, ‘vel_yaw’, ‘vel_roll’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.load_raw">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">load_raw</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.load_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads a raw image generated by ThorImage as a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path to raw file.</p></li>
+<li><p><strong>metadata</strong> (<em>ElementTree root</em>) – Can be obtained with <code class="xref py py-func docutils literal notranslate"><span class="pre">get_metadata()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stacks</strong> – Number of numpy arrays depends on the number of channels recoded during the experiment.
+Has the following dimensions: TZYX or TYX for planar images.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of numpy arrays</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack1</span><span class="p">,</span> <span class="n">stack2</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_raw</span><span class="p">(</span><span class="s1">&#39;Image_0001_0001.raw&#39;</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">save_img</span><span class="p">(</span><span class="s1">&#39;stack1.tif&#39;</span><span class="p">,</span><span class="n">stack1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">save_img</span><span class="p">(</span><span class="s1">&#39;stack2.tif&#39;</span><span class="p">,</span><span class="n">stack2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.load_z_stack">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">load_z_stack</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_z_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.load_z_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads tif files as saved when capturing a z-stack into a 3D numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path to directory of the z-stack.</p></li>
+<li><p><strong>metadata</strong> (<em>ElementTree root</em>) – Can be obtained with <code class="xref py py-func docutils literal notranslate"><span class="pre">get_metadata()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stacks</strong> – Z-stacks for Channel A (green) and Channel B (red).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of numpy arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.save_img">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">save_img</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">img</em>, <em class="sig-param">imagej=True</em>, <em class="sig-param">color=False</em>, <em class="sig-param">full_dynamic_range=True</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#save_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.save_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves an image that is given as a numpy array to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path where the file is saved.</p></li>
+<li><p><strong>img</strong> (<em>numpy array</em>) – Image or stack. For stacks, the first dimension is the stack index.
+For color images, the last dimension are the RGB channels.</p></li>
+<li><p><strong>imagej</strong> (<em>boolean</em>) – Save imagej compatible stacks and hyperstacks.</p></li>
+<li><p><strong>color</strong> (<em>boolean</em><em>, </em><em>default = False</em>) – Determines if image is RGB or gray scale.
+Will be converted to uint8.</p></li>
+<li><p><strong>full_dynamic_range</strong> (<em>boolean</em><em>, </em><em>default = True</em>) – When an image is converted to uint8 for saving a color image the
+max value of the output image is the max of uint8,
+i.e. the image uses the full dynamic range available.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<span class="target" id="module-utils2p.synchronization"></span><div class="section" id="synchronization-module">
+<h2>Synchronization module<a class="headerlink" href="#synchronization-module" title="Permalink to this headline">¶</a></h2>
+<p>This module provides functions to process the synchronization data
+acquired with Thor Sync during imaging.</p>
+<dl class="function">
+<dt id="utils2p.synchronization.beh_idx_to_2p_idx">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">beh_idx_to_2p_idx</code><span class="sig-paren">(</span><em class="sig-param">beh_indices</em>, <em class="sig-param">cam_line</em>, <em class="sig-param">frame_counter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#beh_idx_to_2p_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.beh_idx_to_2p_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions converts behaviour frame numbers into the corresponding
+2p frame numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beh_indices</strong> (<em>numpy array</em>) – Indices of the behaviour frames to be converted.</p></li>
+<li><p><strong>cam_line</strong> (<em>numpy array</em>) – Processed cam line.</p></li>
+<li><p><strong>frame_counter</strong> (<em>numpy array</em>) – Processed frame counter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices_2p</strong> – Corresponding 2p frame indices.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.crop_lines">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">crop_lines</code><span class="sig-paren">(</span><em class="sig-param">mask</em>, <em class="sig-param">lines</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#crop_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.crop_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function crops all lines based on a binary signal/mask.
+The ‘Capture On’ line of the h5 file can be used as a mask.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mask</strong> (<em>numpy array</em>) – Mask that is used for cropping.</p></li>
+<li><p><strong>lines</strong> (<em>list of numpy arrays</em>) – List of the lines that should be cropped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cropped_lines</strong> – Tuple of cropped lines in same order as in input list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of numpy arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.edges">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">edges</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">size=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indices of an edges in a line with
+a specific size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
+<li><p><strong>size</strong> (<em>float</em><em> or </em><em>tuple</em>) – Size of the rising edge. If float it is used as minimum.
+Tuples specify a range. To get falling edges use negative values.
+Only one boundary can be applied using np.inf as on of the values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>indices</strong> – Indices of the rising edges.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.get_lines_from_h5_file">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_lines_from_h5_file</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">line_names</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_lines_from_h5_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_lines_from_h5_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the values of the requested lines save in
+an h5 generated by ThorSync.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>string</em>) – Path to h5 file.</p></li>
+<li><p><strong>line_names</strong> (<em>list of strings</em>) – List of the ThorSync line names to be returned.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>lines</strong> – Line arrays in the same order as given in line_names.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.get_start_times">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_start_times</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">times</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_start_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_start_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the start times of a digital signal,
+i.e. the times of the rising edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
+<li><p><strong>times</strong> (<em>numpy array</em>) – Times returned by <code class="xref py py-func docutils literal notranslate"><span class="pre">new_synchronization.get_times()</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>time_points</strong> – List of the start times.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.get_times">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_times</code><span class="sig-paren">(</span><em class="sig-param">length</em>, <em class="sig-param">freq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_times" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the time point of each tick
+for a given sequence length and tick frequency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<em>int</em>) – Length of sequence.</p></li>
+<li><p><strong>freq</strong> (<em>float</em>) – Frequency in Hz.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>times</strong> – Times in seconds.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.process_cam_line">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_cam_line</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">capture_json</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_cam_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_cam_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove superfluous signals and use frame numbers in array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
+<li><p><strong>capture_json</strong> (<em>string</em>) – Path to the json file save by our camera software.
+This file is usually located in the same folder as the frames
+and is called ‘capture_metadata.json’. If None, it is assumed
+that no frames were dropped.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>processed_line</strong> – Array with frame number for each time point.
+If no frame is available for a given time the value is -1.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.process_frame_counter">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_frame_counter</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">steps_per_frame=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_frame_counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_frame_counter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the frame counter line to an array with frame numbers for each
+time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
+<li><p><strong>steps_per_frame</strong> (<em>int</em>) – Number of steps the frame counter takes per frame.
+This includes fly back frame, i.e. if you acquire one frame
+and flyback frames is set to 3 this number should be 4.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>processed_frame_counter</strong> – Array with frame number for each time point.
+If no frame was recorded at a time point the value is -1.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.process_optical_flow_line">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_optical_flow_line</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_optical_flow_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_optical_flow_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts the optical flow line
+into a step function. The value corresponds
+to the index of optical flow value at this
+time point. If the value is -1, no optical flow
+value was recorded for this time point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>numpy array</em>) – Line signal for h5 file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>processed_optical_flow_line</strong> – Array with monotonically increasing step
+function.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.process_stimulus_line">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_stimulus_line</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_stimulus_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_stimulus_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function converts the stimulus line to an array with
+0s and 1s for stimulus off and on respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>processed_frame_counter</strong> – Array with binary stimulus state for each time point.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.reduce_during_2p_frame">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">reduce_during_2p_frame</code><span class="sig-paren">(</span><em class="sig-param">frame_counter</em>, <em class="sig-param">values</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#reduce_during_2p_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.reduce_during_2p_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduces all values occuring during the acquisition of a
+2-photon frame to a single value using the <cite>function</cite>
+given by the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_counter</strong> (<em>numpy array</em>) – Processed frame counter.</p></li>
+<li><p><strong>values</strong> (<em>numpy array</em>) – Values upsampled to the frequency of ThorSync,
+i.e. 1D numpy array of the same length as
+<cite>frame_counter</cite>.</p></li>
+<li><p><strong>function</strong> (<em>function</em>) – Function used to reduce the value,
+e.g. np.mean.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>reduced</strong> – Numpy array with value for each 2p frame.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">utils2p</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Florian Aymanns.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
