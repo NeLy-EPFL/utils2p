@@ -112,9 +112,46 @@ def get_start_times(line, times):
     return time_points
 
 
+def _default_capture_metadata(n_frames):
+    """
+    Returns a dictionary as it is usually saved by the seven
+    camera setup in the "capture_metadata.json" file.
+    It assumes that no frames where dropped.
+
+    Parameters
+    ----------
+    n_frames : int
+        Number of frames.
+
+    Returns
+    -------
+    capture_info : dict
+        Default metadata dictionary for the seven camera
+        system.
+    """
+    frames_dict = {}
+    for i in range(n_frames):
+        frames_dict[str(i)] = i
+    capture_info = {"Frame Counts": {"0": frames_dict}}
+    return capture_info
+
+
 def process_cam_line(line, capture_json):
     """
     Remove superfluous signals and use frame numbers in array.
+    The cam line signal form the h5 file is a binary sequence.
+    Rising edges mark the acquisition of a new frame.
+    The setup keeps producing rising edges after the acquisition of the
+    last frame. These rising edges are ignored.
+    This function converts it to frame numbers using the information
+    stored in the metadata file of the seven camera setup.
+    In the metadata file the keys are the indices of the file names
+    and the values are the grabbed frame numbers. Suppose the 3
+    frame was dropped. Then the entries in the dictionary will
+    be as follows:
+    "2": 2
+    "3": 4
+    "4": 5
 
     Parameters
     ----------
@@ -132,32 +169,54 @@ def process_cam_line(line, capture_json):
         Array with frame number for each time point.
         If no frame is available for a given time the value is -1.
     """
+    # Check that sequence is binary
+    if len(set(line)) > 2:
+        raise ValueError("Invalid line argument. Sequence is not binary.")
+
+    # Find indices of the start of each frame acquisition
     rising_edges = edges(line, (0, np.inf))[0]
 
+    # Load capture metadata or generate default
     if capture_json is not None:
         with open(capture_json, "r") as f:
             capture_info = json.load(f)
     else:
-        frames_dict = {}
-        for i in range(len(rising_edges)):
-            frames_dict[str(i)] = i
-        capture_info = {"Frame Counts": {"0": frames_dict}}
-    last_ticks = []
+        capture_info = _default_capture_metadata(len(rising_edges))
 
+    # Find the number of frames for each camera
+    n_frames = []
     for cam_idx in capture_info["Frame Counts"].keys():
-        last_ticks.append(max(capture_info["Frame Counts"][cam_idx].values()))
+        max_in_json = max(capture_info["Frame Counts"][cam_idx].values())
+        n_frames.append(max_in_json + 1)
 
-    last_tick = max(last_ticks)
-    if len(np.unique(last_ticks)) > 1:
+    # Ensure all cameras acquired the same number of frames
+    if len(np.unique(n_frames)) > 1:
         raise SynchronizationError("The frames across cameras are not synchronized.")
+
+    # Last rising edge that corresponds to a frame
+    last_tick = max(n_frames)
+
+    # check that there is a rising edge for every frame
+    if len(rising_edges) < last_tick:
+        raise ValueError("The provided cam line and metadata are inconsistent. cam line has less frame acquisitions than metadata.")
+
+    # Ensure correct handling if no rising edges are present after last frame
+    if len(rising_edges) == int(last_tick):
+        average_frame_length = int(np.mean(np.diff(rising_edges)))
+        last_rising_edge = rising_edges[-1]
+        additional_edge = last_rising_edge + average_frame_length
+        if additional_edge > len(line):
+            additional_edge = len(line)
+        rising_edges = list(rising_edges)
+        rising_edges.append(additional_edge)
+        rising_edges = np.array(rising_edges)
 
     processed_line = np.ones_like(line) * -1
 
     current_frame = 0
     first_camera_used = sorted(list(capture_info["Frame Counts"].keys()))[0]
-    # plus 1 because the json file start counting from 0
     for i, (start, stop) in enumerate(
-        zip(rising_edges[: last_tick + 1], rising_edges[1 : last_tick + 2])
+        zip(rising_edges[: last_tick], rising_edges[1 : last_tick + 1])
     ):
         if capture_info["Frame Counts"][first_camera_used][str(current_frame + 1)] <= i:
             current_frame += 1
