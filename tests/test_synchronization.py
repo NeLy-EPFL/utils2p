@@ -3,6 +3,7 @@ This module provides unit tests for the functions provided in utils2p.synchroniz
 """
 
 import os.path
+import json
 
 import numpy as np
 import pytest
@@ -50,6 +51,24 @@ def h5_file(tmpdir):
         return path
 
     return _h5_file
+
+
+@pytest.fixture
+def capture_json(tmpdir):
+    path = os.path.join(tmpdir, "capture_metadata.json")
+    def _capture_json(n_frames, dropped_frames=[]):
+        frames_dict = {}
+        current_frame = 0
+        for i in range(n_frames):
+            while current_frame in dropped_frames:
+                current_frame += 1
+            frames_dict[str(i)] = current_frame
+            current_frame += 1
+        capture_info = {"Frame Counts": {"0": frames_dict}}
+        with open(path, "w") as f:
+            json.dump(capture_info, f)
+        return path
+    return _capture_json
 
 
 @pytest.mark.parametrize("length", [20, 1000000])
@@ -105,9 +124,33 @@ def test_get_start_times():
     assert np.allclose(np.array([2, 5, 9]), utils2p.synchronization.get_start_times(line, times))
 
 
-def test_process_cam_line():
-    #line = np.array([
-    raise NotImplementedError
+def test_process_cam_line(capture_json):
+    line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1])
+    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2])
+    result = utils2p.synchronization.process_cam_line(line, None)
+    assert np.allclose(result, expected)
+
+    metadata = capture_json(2)
+    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, -1])
+    result = utils2p.synchronization.process_cam_line(line, metadata)
+    assert np.allclose(result, expected)
+
+    line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
+    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, -1])
+    metadata = capture_json(4)
+    result = utils2p.synchronization.process_cam_line(line, metadata)
+    assert np.allclose(result, expected)
+    
+    line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
+    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, -1])
+    metadata = capture_json(3, dropped_frames=[2,])
+    result = utils2p.synchronization.process_cam_line(line, metadata)
+    assert np.allclose(result, expected)
+    
+    line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, ])
+    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1,])
+    result = utils2p.synchronization.process_cam_line(line, None)
+    assert np.allclose(result, expected)
 
 
 def test_process_frame_counter():
