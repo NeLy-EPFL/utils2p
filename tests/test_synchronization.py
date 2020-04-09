@@ -55,16 +55,25 @@ def h5_file(tmpdir):
 
 @pytest.fixture
 def capture_json(tmpdir):
+    """
+    This pytest factory produces a json metadata file
+    for the seven camera setup.
+    """
     path = os.path.join(tmpdir, "capture_metadata.json")
-    def _capture_json(n_frames, dropped_frames=[]):
-        frames_dict = {}
-        current_frame = 0
-        for i in range(n_frames):
-            while current_frame in dropped_frames:
-                current_frame += 1
-            frames_dict[str(i)] = current_frame
-            current_frame += 1
-        capture_info = {"Frame Counts": {"0": frames_dict}}
+    def _capture_json(n_frames, dropped_frames=None):
+        """
+        Generates a json file with seven camera capture metadata.
+
+        Parameters
+        ----------
+        n_frames : list of integers
+            Number of frames for each camera.
+        dropped_frames : list of list of integers
+            Frames that were dropped for each camera.
+            Default is None which means no frames where
+            dropped.
+        """
+        capture_info = utils2p.synchronization._capture_metadata(n_frames, dropped_frames)
         with open(path, "w") as f:
             json.dump(capture_info, f)
         return path
@@ -124,26 +133,37 @@ def test_get_start_times():
     assert np.allclose(np.array([2, 5, 9]), utils2p.synchronization.get_start_times(line, times))
 
 
+def test__capture_metadata():
+    capture_info = utils2p.synchronization._capture_metadata([2, 3])
+    assert capture_info == {"Frame Counts": {"0": {"0": 0, "1": 1}, "1": {"0": 0, "1": 1, "2": 2}}}
+    
+    capture_info = utils2p.synchronization._capture_metadata([3,], [[1,]])
+    assert capture_info == {"Frame Counts": {"0": {"0": 0, "1": 2, "2": 3},}}
+    
+    capture_info = utils2p.synchronization._capture_metadata([6,], [[1, 4]])
+    assert capture_info == {"Frame Counts": {"0": {"0": 0, "1": 2, "2": 3, "3": 5, "4": 6, "5": 7},}}
+
+
 def test_process_cam_line(capture_json):
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1])
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2])
     result = utils2p.synchronization.process_cam_line(line, None)
     assert np.allclose(result, expected)
 
-    metadata = capture_json(2)
+    metadata = capture_json([2,])
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, -1])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
 
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, -1])
-    metadata = capture_json(4)
+    metadata = capture_json([4,])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, -1])
-    metadata = capture_json(3, dropped_frames=[2,])
+    metadata = capture_json([3,], dropped_frames=[[2,],])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
@@ -151,6 +171,23 @@ def test_process_cam_line(capture_json):
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1,])
     result = utils2p.synchronization.process_cam_line(line, None)
     assert np.allclose(result, expected)
+
+    # Non-binary line argument
+    line = np.array([0, 1, 2])
+    with pytest.raises(ValueError):
+        utils2p.synchronization.process_cam_line(line, None)
+
+    # Inconsistent number of frames across cameras
+    metadata = capture_json([4, 5])
+    line = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
+    with pytest.raises(utils2p.synchronization.SynchronizationError):
+        utils2p.synchronization.process_cam_line(line, metadata)
+
+    # More frames in metadata than ticks in line
+    metadata = capture_json([5,])
+    line = np.array([0, 1, 0, 1, 0])
+    with pytest.raises(ValueError):
+        utils2p.synchronization.process_cam_line(line, metadata)
 
 
 def test_process_frame_counter():
