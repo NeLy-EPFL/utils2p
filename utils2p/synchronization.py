@@ -10,7 +10,10 @@ import numpy as np
 import h5py
 import json
 
-from .errors import SynchronizationError
+class SynchronizationError(Exception):
+    """The input data is not consistent with synchronization assumption."""
+
+    pass
 
 
 def get_lines_from_h5_file(file_path, line_names):

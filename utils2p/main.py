@@ -13,11 +13,17 @@ from pathlib import Path
 
 import numpy as np
 
-from .errors import InputError, InvalidValueInMetaData
 from . import synchronization
 from .external import tifffile
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
+
+
+class InvalidValueInMetaData(Exception):
+    """This error should be raised when an invalid value
+    is encountered in an 'Experiement.xml' file."""
+
+    pass
 
 
 class Metadata:
@@ -498,7 +504,7 @@ def save_img(
                 elif np.issubdtype(img.dtype, np.floating):
                     old_max = np.finfo(img.dtype).max * np.ones(3)
                 else:
-                    raise InputError(
+                    raise ValueError(
                         f"img must be integer or float type not {img.dtype}"
                     )
             new_max = np.iinfo(np.uint8).max
@@ -545,11 +551,11 @@ def _find_file(directory, name, file_type):
     """
     file_names = list(Path(directory).rglob("*" + name))
     if len(file_names) > 1:
-        raise InputError(
+        raise RuntimeError(
             f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
         )
     elif len(file_names) == 0:
-        raise InputError(f"No {file_type} file found in {directory}")
+        raise FileNotFoundError(f"No {file_type} file found in {directory}")
     return str(file_names[0])
 
 

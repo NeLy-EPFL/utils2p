@@ -10,7 +10,6 @@ import pytest
 import numpy as np
 
 import utils2p
-import utils2p.errors
 from utils2p.external import tifffile
 
 
@@ -327,7 +326,7 @@ def test_get_are_mode(metadata_obj, area_mode, result):
 
 
 def test_wrong_get_area_mode(metadata_obj):
-    with pytest.raises(utils2p.errors.InvalidValueInMetaData):
+    with pytest.raises(utils2p.InvalidValueInMetaData):
         metadata_obj(area_mode=5).get_area_mode()
 
 
@@ -604,7 +603,7 @@ def test_save_img(tmpdir, random_stack, shape):
     )
     assert os.path.isfile(tmpdir / "stack_not_full_dynamic_float.tif")
 
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(ValueError):
         r_stack = random_stack(shape)
         g_stack = random_stack(shape)
         b_stack = random_stack(shape)
@@ -626,12 +625,12 @@ def test_find_metadata_file(default_exp_dir):
     )
     # create second Experiment.xml file
     default_exp_dir.joinpath("Experiment.xml").touch()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(RuntimeError):
         utils2p.find_metadata_file(directory)
     # delete all Experiment.xml files
     default_exp_dir.joinpath("Experiment.xml").unlink()
     default_exp_dir.joinpath("Untitled_001/Experiment.xml").unlink()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(FileNotFoundError):
         utils2p.find_metadata_file(directory)
 
 
@@ -642,12 +641,12 @@ def test_find_sync_file(default_exp_dir):
     )
     # create second Episode001.h5 file
     default_exp_dir.joinpath("Episode001.h5").touch()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(RuntimeError):
         utils2p.find_sync_file(directory)
     # delete all Episode001.h5 files
     default_exp_dir.joinpath("Episode001.h5").unlink()
     default_exp_dir.joinpath("sync001/Episode001.h5").unlink()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(FileNotFoundError):
         utils2p.find_sync_file(directory)
 
 
@@ -658,12 +657,12 @@ def test_find_raw_file(default_exp_dir):
     )
     # create second Image_0001_0001.raw file
     default_exp_dir.joinpath("Image_0001_0001.raw").touch()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(RuntimeError):
         utils2p.find_raw_file(directory)
     # delete all Image_0001_0001.raw files
     default_exp_dir.joinpath("Image_0001_0001.raw").unlink()
     default_exp_dir.joinpath("Untitled_001/Image_0001_0001.raw").unlink()
-    with pytest.raises(utils2p.errors.InputError):
+    with pytest.raises(FileNotFoundError):
         utils2p.find_raw_file(directory)
 
 
