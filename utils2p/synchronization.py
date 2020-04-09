@@ -115,7 +115,7 @@ def get_start_times(line, times):
     return time_points
 
 
-def _default_capture_metadata(n_frames):
+def _capture_metadata(n_frames, dropped_frames=None):
     """
     Returns a dictionary as it is usually saved by the seven
     camera setup in the "capture_metadata.json" file.
@@ -123,8 +123,12 @@ def _default_capture_metadata(n_frames):
 
     Parameters
     ----------
-    n_frames : int
-        Number of frames.
+    n_frames : list of integers
+        Number of frames for each camera.
+    dropped_frames : list of list of integers
+        Frames that were dropped for each camera.
+        Default is None which means no frames where
+        dropped.
 
     Returns
     -------
@@ -132,10 +136,18 @@ def _default_capture_metadata(n_frames):
         Default metadata dictionary for the seven camera
         system.
     """
-    frames_dict = {}
-    for i in range(n_frames):
-        frames_dict[str(i)] = i
-    capture_info = {"Frame Counts": {"0": frames_dict}}
+    if dropped_frames is None:
+        dropped_frames = [[] for i in range(len(n_frames))]
+    capture_info = {"Frame Counts": {}}
+    for cam_idx, n in enumerate(n_frames):
+        frames_dict = {}
+        current_frame = 0
+        for i in range(n):
+            while current_frame in dropped_frames[cam_idx]:
+                current_frame += 1
+            frames_dict[str(i)] = current_frame
+            current_frame += 1
+        capture_info["Frame Counts"][str(cam_idx)] = frames_dict
     return capture_info
 
 
@@ -184,7 +196,7 @@ def process_cam_line(line, capture_json):
         with open(capture_json, "r") as f:
             capture_info = json.load(f)
     else:
-        capture_info = _default_capture_metadata(len(rising_edges))
+        capture_info = _capture_metadata([len(rising_edges),])
 
     # Find the number of frames for each camera
     n_frames = []
