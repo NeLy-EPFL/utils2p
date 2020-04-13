@@ -44,6 +44,13 @@ class Metadata:
         -------
         Instance of class Metadata
             Based on given xml file.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = utils2p.Metadata("data/mouse_kidney_z_stack/Experiment.xml")
+        >>> type(metadata)
+        <class 'utils2p.main.Metadata'>
         """
         self.path = path
         self.tree = ET.parse(path)
@@ -68,11 +75,13 @@ class Metadata:
         Examples
         --------
         >>> import utils2p
-        >>> metadata = Metadata('Experiment.xml')
-        >>> n_time_points = int(metadata.get_metadata_value('Timelapse','timepoints'))
-        >>> width = int(metadata.get_metadata_value('LSM','pixelX'))
-        >>> height = int(metadata.get_metadata_value('LSM','pixelY'))
-        >>> n_channels = len(metadata.get_metadata_value('Wavelengths'))-1
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_metadata_value('Timelapse','timepoints')
+        '3'
+        >>> metadata.get_metadata_value('LSM','pixelX')
+        '128'
+        >>> metadata.get_metadata_value('LSM','pixelY')
+        '128'
         """
         node = self.root.find(args[0])
         for key in args[1:-1]:
@@ -90,6 +99,13 @@ class Metadata:
         -------
         n_time_points : int
             Number of time points.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_n_time_points()
+        3
         """
         return int(self.get_metadata_value("Timelapse", "timepoints"))
 
@@ -102,6 +118,13 @@ class Metadata:
         -------
         width : int
             Width of image.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_num_x_pixels()
+        128
         """
         return int(self.get_metadata_value("LSM", "pixelX"))
 
@@ -114,6 +137,13 @@ class Metadata:
         -------
         height : int
             Width of image.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_num_y_pixels()
+        128
         """
         return int(self.get_metadata_value("LSM", "pixelY"))
 
@@ -126,6 +156,13 @@ class Metadata:
         -------
         area_mode : string
             Area mode of experiment.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_area_mode()
+        'square'
         """
         int_area_mode = int(self.get_metadata_value("LSM", "areaMode"))
         if int_area_mode == 0:
@@ -149,6 +186,13 @@ class Metadata:
         -------
         n_z : int
             Number of z layers of image.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_n_z()
+        3
         """
         return int(self.get_metadata_value("ZStage", "steps"))
 
@@ -160,6 +204,13 @@ class Metadata:
         -------
         n_channels : int
             Number of channels in raw data file.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_n_channels()
+        2
         """
         return len(self.get_metadata_value("Wavelengths")) - 1
 
@@ -171,6 +222,13 @@ class Metadata:
         -------
         channels : tuple of strings
             Names of channels.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_channels()
+        ('ChanA', 'ChanB')
         """
         wavelengths_node = self.get_metadata_value("Wavelengths")
         channels = []
@@ -186,6 +244,13 @@ class Metadata:
         -------
         pixel_size : float
             Size of one pixel in um in x and y direction.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_pixel_size()
+        0.593
         """
         return float(self.get_metadata_value("LSM", "pixelSizeUM"))
 
@@ -197,17 +262,36 @@ class Metadata:
         -------
         z_step_size : float
             Distance covered in um along z direction.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_z_step_size()
+        15.0
         """
         return float(self.get_metadata_value("ZStage", "stepSizeUM"))
 
     def get_z_pixel_size(self):
         """
         Returns the pixel size in z direction for a given experiment metadata.
+        This function is meant for "kymograph" and "line" recordings.
+        For these recordings the pixel size in z direction is not 
+        equal to the step size, unless the number of pixels equals the number
+        of steps.
+        For all other types of recordings it is equivalent to :func:`get_z_step_size`.
     
         Returns
         -------
         z_pixel_size : float
             Distance covered in um along z direction.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_z_pixel_size()
+        15.0
         """
         area_mode = self.get_area_mode()
         if area_mode == "line" or area_mode == "kymograph":
@@ -226,6 +310,13 @@ class Metadata:
         -------
         dwell_time : float
             Dwell time for a pixel.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_dwell_time()
+        0.308199306062498
         """
         return float(self.get_metadata_value("LSM", "dwellTime"))
 
@@ -244,11 +335,20 @@ class Metadata:
     def get_frame_rate(self):
         """
         Returns the frame rate for a given experiment metadata.
+        When the frame rate is calculated flyback frames and
+        steps in z are not considered frames.
     
         Returns
         -------
-        dwell_time : float
-            Dwell time for a pixel.
+        frame_rate : float
+            Frame rate of the experiment.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_frame_rate()
+        10.0145
         """
         frame_rate_without_flybacks = float(self.get_metadata_value("LSM", "frameRate"))
         flyback_frames = self.get_n_flyback_frames()
@@ -263,18 +363,33 @@ class Metadata:
         -------
         width : float
             Width of FOV in um..
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_width()
+        75.88
         """
         return float(self.get_metadata_value("LSM", "widthUM"))
 
     def get_power_reg1_start(self):
         """
         Returns the starting position of power regulator 1 for a given
-        experiment metadata.
+        experiment metadata. Unless a gradient is defined, this
+        value is the power value for the entire experiment.
     
         Returns
         -------
         reg1_start : float
             Starting position of power regulator 1.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_power_reg1_start()
+        1.0
         """
         return float(self.get_metadata_value("PowerRegulator", "start"))
 
@@ -286,6 +401,13 @@ class Metadata:
         -------
         gainA : int
             Gain of channel A.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_gainA()
+        20.0
         """
         return float(self.get_metadata_value("PMT", "gainA"))
 
@@ -297,6 +419,13 @@ class Metadata:
         -------
         gainB : int
             Gain of channel B.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_gainB()
+        30.0
         """
         return float(self.get_metadata_value("PMT", "gainB"))
 
@@ -308,6 +437,13 @@ class Metadata:
         -------
         date_time : string
             Date and time of an experiment.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_date_time()
+        '11/21/2019 11:15:18'
         """
         return self.get_metadata_value("Date", "date")
 
@@ -325,6 +461,15 @@ def load_img(path):
     -------
     numpy.array
         Image in form of numpy array.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> img = utils2p.load_img("data/chessboard_GRAY_U16.tif")
+    >>> type(img)
+    <class 'numpy.ndarray'>
+    >>> img.shape
+    (200, 200)
     """
     path = os.path.expanduser(os.path.expandvars(path))
     return tifffile.imread(path)
@@ -350,8 +495,10 @@ def load_raw(path, metadata):
     Examples
     --------
     >>> import utils2p
-    >>> metadata = utils2p.Metadata('Experiment.xml')
-    >>> stack1, stack2 = utils2p.load_raw('Image_0001_0001.raw',metadata)
+    >>> metadata = utils2p.Metadata('data/mouse_kidney_raw/Experiment.xml')
+    >>> stack1, stack2 = utils2p.load_raw('data/mouse_kidney_raw/Image_0001_0001.raw',metadata)
+    >>> type(stack1), type(stack2)
+    (<class 'numpy.ndarray'>, <class 'numpy.ndarray'>)
     >>> utils2p.save_img('stack1.tif',stack1)
     >>> utils2p.save_img('stack2.tif',stack2)
     """
@@ -440,6 +587,16 @@ def load_z_stack(path, metadata):
     -------
     stacks : tuple of numpy arrays
         Z-stacks for Channel A (green) and Channel B (red).
+        
+    Examples
+    --------
+    >>> import utils2p
+    >>> metadata = utils2p.Metadata("data/mouse_kidney_z_stack/Experiment.xml")
+    >>> z_stack_A, z_stack_B = utils2p.load_z_stack("data/mouse_kidney_z_stack/", metadata)
+    >>> type(z_stack_A), type(z_stack_B)
+    (<class 'numpy.ndarray'>, <class 'numpy.ndarray'>)
+    >>> z_stack_A.shape, z_stack_B.shape
+    ((3, 128, 128), (3, 128, 128))
     """
     path = os.path.expanduser(os.path.expandvars(path))
     channels = metadata.get_channels()
@@ -453,17 +610,28 @@ def load_z_stack(path, metadata):
 def concatenate_z(stack):
     """
     Concatenate in z direction for area mode 'line' or 'kymograph',
-    e.g. coronal section.
+    e.g. coronal section. This is necessary because z steps are
+    otherwise treated as additional temporal frame, i.e. in Fiji
+    the frames jump up and down between z positions.
 
     Parameters
     ----------
     stack : 4D or 6D numpy array
-        Stack that should be concatenated.
+        Stack to be z concatenated.
 
     Returns
     -------
     stack : 3D or 5D numpy array
         Concatenated stack.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import numpy as np
+    >>> stack = np.zeros((100, 2, 64, 128))
+    >>> concatenated = utils2p.concatenate_z(stack)
+    >>> concatenated.shape
+    (100, 128, 128)
     """
     res = np.concatenate(np.split(stack, stack.shape[-3], axis=-3), axis=-2)
     return np.squeeze(res)
@@ -491,6 +659,12 @@ def save_img(
         When an image is converted to uint8 for saving a color image the
         max value of the output image is the max of uint8,
         i.e. the image uses the full dynamic range available.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import numpy as np
+    >>> 
     """
     if img.dtype == np.bool:
         img = img.astype(np.uint8) * 255
@@ -575,6 +749,12 @@ def find_metadata_file(directory):
     -------
     path : str
         Path to metadata file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_metadata_file("data/mouse_kidney_z_stack")
+    'data/mouse_kidney_z_stack/Experiment.xml'
     """
     return _find_file(directory, "Experiment.xml", "metadata")
 
@@ -595,6 +775,12 @@ def find_sync_file(directory):
     -------
     path : str
         Path to sync file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_sync_file("data/mouse_kidney_z_stack")
+    'data/mouse_kidney_z_stack/Episode001.h5'
     """
     return _find_file(directory, "Episode001.h5", "synchronization")
 
@@ -615,6 +801,12 @@ def find_raw_file(directory):
     -------
     path : str
         Path to raw file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_raw_file("data/mouse_kidney_raw")
+    'data/mouse_kidney_raw/Image_0001_0001.raw'
     """
     return _find_file(directory, "Image_0001_0001.raw", "raw")
 
@@ -625,7 +817,9 @@ def load_optical_flow(
     """
     This function loads the optical flow data from
     the file specified in path. By default it is
-    directly converted into ball rotation.
+    directly converted into ball rotation. Gain values
+    have to be determined with the calibration of the
+    optical flow sensors.
     
     Parameters
     ----------
@@ -645,6 +839,45 @@ def load_optical_flow(
     data : dictionary
         A dictionary with keys: 'sensor0', 'sensor1',
         'time_stamps', 'vel_pitch', 'vel_yaw', 'vel_roll'.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> gain_0_x = round(1 / 1.45, 2)
+    >>> gain_0_y = round(1 / 1.41, 2)
+    >>> gain_1_x = round(1 / 1.40, 2)
+    >>> gain_1_y = round(1 / 1.36, 2)
+
+    >>> optical_flow = utils2p.load_optical_flow("data/behData/OptFlowData/OptFlow.txt", gain_0_x, gain_0_y, gain_1_x, gain_1_y)
+    >>> type(optical_flow)
+    <class 'dict'>
+    >>> optical_flow.keys()
+    dict_keys(['sensor0', 'sensor1', 'time_stamps', 'vel_pitch', 'vel_yaw', 'vel_roll'])
+
+    >>> type(optical_flow["time_stamps"])
+    <class 'numpy.ndarray'>
+    >>> optical_flow["time_stamps"].shape
+    (1000,)
+
+    >>> type(optical_flow["vel_pitch"])
+    <class 'numpy.ndarray'>
+    >>> optical_flow["vel_pitch"].shape
+    (1000,)
+
+    >>> type(optical_flow["vel_yaw"])
+    <class 'numpy.ndarray'>
+    >>> optical_flow["vel_yaw"].shape
+    (1000,)
+
+    >>> type(optical_flow["vel_roll"])
+    <class 'numpy.ndarray'>
+    >>> optical_flow["vel_roll"].shape
+    (1000,)
+
+    >>> type(optical_flow["sensor0"])
+    <class 'dict'>
+    >>> optical_flow["sensor0"].keys()
+    dict_keys(['x', 'y', 'gain_x', 'gain_y'])
     """
     raw_data = np.genfromtxt(path, delimiter=",")
     data = {
