@@ -10,6 +10,7 @@ Welcome to utils2p's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. include:: ../../README.rst
 
 .. automodule:: utils2p.main
     :members:

@@ -43,7 +43,10 @@
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">.errors</span> <span class="kn">import</span> <span class="n">SynchronizationError</span>
+<div class="viewcode-block" id="SynchronizationError"><a class="viewcode-back" href="../../index.html#utils2p.synchronization.SynchronizationError">[docs]</a><span class="k">class</span> <span class="nc">SynchronizationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The input data is not consistent with synchronization assumption.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="get_lines_from_h5_file"><a class="viewcode-back" href="../../index.html#utils2p.synchronization.get_lines_from_h5_file">[docs]</a><span class="k">def</span> <span class="nf">get_lines_from_h5_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">line_names</span><span class="p">):</span>
@@ -145,9 +148,58 @@
     <span class="k">return</span> <span class="n">time_points</span></div>
 
 
+<span class="k">def</span> <span class="nf">_capture_metadata</span><span class="p">(</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">dropped_frames</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary as it is usually saved by the seven</span>
+<span class="sd">    camera setup in the &quot;capture_metadata.json&quot; file.</span>
+<span class="sd">    It assumes that no frames where dropped.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_frames : list of integers</span>
+<span class="sd">        Number of frames for each camera.</span>
+<span class="sd">    dropped_frames : list of list of integers</span>
+<span class="sd">        Frames that were dropped for each camera.</span>
+<span class="sd">        Default is None which means no frames where</span>
+<span class="sd">        dropped.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    capture_info : dict</span>
+<span class="sd">        Default metadata dictionary for the seven camera</span>
+<span class="sd">        system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dropped_frames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dropped_frames</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n_frames</span><span class="p">))]</span>
+    <span class="n">capture_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="k">for</span> <span class="n">cam_idx</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n_frames</span><span class="p">):</span>
+        <span class="n">frames_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">current_frame</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">while</span> <span class="n">current_frame</span> <span class="ow">in</span> <span class="n">dropped_frames</span><span class="p">[</span><span class="n">cam_idx</span><span class="p">]:</span>
+                <span class="n">current_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">frames_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">current_frame</span>
+            <span class="n">current_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">cam_idx</span><span class="p">)]</span> <span class="o">=</span> <span class="n">frames_dict</span>
+    <span class="k">return</span> <span class="n">capture_info</span>
+
+
 <div class="viewcode-block" id="process_cam_line"><a class="viewcode-back" href="../../index.html#utils2p.synchronization.process_cam_line">[docs]</a><span class="k">def</span> <span class="nf">process_cam_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">capture_json</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Remove superfluous signals and use frame numbers in array.</span>
+<span class="sd">    The cam line signal form the h5 file is a binary sequence.</span>
+<span class="sd">    Rising edges mark the acquisition of a new frame.</span>
+<span class="sd">    The setup keeps producing rising edges after the acquisition of the</span>
+<span class="sd">    last frame. These rising edges are ignored.</span>
+<span class="sd">    This function converts it to frame numbers using the information</span>
+<span class="sd">    stored in the metadata file of the seven camera setup.</span>
+<span class="sd">    In the metadata file the keys are the indices of the file names</span>
+<span class="sd">    and the values are the grabbed frame numbers. Suppose the 3</span>
+<span class="sd">    frame was dropped. Then the entries in the dictionary will</span>
+<span class="sd">    be as follows:</span>
+<span class="sd">    &quot;2&quot;: 2</span>
+<span class="sd">    &quot;3&quot;: 4</span>
+<span class="sd">    &quot;4&quot;: 5</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -165,32 +217,54 @@
 <span class="sd">        Array with frame number for each time point.</span>
 <span class="sd">        If no frame is available for a given time the value is -1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check that sequence is binary</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid line argument. Sequence is not binary.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Find indices of the start of each frame acquisition</span>
     <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
 
+    <span class="c1"># Load capture metadata or generate default</span>
     <span class="k">if</span> <span class="n">capture_json</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">capture_json</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">capture_info</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">frames_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)):</span>
-            <span class="n">frames_dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">i</span>
-        <span class="n">capture_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;0&quot;</span><span class="p">:</span> <span class="n">frames_dict</span><span class="p">}}</span>
-    <span class="n">last_ticks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">capture_info</span> <span class="o">=</span> <span class="n">_capture_metadata</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">),])</span>
 
+    <span class="c1"># Find the number of frames for each camera</span>
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">cam_idx</span> <span class="ow">in</span> <span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">last_ticks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">][</span><span class="n">cam_idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="n">max_in_json</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">][</span><span class="n">cam_idx</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">n_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">max_in_json</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">last_tick</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">last_ticks</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">last_ticks</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="c1"># Ensure all cameras acquired the same number of frames</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">n_frames</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SynchronizationError</span><span class="p">(</span><span class="s2">&quot;The frames across cameras are not synchronized.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Last rising edge that corresponds to a frame</span>
+    <span class="n">last_tick</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_frames</span><span class="p">)</span>
+
+    <span class="c1"># check that there is a rising edge for every frame</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">last_tick</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The provided cam line and metadata are inconsistent. cam line has less frame acquisitions than metadata.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Ensure correct handling if no rising edges are present after last frame</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">last_tick</span><span class="p">):</span>
+        <span class="n">average_frame_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)))</span>
+        <span class="n">last_rising_edge</span> <span class="o">=</span> <span class="n">rising_edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">additional_edge</span> <span class="o">=</span> <span class="n">last_rising_edge</span> <span class="o">+</span> <span class="n">average_frame_length</span>
+        <span class="k">if</span> <span class="n">additional_edge</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="n">additional_edge</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">rising_edges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)</span>
+        <span class="n">rising_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">additional_edge</span><span class="p">)</span>
+        <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)</span>
 
     <span class="n">processed_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="n">current_frame</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">first_camera_used</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># plus 1 because the json file start counting from 0</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-        <span class="nb">zip</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">[:</span> <span class="n">last_tick</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rising_edges</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">last_tick</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="nb">zip</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">[:</span> <span class="n">last_tick</span><span class="p">],</span> <span class="n">rising_edges</span><span class="p">[</span><span class="mi">1</span> <span class="p">:</span> <span class="n">last_tick</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
     <span class="p">):</span>
         <span class="k">if</span> <span class="n">capture_info</span><span class="p">[</span><span class="s2">&quot;Frame Counts&quot;</span><span class="p">][</span><span class="n">first_camera_used</span><span class="p">][</span><span class="nb">str</span><span class="p">(</span><span class="n">current_frame</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="p">:</span>
             <span class="n">current_frame</span> <span class="o">+=</span> <span class="mi">1</span>
