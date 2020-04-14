@@ -759,6 +759,33 @@ def find_metadata_file(directory):
     return _find_file(directory, "Experiment.xml", "metadata")
 
 
+def find_seven_camera_metadata_file(directory):
+    """
+    This functions find the path to the metadata file
+    "capture_metadata.json" created by seven camera
+    setup and returns it.
+    If multiple files with this name are found, it throws
+    and exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to capture metadata file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_seven_camera_metadata_file("data/behData")
+    'data/behData/images/capture_metadata.json'
+    """
+    return _find_file(directory, "capture_metadata.json", "seven camera capture metadata")
+
+
 def find_sync_file(directory):
     """
     This functions find the path to the sync file
@@ -783,6 +810,32 @@ def find_sync_file(directory):
     'data/mouse_kidney_z_stack/Episode001.h5'
     """
     return _find_file(directory, "Episode001.h5", "synchronization")
+
+
+def find_optical_flow_file(directory):
+    """
+    This functions find the path to the optical flow file
+    "OptFlow.txt" created by seven camera software and returns it.
+    If multiple files with this name are found, it throws
+    and exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to optical flow file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_optical_flow_file("data/behData")
+    'data/behData/OptFlowData/OptFlow.txt'
+    """
+    return _find_file(directory, "OptFlow.txt", "optical flow")
 
 
 def find_raw_file(directory):
