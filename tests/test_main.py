@@ -254,33 +254,6 @@ def random_raw_file(tmpdir, random_stack, metadata_obj):
 
 
 @pytest.fixture
-def random_z_stack(tmpdir, random_stack, metadata_obj):
-    """
-    """
-
-    def _random_z_stack(
-        shape=(50, 60), timepoints=10, channels=("ChanA", "ChanB"), n_z=5
-    ):
-        z_stack = random_stack((timepoints, n_z, len(channels)) + shape)
-        for c, channel in enumerate(channels):
-            for step in range(n_z):
-                for t in range(timepoints):
-                    name = f"{channel}_0001_0001_{step + 1:04}_{t + 1:04}.tif"
-                    path = tmpdir.join(name)
-                    tifffile.imsave(str(path), z_stack[t, step, c])
-        metadata = metadata_obj(
-            y_pixels=shape[0],
-            x_pixels=shape[1],
-            timepoints=timepoints,
-            channels=channels,
-            n_z=n_z,
-        )
-        return tmpdir, metadata, z_stack
-
-    return _random_z_stack
-
-
-@pytest.fixture
 def default_exp_dir(tmpdir):
     tmpdir = Path(tmpdir)
     tmpdir.joinpath("Untitled_001").mkdir()
