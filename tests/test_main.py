@@ -311,7 +311,7 @@ def test_get_n_z(metadata_obj, n_z):
 @pytest.mark.parametrize(
     "channels,result", [(("ChanA", "ChanB"), 2), (("ChanA", "ChanB", "ChanC"), 3)]
 )
-def test_get_channels(metadata_obj, channels, result):
+def test_get_n_channels(metadata_obj, channels, result):
     assert metadata_obj(channels=channels).get_n_channels() == result
 
 
