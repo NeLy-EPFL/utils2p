@@ -42,12 +42,12 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
 <span class="kn">import</span> <span class="nn">array</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">synchronization</span>
-<span class="kn">from</span> <span class="nn">.external</span> <span class="kn">import</span> <span class="n">tifffile</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">synchronization</span>
+<span class="kn">from</span> <span class="nn">.external</span> <span class="k">import</span> <span class="n">tifffile</span>
 
 <span class="n">package_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
@@ -64,7 +64,7 @@
 <span class="sd">    Class for managing ThorImage metadata.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads metadata file &#39;Experiment.xml&#39; and returns the root of an ElementTree.</span>
 
@@ -208,7 +208,7 @@
             <span class="k">return</span> <span class="s2">&quot;line&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidValueInMetaData</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{int_area_mode}</span><span class="s2"> is not a valid value for areaMode.&quot;</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{int_area_mode}</span><span class="s2"> is not a valid value for areaMode.&quot;</span>
             <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Metadata.get_n_z"><a class="viewcode-back" href="../../index.html#utils2p.main.Metadata.get_n_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -712,7 +712,7 @@
                     <span class="n">old_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;img must be integer or float type not </span><span class="si">{img.dtype}</span><span class="s2">&quot;</span>
+                        <span class="n">f</span><span class="s2">&quot;img must be integer or float type not </span><span class="si">{img.dtype}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
             <span class="n">new_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
             <span class="n">img</span> <span class="o">=</span> <span class="n">img</span> <span class="o">/</span> <span class="n">old_max</span> <span class="o">*</span> <span class="n">new_max</span>
@@ -759,10 +759,10 @@
     <span class="n">file_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Could not identify </span><span class="si">{file_type}</span><span class="s2"> file unambiguously. Discovered {len(file_names)} </span><span class="si">{file_type}</span><span class="s2"> files in </span><span class="si">{directory}</span><span class="s2">.&quot;</span>
+            <span class="n">f</span><span class="s2">&quot;Could not identify </span><span class="si">{file_type}</span><span class="s2"> file unambiguously. Discovered {len(file_names)} </span><span class="si">{file_type}</span><span class="s2"> files in </span><span class="si">{directory}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{file_type}</span><span class="s2"> file found in </span><span class="si">{directory}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No </span><span class="si">{file_type}</span><span class="s2"> file found in </span><span class="si">{directory}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
@@ -792,6 +792,33 @@
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Experiment.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="find_seven_camera_metadata_file"><a class="viewcode-back" href="../../index.html#utils2p.main.find_seven_camera_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This functions find the path to the metadata file</span>
+<span class="sd">    &quot;capture_metadata.json&quot; created by seven camera</span>
+<span class="sd">    setup and returns it.</span>
+<span class="sd">    If multiple files with this name are found, it throws</span>
+<span class="sd">    and exception.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">        Directory in which to search.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to capture metadata file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_seven_camera_metadata_file(&quot;data/behData&quot;)</span>
+<span class="sd">    &#39;data/behData/images/capture_metadata.json&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;capture_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;seven camera capture metadata&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="find_sync_file"><a class="viewcode-back" href="../../index.html#utils2p.main.find_sync_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the sync file</span>
@@ -816,6 +843,32 @@
 <span class="sd">    &#39;data/mouse_kidney_z_stack/Episode001.h5&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Episode001.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_optical_flow_file"><a class="viewcode-back" href="../../index.html#utils2p.main.find_optical_flow_file">[docs]</a><span class="k">def</span> <span class="nf">find_optical_flow_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This functions find the path to the optical flow file</span>
+<span class="sd">    &quot;OptFlow.txt&quot; created by seven camera software and returns it.</span>
+<span class="sd">    If multiple files with this name are found, it throws</span>
+<span class="sd">    and exception.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">        Directory in which to search.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to optical flow file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_optical_flow_file(&quot;data/behData&quot;)</span>
+<span class="sd">    &#39;data/behData/OptFlowData/OptFlow.txt&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;OptFlow.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;optical flow&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="find_raw_file"><a class="viewcode-back" href="../../index.html#utils2p.main.find_raw_file">[docs]</a><span class="k">def</span> <span class="nf">find_raw_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
@@ -997,7 +1050,7 @@
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

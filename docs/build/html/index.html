@@ -559,6 +559,32 @@ and exception.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="utils2p.main.find_optical_flow_file">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_optical_flow_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_optical_flow_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_optical_flow_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions find the path to the optical flow file
+“OptFlow.txt” created by seven camera software and returns it.
+If multiple files with this name are found, it throws
+and exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to optical flow file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_optical_flow_file</span><span class="p">(</span><span class="s2">&quot;data/behData&quot;</span><span class="p">)</span>
+<span class="go">&#39;data/behData/OptFlowData/OptFlow.txt&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
 <dt id="utils2p.main.find_raw_file">
 <code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_raw_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_raw_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_raw_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the raw file
@@ -580,6 +606,33 @@ and exception.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_raw_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
 <span class="go">&#39;data/mouse_kidney_raw/Image_0001_0001.raw&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.main.find_seven_camera_metadata_file">
+<code class="sig-prename descclassname">utils2p.main.</code><code class="sig-name descname">find_seven_camera_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_seven_camera_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.main.find_seven_camera_metadata_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions find the path to the metadata file
+“capture_metadata.json” created by seven camera
+setup and returns it.
+If multiple files with this name are found, it throws
+and exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to capture metadata file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/behData&quot;</span><span class="p">)</span>
+<span class="go">&#39;data/behData/images/capture_metadata.json&#39;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1127,7 +1180,7 @@ e.g. np.mean.</p></li>
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
