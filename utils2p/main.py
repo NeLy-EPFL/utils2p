@@ -780,8 +780,8 @@ def find_seven_camera_metadata_file(directory):
     Examples
     --------
     >>> import utils2p
-    >>> utils2p.find_seven_camera_metadata_file("data/behData")
-    'data/behData/images/capture_metadata.json'
+    >>> utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/images/capture_metadata.json'
     """
     return _find_file(directory, "capture_metadata.json", "seven camera capture metadata")
 
@@ -832,8 +832,8 @@ def find_optical_flow_file(directory):
     Examples
     --------
     >>> import utils2p
-    >>> utils2p.find_optical_flow_file("data/behData")
-    'data/behData/OptFlowData/OptFlow.txt'
+    >>> utils2p.find_optical_flow_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/OptFlowData/OptFlow.txt'
     """
     return _find_file(directory, "OptFlow.txt", "optical flow")
 
@@ -901,7 +901,8 @@ def load_optical_flow(
     >>> gain_1_x = round(1 / 1.40, 2)
     >>> gain_1_y = round(1 / 1.36, 2)
 
-    >>> optical_flow = utils2p.load_optical_flow("data/behData/OptFlowData/OptFlow.txt", gain_0_x, gain_0_y, gain_1_x, gain_1_y)
+    >>> optical_flow_file = utils2p.find_optical_flow_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y)
     >>> type(optical_flow)
     <class 'dict'>
     >>> optical_flow.keys()
@@ -910,22 +911,22 @@ def load_optical_flow(
     >>> type(optical_flow["time_stamps"])
     <class 'numpy.ndarray'>
     >>> optical_flow["time_stamps"].shape
-    (1000,)
+    (98347,)
 
     >>> type(optical_flow["vel_pitch"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_pitch"].shape
-    (1000,)
+    (98347,)
 
     >>> type(optical_flow["vel_yaw"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_yaw"].shape
-    (1000,)
+    (98347,)
 
     >>> type(optical_flow["vel_roll"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_roll"].shape
-    (1000,)
+    (98347,)
 
     >>> type(optical_flow["sensor0"])
     <class 'dict'>

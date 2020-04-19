@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<ThorImageExperiment>
+  <Name name="R15E08-tdTomGC6fopt-fly2-001" />
+  <Date date="12/27/2018 17:10:24" uTime="1545927024" />
+  <User name="User" />
+  <Computer name="USER-PC" />
+  <Software version="3.1.2017.9041" />
+  <Camera name="None" width="1392" height="1040" pixelSizeUM="6.45" binning="2" gain="0" lightmode="0" left="0" right="1392" top="0" bottom="1040" binningX="1" binningY="1" tdiWidth="0" tdiHeight="0" bitsPerPixel="14" />
+  <Magnification mag="22.2" indexOfRefraction="1.3" name="20X" />
+  <Wavelengths nyquistExWavelengthNM="488" nyquistEmWavelengthNM="488">
+    <Wavelength name="ChanA" exposureTimeMS="0" />
+    <Wavelength name="ChanB" exposureTimeMS="0" />
+    <ChannelEnable Set="3" />
+  </Wavelengths>
+  <ZStage name="ThorZPiezo" steps="2" stepSizeUM="90" startPos="0" zStreamFrames="1" zStreamMode="0" setupPositionMM="0" enable="1" />
+  <Timelapse timepoints="1067" intervalSec="0" triggerMode="0" />
+  <Autofocus type="3" repeat="1" exposureTimeMS="1.0" stepSizeUM="1.0" startPosMM="-5.0" stopPosMM="5.0" />
+  <Comments text="" />
+  <LSM name="GalvoGalvo" scanMode="0" areaMode="3" channel="3" fieldSize="15" pixelX="256" pixelY="96" offsetX="0" offsetY="0" averageMode="0" averageNum="5" clockSource="1" inputRange1="10" inputRange2="10" twoWayAlignment="5" extClockRate="620000" inputRange3="10" inputRange4="10" flybackCycles="0" minimizeFlybackCycles="1" pixelSizeUM="0.257" horizontalFlip="1" verticalFlip="1" polarity1="0" polarity2="0" polarity3="0" polarity4="0" dwellTime="1.6" areaAngle="0" widthUM="65.73" heightUM="0.26" frameRate="12.862" fineOffsetX="0" fineOffsetY="0" fineScaleX="0.8" fineScaleY="0.822" chan1DigOffset="0" chan2DigOffset="0" chan3DigOffset="0" chan4DigOffset="0" pulseMultiplexing="0" pulseMultiplexingPhase="1" />
+  <PMT enableA="1" gainA="35" bandwidthAHz="80000000" enableB="1" gainB="35" bandwidthBHz="2500000" enableC="0" gainC="0" bandwidthCHz="0" enableD="0" gainD="0" bandwidthDHz="0" offsetAVolts="-0.021" offsetBVolts="-0.021" offsetCVolts="0" offsetDVolts="0" />
+  <MCLS enable1="0" power1="0" enable2="0" power2="0" enable3="0" power3="0" enable4="0" power4="0" power1percent="0" power2percent="0" power3percent="0" power4percent="0" />
+  <PinholeWheel position="0" micrometers="25" adu="1.765" />
+  <Pockels type="0" pockelsBlankPercentage="0" maskEnable="0" maskInvert="0" maskPath="" pockelsMinV="0" pockelsMaxV="1" start="0" stop="0" path="" />
+  <Pockels type="0" pockelsBlankPercentage="0" pockelsMinV="0" pockelsMaxV="1" start="0" stop="0" path="" />
+  <Pockels type="0" pockelsBlankPercentage="0" pockelsMinV="0" pockelsMaxV="1" start="0" stop="0" path="" />
+  <Pockels type="0" pockelsBlankPercentage="0" pockelsMinV="0" pockelsMaxV="0" start="0" stop="0" path="" />
+  <Streaming enable="1" frames="3201" dmaFrames="100" rawData="1" triggerMode="1" storageMode="0" displayImage="1" zFastEnable="1" flybackFrames="1" previewIndex="1" stimulusTriggering="0" stimulusMaxFrames="426" useReferenceVoltageForFastZPockels="0" />
+  <PowerRegulator enable="1" type="0" start="19.99" stop="19.99" path="C:\Users\User\Documents\ThorImageLS 3.1\Application Settings\powerramps\Exponential.txt" offset="0" />
+  <ImageCorrection enablePincushion="0" pinCoeff1="0" pinCoeff2="0" pinCoeff3="0" enableBackgroundSubtraction="0" pathBackgroundSubtraction="C:\" enableFlatField="0" pathFlatField="C:\" />
+  <MultiPhotonLaser enable="1" pos="0" seqEnable="0" seqPos1="0" seqPos2="0" />
+  <Photobleaching enable="0" laserPos="710" durationMS="5000" powerPos="30" bleachTrigger="0" bleachPostTrigger="0" preBleachFrames="0" preBleachInterval="0" preBleachStream="0" bleachFrames="0" postBleachFrames1="0" postBleachInterval1="0" postBleachStream1="0" postBleachFrames2="0" postBleachInterval2="0" postBleachStream2="0" rawOption="0" EnableSimultaneous="0" pmt1EnableDuringBleach="0" pmt2EnableDuringBleach="0" pmt3EnableDuringBleach="0" pmt4EnableDuringBleach="0" calibrationDate="Calibration Date 4/19/2018 4:11:53 PM" calibrationDateUnix="1524147113" fieldSize="17" pixelX="512" pixelY="512" scaleYScan="1" pixelSizeUM="0.145" offsetX="0" offsetY="0" fineOffsetX="0" fineOffsetY="0" fineScaleX="0.8" fineScaleY="0.822" areaAngle="0" horizontalFlip="1" verticalFlip="1" powerMin="0" powerMax="1" powerEnable="0" laserEnable="0" bleachQuery="0" />
+  <CaptureMode mode="1" />
+  <RStage pos="0" />
+  <ZStage2 pos="0" />
+  <LightPath GalvoGalvo="1" GalvoResonance="0" Camera="0" />
+  <CaptureSequence enable="0" />
+  <SpectralFilter wavelengthStart="420" wavelengthStop="730" wavelengthStepSize="10" steps="32" controlMode="0" bandwidthMode="0" path="C:\Users\User\Documents\ThorImageLS 3.1\Application Settings\kurios\.txt" />
+  <Modality name="Multiphoton GG" primaryDetectorType="1" />
+  <ExperimentStatus value="Complete" />
+  <ExperimentNotes text="" />
+  <RawData onlyEnabledChannels="1" />
+  <DigitalIO enable="0" digOut1="0" digOut2="0" digOut3="0" digOut4="0" digOut5="0" digOut6="0" digOut7="0" digOut8="0" />
+  <SLM lastCalibTime="1/1/1970 1:00:00 AM" lastCalibTimeUnix="0" calibPower="0" calibDwell="0" cycleDelay="0" epochCount="1" />
+  <Sample homeOffsetX="0" homeOffsetY="0" homeOffsetZ="0.3035" overlapX="0" overlapY="0" name="Slide" type="Slide" width="75" height="25" row="0" column="0" diameter="0" centerToCenterX="0" centerToCenterY="0" topLeftCenterOffsetX="0" topLeftCenterOffsetY="0" WellShape="Circle" WellWidth="0" WellHeight="0" tiltAdjustment="0" fPt1XMM="0" fPt1YMM="0" fPt1ZMM="0" fPt2XMM="0" fPt2YMM="0" fPt2ZMM="0" fPt3XMM="0" fPt3YMM="0" fPt3ZMM="0" DisplayTileGrid="0" initialStageLocationX="-2.42697" initialStageLocationY="3776.49334" />
+</ThorImageExperiment>
