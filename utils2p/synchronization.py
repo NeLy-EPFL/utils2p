@@ -32,6 +32,22 @@ def get_lines_from_h5_file(file_path, line_names):
     -------
     lines : tuple
         Line arrays in the same order as given in line_names.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_z_stack")
+    >>> line_names = ["Frame Counter", "Capture On"]
+    >>> frame_counter, capture_on = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> type(frame_counter)
+    <class 'numpy.ndarray'>
+    >>> frame_counter.shape
+    (54000,)
+    >>> type(capture_on)
+    <class 'numpy.ndarray'>
+    >>> capture_on.shape
+    (54000,)
     """
     lines = []
     
@@ -65,6 +81,12 @@ def get_times(length, freq):
     -------
     times : array
         Times in seconds.
+
+    Examples
+    --------
+    >>> import utils2p.synchronization
+    >>> utils2p.synchronization.get_times(5, 20)
+    array([0.  , 0.05, 0.1 , 0.15, 0.2 ])
     """
     times = np.arange(0, length / freq, 1 / freq)
     return times
@@ -72,8 +94,11 @@ def get_times(length, freq):
 
 def edges(line, size=0):
     """
-    Returns the indices of an edges in a line with
-    a specific size.
+    Returns the indices of edges in a line. An
+    edge is change in value of the line. A size
+    argument can be specified to filter for changes
+    of specific magnitude. By default only rising
+    edges (increases in value) are returned.
 
     Parameters
     ----------
@@ -83,11 +108,30 @@ def edges(line, size=0):
         Size of the rising edge. If float it is used as minimum.
         Tuples specify a range. To get falling edges use negative values.
         Only one boundary can be applied using np.inf as on of the values.
-
+        All boundaries are exclusive the specified value.
     Returns
     -------
     indices : list
         Indices of the rising edges.
+
+    Examples
+    --------
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> binary_line = np.array([0, 1, 1, 0, 1, 1])
+    >>> utils2p.synchronization.edges(binary_line)
+    (array([1, 4]),)
+    >>> utils2p.synchronization.edges(binary_line, size=2)
+    (array([], dtype=int64),)
+    >>> utils2p.synchronization.edges(binary_line, size=(-np.inf, np.inf))
+    (array([1, 3, 4]),)
+    >>> continuous_line = np.array([0, 0, 3, 3, 3, 5, 5, 8, 8, 10, 10, 10])
+    >>> utils2p.synchronization.edges(continuous_line)
+    (array([2, 5, 7, 9]),)
+    >>> utils2p.synchronization.edges(continuous_line, size=2)
+    (array([2, 7]),)
+    >>> utils2p.synchronization.edges(continuous_line, size=(-np.inf, 3))
+    (array([5, 9]),)
     """
     diff = np.diff(line.astype(np.float64))
     if type(size) == tuple:
@@ -117,6 +161,17 @@ def get_start_times(line, times):
     -------
     time_points : list
         List of the start times.
+
+    Examples
+    --------
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> binary_line = np.array([0, 1, 1, 0, 1, 1])
+    >>> times = utils2p.synchronization.get_times(len(binary_line), freq=20)
+    >>> times
+    array([0.  , 0.05, 0.1 , 0.15, 0.2 , 0.25])
+    >>> utils2p.synchronization.get_start_times(binary_line, times)
+    array([0.05, 0.2 ])
     """
     indices = edges(line, size=(0, np.inf))
     time_points = times[indices]
@@ -191,6 +246,24 @@ def process_cam_line(line, capture_json):
     processed_line : numpy array
         Array with frame number for each time point.
         If no frame is available for a given time the value is -1.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["Basler"]
+    >>> (cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> set(np.diff(cam_line))
+    {0, 8, 4294967288}
+    >>> processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
+    >>> set(np.diff(processed_cam_line))
+    {0, 1, -7440}
+    >>> cam_line = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0])
+    >>> utils2p.synchronization.process_cam_line(cam_line, capture_json=None)
+    array([-1,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1])
     """
     # Check that sequence is binary
     if len(set(line)) > 2:
@@ -266,6 +339,24 @@ def process_frame_counter(line, steps_per_frame=1):
     processed_frame_counter : numpy array
         Array with frame number for each time point.
         If no frame was recorded at a time point the value is -1.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_z_stack")
+    >>> line_names = ["Frame Counter",]
+    >>> (frame_counter,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> len(set(frame_counter))
+    31
+    >>> metadata_file = utils2p.find_metadata_file("data/mouse_kidney_z_stack")
+    >>> metadata = utils2p.Metadata(metadata_file)
+    >>> steps_per_frame = 1 + metadata.get_n_flyback_frames()
+    >>> steps_per_frame
+    4
+    >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame)
+    >>> len(set(processed_frame_counter))
+    9
     """
     processed_frame_counter = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
@@ -284,7 +375,8 @@ def process_frame_counter(line, steps_per_frame=1):
 def process_stimulus_line(line):
     """
     This function converts the stimulus line to an array with
-    0s and 1s for stimulus off and on respectively.
+    0s and 1s for stimulus off and on respectively. The raw
+    stimulus line can contain values larger than 1.
 
     Parameters
     ----------
@@ -295,6 +387,20 @@ def process_stimulus_line(line):
     -------
     processed_frame_counter : numpy array
         Array with binary stimulus state for each time point.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["CO2_Stim"]
+    >>> (stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> set(stimulus_line)
+    {0, 4}
+    >>> processed_stimulus_line = utils2p.synchronization.process_stimulus_line(stimulus_line)
+    >>> set(processed_stimulus_line)
+    {0, 1}
     """
     processed_stimulus_line = np.zeros_like(line)
     indices = np.where(line > 0)
@@ -310,6 +416,15 @@ def process_optical_flow_line(line):
     time point. If the value is -1, no optical flow
     value was recorded for this time point.
 
+    Note: Due to the time it take to transfer the data
+    from the Arduino to the computer it is possible that
+    the last optical flow data point is missing, i.e.
+    the processed optical flow line indicates one more
+    data point than the text file contains. This can be
+    solved by cropping all lines before the acquisition
+    of the last optical flow data point. Lines can be
+    cropped with :func:`crop_lines`.
+
     Parameters
     ----------
     line : numpy array
@@ -320,6 +435,20 @@ def process_optical_flow_line(line):
     processed_optical_flow_line : numpy array
         Array with monotonically increasing step
         function.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["OpFlow"]
+    >>> (optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> set(optical_flow_line)
+    {0, 16}
+    >>> processed_optical_flow_line = utils2p.synchronization.process_optical_flow_line(optical_flow_line)
+    >>> len(set(processed_optical_flow_line))
+    98348
     """
     processed_optical_flow_line = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
@@ -349,6 +478,31 @@ def crop_lines(mask, lines):
     -------
     cropped_lines : tuple of numpy arrays
         Tuple of cropped lines in same order as in input list.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["Frame Counter", "Capture On", "CO2_Stim", "OpFlow"]
+    >>> (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
+    >>> len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)
+    (7632000, 7632000, 7632000, 7632000)
+    >>> mask = np.logical_and(frame_counter >= 0, capture_on)
+    >>> np.sum(mask)
+    7466954
+    >>> (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.crop_lines(mask, (frame_counter, capture_on, stimulus_line, optical_flow_line,))
+    >>> len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)
+    (7466954, 7466954, 7466954, 7466954)
+    >>> line = np.arange(10)
+    >>> mask = np.ones(10, dtype=np.bool)
+    >>> mask[0] = False
+    >>> mask[-1] = False
+    >>> mask[4] = False
+    >>> utils2p.synchronization.crop_lines(mask, (line,))
+    (array([1, 2, 3, 4, 5, 6, 7, 8]),)
     """
     indices = np.where(mask)[0]
     first_idx = indices[0]
@@ -377,6 +531,24 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     -------
     indices_2p : numpy array
         Corresponding 2p frame indices.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["Frame Counter", "Basler"]
+    >>> (frame_counter, cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
+    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
+    >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([0,]), cam_line, frame_counter)
+    array([0])
+    >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([10,]), cam_line, frame_counter)
+    array([1])
+    >>> utils2p.synchronization.beh_idx_to_2p_idx(np.arange(20), cam_line, frame_counter)
+    array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2])
     """
     thor_sync_indices = edges(cam_line)[0]
 
@@ -412,6 +584,29 @@ def reduce_during_2p_frame(frame_counter, values, function):
     -------
     reduced : numpy array
         Numpy array with value for each 2p frame.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> line_names = ["Frame Counter", "CO2_Stim"]
+    >>> (frame_counter, stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
+    >>> stimulus_line = utils2p.synchronization.process_stimulus_line(stimulus_line)
+    >>> np.max(frame_counter)
+    800
+    >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.mean)
+    >>> len(stimulus_during_2p_frames)
+    801
+    >>> np.max(stimulus_during_2p_frames)
+    1.0
+    >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.max)
+    >>> len(stimulus_during_2p_frames)
+    801
+    >>> set(stimulus_during_2p_frames)
+    {0.0, 1.0}
     """
     if len(frame_counter) != len(values):
         raise ValueError("frame_counter and values need to have the same length.")
