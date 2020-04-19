@@ -1395,6 +1395,7 @@ class TiffFile(object):
 
     Examples
     --------
+    >>> imsave('temp.tif', numpy.random.rand(5, 301, 219))
     >>> with TiffFile('temp.tif') as tif:
     ...     data = tif.asarray()
     ...     data.shape
