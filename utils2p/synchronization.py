@@ -91,7 +91,10 @@ def edges(line, size=0):
     """
     diff = np.diff(line.astype(np.float64))
     if type(size) == tuple:
-        indices = np.where(np.logical_and(diff > size[0], diff < size[1]))
+        zero_elements = np.isclose(diff, np.zeros_like(diff))
+        edges_in_range = np.logical_and(diff > size[0], diff < size[1])
+        valid_edges = np.logical_and(edges_in_range,  np.logical_not(zero_elements))
+        indices = np.where(valid_edges)
     else:
         indices = np.where(diff > size)
     indices = tuple([i + 1 for i in indices])
