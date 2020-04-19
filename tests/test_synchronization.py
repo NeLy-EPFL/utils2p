@@ -113,6 +113,9 @@ def test_get_lines_from_h5_file(h5_file):
     assert capture_on.ndim == 1
     assert np.all(expected_capture_on == capture_on)
 
+    with pytest.raises(KeyError):
+        utils2p.synchronization.get_lines_from_h5_file(path, ["Some none existing line",])
+
 
 def test_edges():
     line = np.array([0, 1, 1, 2, 2, 2, 0, -1, -1, -1, 5, 5])

@@ -38,9 +38,14 @@ def get_lines_from_h5_file(file_path, line_names):
     with h5py.File(file_path, "r") as f:
         for name in line_names:
             try:
-                lines.append(f["DI"][name][:].squeeze())
+                try:
+                    lines.append(f["DI"][name][:].squeeze())
+                except KeyError:
+                    lines.append(f["CI"][name][:].squeeze())
             except KeyError:
-                lines.append(f["CI"][name][:].squeeze())
+                DI_keys = list(f["DI"].keys())
+                CI_keys = list(f["CI"].keys())
+                raise KeyError(f"No line named '{name}' exists. The digital lines are {DI_keys} and the continuous lines are {CI_keys}.")
     return tuple(lines)
 
 
