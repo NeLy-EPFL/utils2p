@@ -3,13 +3,11 @@ import numpy as np
 import utils2p
 
 
-dir_beh = "/mnt/data/CLC/181227_R15E08-tdTomGC6fopt/Fly2/CO2xzGG/behData_001"
-dir_2p = "/mnt/data/2photonData/CLC/20181227/R15E08-tdTomGC6fopt-fly2/R15E08-tdTomGC6fopt-fly2-001"
-dir_sync = "/mnt/data/2photonData/CLC/20181227/R15E08-tdTomGC6fopt-fly2/R15E08-tdTomGC6fopt-fly2-sync-001"
+experiment_dir= "data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG"
 
 
 # Load optical flow data
-optical_flow_path = utils2p.find_optical_flow_file(dir_beh)
+optical_flow_path = utils2p.find_optical_flow_file(experiment_dir)
 
 gain_0_x = round(1 / 1.45, 2)
 gain_0_y = round(1 / 1.41, 2)
@@ -20,14 +18,14 @@ optical_flow = utils2p.load_optical_flow(optical_flow_path, gain_0_x, gain_0_y, 
 
 
 # Load synchronization information
-h5_path = utils2p.find_sync_file(dir_sync)
+h5_path = utils2p.find_sync_file(experiment_dir)
 co2_line, cam_line, opt_flow_line, frame_counter, capture_on = utils2p.synchronization.get_lines_from_h5_file(h5_path, ["CO2_Stim", "Basler", "OpFlow", "Frame Counter", "Capture On"])
 
 
 # Load metadata files
-capture_json = utils2p.find_seven_camera_metadata_file(dir_beh)
+capture_json = utils2p.find_seven_camera_metadata_file(experiment_dir)
 
-metadata_2p = utils2p.find_metadata_file(dir_2p)
+metadata_2p = utils2p.find_metadata_file(experiment_dir)
 metadata = utils2p.Metadata(metadata_2p)
 
 
