@@ -29,7 +29,7 @@ metadata_2p = utils2p.find_metadata_file(experiment_dir)
 metadata = utils2p.Metadata(metadata_2p)
 
 
-# Process pre-process synchronization information
+# Pre-process synchronization information
 cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
 
 opt_flow_line = utils2p.synchronization.process_optical_flow_line(opt_flow_line)
