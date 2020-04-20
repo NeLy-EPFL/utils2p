@@ -9,15 +9,12 @@ Welcome to utils2p's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+    
+   main
+   synchronization
+   examples
 
 .. include:: ../../README.rst
-
-.. automodule:: utils2p.main
-    :members:
-
-.. automodule:: utils2p.synchronization
-    :members:
-
 
 
 Indices and tables

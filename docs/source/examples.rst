@@ -1,0 +1,6 @@
+Examples
+========
+
+:toctree::q
+:q
+
