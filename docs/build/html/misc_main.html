@@ -1,0 +1,147 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Miscellaneous &#8212; utils2p  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Synchronization functions" href="synchronization.html" />
+    <link rel="prev" title="Loading and saving" href="load_save.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="miscellaneous">
+<h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="utils2p.concatenate_z">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">concatenate_z</code><span class="sig-paren">(</span><em class="sig-param">stack</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#concatenate_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.concatenate_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate in z direction for area mode ‘line’ or ‘kymograph’,
+e.g. coronal section. This is necessary because z steps are
+otherwise treated as additional temporal frame, i.e. in Fiji
+the frames jump up and down between z positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stack</strong> (<em>4D</em><em> or </em><em>6D numpy array</em>) – Stack to be z concatenated.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stack</strong> – Concatenated stack.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>3D or 5D numpy array</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">concatenated</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">concatenate_z</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">concatenated</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(100, 128, 128)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">utils2p</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="main.html">Core functions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Microscope metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_discovery.html">File discovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_save.html">Loading and saving</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronization functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="main.html">Core functions</a><ul>
+      <li>Previous: <a href="load_save.html" title="previous chapter">Loading and saving</a></li>
+      <li>Next: <a href="synchronization.html" title="next chapter">Synchronization functions</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Florian Aymanns.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/misc_main.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

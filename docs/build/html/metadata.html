@@ -1,0 +1,537 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Microscope metadata &#8212; utils2p  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="File discovery" href="file_discovery.html" />
+    <link rel="prev" title="Core functions" href="main.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="microscope-metadata">
+<h1>Microscope metadata<a class="headerlink" href="#microscope-metadata" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="utils2p.Metadata">
+<em class="property">class </em><code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for managing ThorImage metadata.</p>
+<dl class="method">
+<dt id="utils2p.Metadata.get_area_mode">
+<code class="sig-name descname">get_area_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_area_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_area_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the area mode of a given experiment metadata, e.g.
+square, rectangle, line, kymograph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>area_mode</strong> – Area mode of experiment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_area_mode</span><span class="p">()</span>
+<span class="go">&#39;square&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_channels">
+<code class="sig-name descname">get_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retruns a tuple with the names of all channels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>channels</strong> – Names of channels.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>tuple of strings</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_channels</span><span class="p">()</span>
+<span class="go">(&#39;ChanA&#39;, &#39;ChanB&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_date_time">
+<code class="sig-name descname">get_date_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_date_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_date_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date and time of an experiment for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>date_time</strong> – Date and time of an experiment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_date_time</span><span class="p">()</span>
+<span class="go">&#39;11/21/2019 11:15:18&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_dwell_time">
+<code class="sig-name descname">get_dwell_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_dwell_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_dwell_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dwell time for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>dwell_time</strong> – Dwell time for a pixel.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_dwell_time</span><span class="p">()</span>
+<span class="go">0.308199306062498</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_frame_rate">
+<code class="sig-name descname">get_frame_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_frame_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_frame_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the frame rate for a given experiment metadata.
+When the frame rate is calculated flyback frames and
+steps in z are not considered frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>frame_rate</strong> – Frame rate of the experiment.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_frame_rate</span><span class="p">()</span>
+<span class="go">10.0145</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_gainA">
+<code class="sig-name descname">get_gainA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_gainA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the gain of channel A for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>gainA</strong> – Gain of channel A.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gainA</span><span class="p">()</span>
+<span class="go">20.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_gainB">
+<code class="sig-name descname">get_gainB</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_gainB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the gain of channel B for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>gainB</strong> – Gain of channel B.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gainB</span><span class="p">()</span>
+<span class="go">30.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_metadata_value">
+<code class="sig-name descname">get_metadata_value</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_metadata_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_metadata_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a value from the metadata file ‘Experiment.xml’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – Arbitrary number of strings of tag from the xml file in the correct order.
+See examples.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>attribute or node</strong> – If the number of strings given in args leads to a leaf of the tree, the attribute,
+usually a dictionary is returned. Otherwise the node is returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>string or ElementTree node</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;Timelapse&#39;</span><span class="p">,</span><span class="s1">&#39;timepoints&#39;</span><span class="p">)</span>
+<span class="go">&#39;3&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;LSM&#39;</span><span class="p">,</span><span class="s1">&#39;pixelX&#39;</span><span class="p">)</span>
+<span class="go">&#39;128&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s1">&#39;LSM&#39;</span><span class="p">,</span><span class="s1">&#39;pixelY&#39;</span><span class="p">)</span>
+<span class="go">&#39;128&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_n_channels">
+<code class="sig-name descname">get_n_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of channels for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_channels</strong> – Number of channels in raw data file.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_n_channels</span><span class="p">()</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_n_flyback_frames">
+<code class="sig-name descname">get_n_flyback_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_flyback_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_flyback_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of flyback frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_flyback</strong> – Number of flyback frames.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_n_time_points">
+<code class="sig-name descname">get_n_time_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_time_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_time_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of time points for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_time_points</strong> – Number of time points.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_n_time_points</span><span class="p">()</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_n_z">
+<code class="sig-name descname">get_n_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number for z slices for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_z</strong> – Number of z layers of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_n_z</span><span class="p">()</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_num_x_pixels">
+<code class="sig-name descname">get_num_x_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_x_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_num_x_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the image width for a given experiment metadata,
+i.e. the number of pixels in the x direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>width</strong> – Width of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_num_x_pixels</span><span class="p">()</span>
+<span class="go">128</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_num_y_pixels">
+<code class="sig-name descname">get_num_y_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_y_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_num_y_pixels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the image height for a given experiment metadata,
+i.e. the number of pixels in the y direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>height</strong> – Width of image.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_num_y_pixels</span><span class="p">()</span>
+<span class="go">128</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_pixel_size">
+<code class="sig-name descname">get_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixel size for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>pixel_size</strong> – Size of one pixel in um in x and y direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_pixel_size</span><span class="p">()</span>
+<span class="go">0.593</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_power_reg1_start">
+<code class="sig-name descname">get_power_reg1_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_power_reg1_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_power_reg1_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the starting position of power regulator 1 for a given
+experiment metadata. Unless a gradient is defined, this
+value is the power value for the entire experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>reg1_start</strong> – Starting position of power regulator 1.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_power_reg1_start</span><span class="p">()</span>
+<span class="go">1.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_width">
+<code class="sig-name descname">get_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returbns the image with in um for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>width</strong> – Width of FOV in um..</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span>
+<span class="go">75.88</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_z_pixel_size">
+<code class="sig-name descname">get_z_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_z_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pixel size in z direction for a given experiment metadata.
+This function is meant for “kymograph” and “line” recordings.
+For these recordings the pixel size in z direction is not
+equal to the step size, unless the number of pixels equals the number
+of steps.
+For all other types of recordings it is equivalent to <a class="reference internal" href="#utils2p.Metadata.get_z_step_size" title="utils2p.Metadata.get_z_step_size"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_z_step_size()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>z_pixel_size</strong> – Distance covered in um along z direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_z_pixel_size</span><span class="p">()</span>
+<span class="go">15.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="utils2p.Metadata.get_z_step_size">
+<code class="sig-name descname">get_z_step_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_z_step_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the z step size for a given experiment metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>z_step_size</strong> – Distance covered in um along z direction.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_z_step_size</span><span class="p">()</span>
+<span class="go">15.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">utils2p</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="main.html">Core functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Microscope metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_discovery.html">File discovery</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_save.html">Loading and saving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_main.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronization functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="main.html">Core functions</a><ul>
+      <li>Previous: <a href="main.html" title="previous chapter">Core functions</a></li>
+      <li>Next: <a href="file_discovery.html" title="next chapter">File discovery</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Florian Aymanns.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/metadata.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

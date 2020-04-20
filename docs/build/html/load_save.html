@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Loading and saving &#8212; utils2p  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Miscellaneous" href="misc_main.html" />
+    <link rel="prev" title="File discovery" href="file_discovery.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="loading-and-saving">
+<h1>Loading and saving<a class="headerlink" href="#loading-and-saving" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="utils2p.save_img">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">save_img</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">img</em>, <em class="sig-param">imagej=True</em>, <em class="sig-param">color=False</em>, <em class="sig-param">full_dynamic_range=True</em>, <em class="sig-param">metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#save_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.save_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves an image that is given as a numpy array to file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path where the file is saved.</p></li>
+<li><p><strong>img</strong> (<em>numpy array</em>) – Image or stack. For stacks, the first dimension is the stack index.
+For color images, the last dimension are the RGB channels.</p></li>
+<li><p><strong>imagej</strong> (<em>boolean</em>) – Save imagej compatible stacks and hyperstacks.</p></li>
+<li><p><strong>color</strong> (<em>boolean</em><em>, </em><em>default = False</em>) – Determines if image is RGB or gray scale.
+Will be converted to uint8.</p></li>
+<li><p><strong>full_dynamic_range</strong> (<em>boolean</em><em>, </em><em>default = True</em>) – When an image is converted to uint8 for saving a color image the
+max value of the output image is the max of uint8,
+i.e. the image uses the full dynamic range available.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.load_img">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_img</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_img" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions loads an image from file and returns as a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – Path to image file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Image in form of numpy array.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.array</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_img</span><span class="p">(</span><span class="s2">&quot;data/chessboard_GRAY_U16.tif&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(200, 200)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.load_raw">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_raw</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_raw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads a raw image generated by ThorImage as a numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path to raw file.</p></li>
+<li><p><strong>metadata</strong> (<em>ElementTree root</em>) – Can be obtained with <code class="xref py py-func docutils literal notranslate"><span class="pre">get_metadata()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stacks</strong> – Number of numpy arrays depends on the number of channels recoded during the experiment.
+Has the following dimensions: TZYX or TYX for planar images.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of numpy arrays</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_raw/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stack1</span><span class="p">,</span> <span class="n">stack2</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_raw</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_raw/Image_0001_0001.raw&#39;</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">stack1</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">stack2</span><span class="p">)</span>
+<span class="go">(&lt;class &#39;numpy.ndarray&#39;&gt;, &lt;class &#39;numpy.ndarray&#39;&gt;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">save_img</span><span class="p">(</span><span class="s1">&#39;stack1.tif&#39;</span><span class="p">,</span><span class="n">stack1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">save_img</span><span class="p">(</span><span class="s1">&#39;stack2.tif&#39;</span><span class="p">,</span><span class="n">stack2</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.load_z_stack">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_z_stack</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_z_stack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_z_stack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads tif files as saved when capturing a z-stack into a 3D numpy array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path to directory of the z-stack.</p></li>
+<li><p><strong>metadata</strong> (<em>ElementTree root</em>) – Can be obtained with <code class="xref py py-func docutils literal notranslate"><span class="pre">get_metadata()</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>stacks</strong> – Z-stacks for Channel A (green) and Channel B (red).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple of numpy arrays</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_z_stack/Experiment.xml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z_stack_A</span><span class="p">,</span> <span class="n">z_stack_B</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_z_stack</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_z_stack/&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">z_stack_A</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">z_stack_B</span><span class="p">)</span>
+<span class="go">(&lt;class &#39;numpy.ndarray&#39;&gt;, &lt;class &#39;numpy.ndarray&#39;&gt;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z_stack_A</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">z_stack_B</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">((3, 128, 128), (3, 128, 128))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.load_optical_flow">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_optical_flow</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">gain_0_x: float</em>, <em class="sig-param">gain_0_y: float</em>, <em class="sig-param">gain_1_x: float</em>, <em class="sig-param">gain_1_y: float</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_optical_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_optical_flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function loads the optical flow data from
+the file specified in path. By default it is
+directly converted into ball rotation. Gain values
+have to be determined with the calibration of the
+optical flow sensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to file holding the optical flow data.</p></li>
+<li><p><strong>gain_0_x</strong> (<em>float</em>) – Gain for the x direction of sensor 0.</p></li>
+<li><p><strong>gain_0_y</strong> (<em>float</em>) – Gain for the y direction of sensor 0.</p></li>
+<li><p><strong>gain_1_x</strong> (<em>float</em>) – Gain for the x direction of sensor 1.</p></li>
+<li><p><strong>gain_1_y</strong> (<em>float</em>) – Gain for the y direction of sensor 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>data</strong> – A dictionary with keys: ‘sensor0’, ‘sensor1’,
+‘time_stamps’, ‘vel_pitch’, ‘vel_yaw’, ‘vel_roll’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dictionary</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gain_0_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.45</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gain_0_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.41</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gain_1_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.40</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gain_1_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.36</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_optical_flow_file</span><span class="p">(</span><span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_optical_flow</span><span class="p">(</span><span class="n">optical_flow_file</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">)</span>
+<span class="go">&lt;class &#39;dict&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">dict_keys([&#39;sensor0&#39;, &#39;sensor1&#39;, &#39;time_stamps&#39;, &#39;vel_pitch&#39;, &#39;vel_yaw&#39;, &#39;vel_roll&#39;])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;time_stamps&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;time_stamps&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(98347,)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_pitch&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_pitch&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(98347,)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_yaw&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_yaw&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(98347,)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_roll&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_roll&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(98347,)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;sensor0&quot;</span><span class="p">])</span>
+<span class="go">&lt;class &#39;dict&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;sensor0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">dict_keys([&#39;x&#39;, &#39;y&#39;, &#39;gain_x&#39;, &#39;gain_y&#39;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">utils2p</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="main.html">Core functions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Microscope metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="file_discovery.html">File discovery</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Loading and saving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="misc_main.html">Miscellaneous</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronization functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="main.html">Core functions</a><ul>
+      <li>Previous: <a href="file_discovery.html" title="previous chapter">File discovery</a></li>
+      <li>Next: <a href="misc_main.html" title="next chapter">Miscellaneous</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Florian Aymanns.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/load_save.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
