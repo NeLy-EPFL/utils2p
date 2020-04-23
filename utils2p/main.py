@@ -864,6 +864,33 @@ def find_raw_file(directory):
     return _find_file(directory, "Image_0001_0001.raw", "raw")
 
 
+def find_sync_metadata_file(directory):
+    """
+    This function ifn the path to the synchonization
+    metadata file "ThorRealTimeDataSettings.xml" created
+    by ThorSync. If multiple files with this name are found,
+    it throws an exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+
+    Returns
+    -------
+    path : str
+        Path to synchronization metadata file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_sync_metadata_file("data/181227_R15E08-tdTomGC6fopt")
+    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml'
+
+    """
+    return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata")
+
+
 def load_optical_flow(
     path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float
 ):
