@@ -25,36 +25,50 @@ class InvalidValueInMetaData(Exception):
 
     pass
 
-
-class Metadata:
+class _XMLFile:
     """
-    Class for managing ThorImage metadata.
+    Base class for xml based Metadata.
     """
 
     def __init__(self, path):
         """
-        Loads metadata file 'Experiment.xml' and returns the root of an ElementTree.
-
-        Parameters
-        ----------
-        path : string
-            Path to xml file.
-
-        Returns
-        -------
-        Instance of class Metadata
-            Based on given xml file.
-
-        Examples
-        --------
-        >>> import utils2p
-        >>> metadata = utils2p.Metadata("data/mouse_kidney_z_stack/Experiment.xml")
-        >>> type(metadata)
-        <class 'utils2p.main.Metadata'>
         """
         self.path = path
         self.tree = ET.parse(path)
         self.root = self.tree.getroot()
+
+    def get_value(self, *args):
+        node = self.root.find(args[0])
+        for key in args[1:-1]:
+            node = node.find(key)
+        if len(list(node)) == 0:
+            return node.attrib[args[-1]]
+        else:
+            return node
+
+
+class Metadata(_XMLFile):
+    """
+    Class for managing ThorImage metadata.
+    Loads metadata file 'Experiment.xml' and returns the root of an ElementTree.
+
+    Parameters
+    ----------
+    path : string
+        Path to xml file.
+
+    Returns
+    -------
+    Instance of class Metadata
+        Based on given xml file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> metadata = utils2p.Metadata("data/mouse_kidney_z_stack/Experiment.xml")
+    >>> type(metadata)
+    <class 'utils2p.main.Metadata'>
+    """
 
     def get_metadata_value(self, *args):
         """
@@ -83,13 +97,7 @@ class Metadata:
         >>> metadata.get_metadata_value('LSM','pixelY')
         '128'
         """
-        node = self.root.find(args[0])
-        for key in args[1:-1]:
-            node = node.find(key)
-        if len(list(node)) == 0:
-            return node.attrib[args[-1]]
-        else:
-            return node
+        return self.get_value(*args)
 
     def get_n_time_points(self):
         """
