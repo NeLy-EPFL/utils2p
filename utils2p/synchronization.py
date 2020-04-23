@@ -10,6 +10,8 @@ import numpy as np
 import h5py
 import json
 
+import utils2p.main as main
+
 class SynchronizationError(Exception):
     """The input data is not consistent with synchronization assumption."""
 
@@ -625,3 +627,66 @@ def reduce_during_2p_frame(frame_counter, values, function):
         reduced[i] = function(values[start:stop])
 
     return reduced
+
+
+class SyncMetadata(main._XMLFile):
+    """
+    Class for managing ThorSync metadata.
+    Loads metadata file 'ThorRealTimeDataSettings.xml'
+    and returns the root of an ElementTree.
+
+    Parameters
+    ----------
+    path : string
+        Path to xml file.
+
+    Returns
+    -------
+    Instance of class Metadata
+        Based on given xml file.
+
+    Examples
+    --------
+    >>> import utils2p.synchronization
+    >>> metadata = utils2p.synchronization.SyncMetadata("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml")
+    >>> type(metadata)
+    <class 'utils2p.synchronization.SyncMetadata'>
+    """
+
+    def get_active_devices(self):
+        active_devices = []
+        for device in self.get_value("DaqDevices", "AcquireBoard"):
+            if device.attrib["active"] == "1":
+                active_devices.append(device)
+        return active_devices
+
+    
+    def get_freq(self):
+        """
+        Returns the frequency of the ThorSync
+        value acquisition, i.e. the sample rate.
+
+        Returns
+        -------
+        freq : integer
+            Sample frequency in Hz.
+
+        Examples
+        --------
+        >>> import utils2p.synchronization
+        >>> metadata = utils2p.synchronization.SyncMetadata("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml")
+        >>> metadata.get_freq()
+        30000
+        """
+        sample_rate = -1
+        for device in self.get_active_devices():
+            set_for_device = False
+            for element in device.findall("SampleRate"):
+                if element.attrib["enable"] == "1":
+                    if set_for_device:
+                        raise ValueError("Invalid metadata file. Multiple sample rates are enabled for device {device.type}")
+                    if sample_rate != -1:
+                        raise ValueError("Multiple devices are enabled.")
+                    sample_rate = int(element.attrib["rate"])
+                    set_for_device = True
+        return sample_rate 
