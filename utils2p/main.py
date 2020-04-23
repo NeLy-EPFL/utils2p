@@ -13,7 +13,6 @@ from pathlib import Path
 
 import numpy as np
 
-from . import synchronization
 from .external import tifffile
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,26 +24,31 @@ class InvalidValueInMetaData(Exception):
 
     pass
 
+def _node_crawler(node, *args):
+    if len(args) == 0:
+        return node
+    elif len(args) == 1 and args[0] in node.attrib.keys():
+            return node.attrib[args[0]]
+    if len(node) == 0:
+        raise ValueError(f"Hit dead end {node} has no children.")
+    return [_node_crawler(child, *args[1:]) for child in node.findall(args[0])]
+
 class _XMLFile:
     """
     Base class for xml based Metadata.
     """
 
     def __init__(self, path):
-        """
-        """
         self.path = path
         self.tree = ET.parse(path)
         self.root = self.tree.getroot()
 
     def get_value(self, *args):
         node = self.root.find(args[0])
-        for key in args[1:-1]:
-            node = node.find(key)
-        if len(list(node)) == 0:
-            return node.attrib[args[-1]]
-        else:
-            return node
+        values = _node_crawler(node, *args[1:])
+        if len(values) == 1:
+            return values[0]
+        return values
 
 
 class Metadata(_XMLFile):
@@ -238,10 +242,7 @@ class Metadata(_XMLFile):
         >>> metadata.get_channels()
         ('ChanA', 'ChanB')
         """
-        wavelengths_node = self.get_metadata_value("Wavelengths")
-        channels = []
-        for node in wavelengths_node.findall("Wavelength"):
-            channels += [node.attrib["name"]]
+        channels = self.get_metadata_value("Wavelengths", "Wavelength", "name")
         return tuple(channels)
 
     def get_pixel_size(self):
