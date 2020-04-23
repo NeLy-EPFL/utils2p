@@ -1,6 +1,8 @@
 Core functions
 ==============
 
+.. automodule:: utils2p.main
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
