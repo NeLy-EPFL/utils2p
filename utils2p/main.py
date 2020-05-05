@@ -504,8 +504,8 @@ def load_raw(path, metadata):
     Examples
     --------
     >>> import utils2p
-    >>> metadata = utils2p.Metadata('data/mouse_kidney_raw/Experiment.xml')
-    >>> stack1, stack2 = utils2p.load_raw('data/mouse_kidney_raw/Image_0001_0001.raw',metadata)
+    >>> metadata = utils2p.Metadata('data/mouse_kidney_raw/2p/Untitled_001/Experiment.xml')
+    >>> stack1, stack2 = utils2p.load_raw('data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw',metadata)
     >>> type(stack1), type(stack2)
     (<class 'numpy.ndarray'>, <class 'numpy.ndarray'>)
     >>> utils2p.save_img('stack1.tif',stack1)
@@ -789,8 +789,8 @@ def find_seven_camera_metadata_file(directory):
     Examples
     --------
     >>> import utils2p
-    >>> utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
-    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/images/capture_metadata.json'
+    >>> utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
+    'data/mouse_kidney_raw/behData/images/capture_metadata.json'
     """
     return _find_file(directory, "capture_metadata.json", "seven camera capture metadata")
 
@@ -841,8 +841,8 @@ def find_optical_flow_file(directory):
     Examples
     --------
     >>> import utils2p
-    >>> utils2p.find_optical_flow_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
-    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/OptFlowData/OptFlow.txt'
+    >>> utils2p.find_optical_flow_file("data/mouse_kidney_raw")
+    'data/mouse_kidney_raw/behData/OptFlowData/OptFlow.txt'
     """
     return _find_file(directory, "OptFlow.txt", "optical flow")
 
@@ -868,7 +868,7 @@ def find_raw_file(directory):
     --------
     >>> import utils2p
     >>> utils2p.find_raw_file("data/mouse_kidney_raw")
-    'data/mouse_kidney_raw/Image_0001_0001.raw'
+    'data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw'
     """
     return _find_file(directory, "Image_0001_0001.raw", "raw")
 
@@ -893,8 +893,8 @@ def find_sync_metadata_file(directory):
     Examples
     --------
     >>> import utils2p
-    >>> utils2p.find_sync_metadata_file("data/181227_R15E08-tdTomGC6fopt")
-    'data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml'
+    >>> utils2p.find_sync_metadata_file("data/mouse_kidney_raw")
+    'data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml'
 
     """
     return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata")
@@ -937,7 +937,7 @@ def load_optical_flow(
     >>> gain_1_x = round(1 / 1.40, 2)
     >>> gain_1_y = round(1 / 1.36, 2)
 
-    >>> optical_flow_file = utils2p.find_optical_flow_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> optical_flow_file = utils2p.find_optical_flow_file("data/mouse_kidney_raw")
     >>> optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y)
     >>> type(optical_flow)
     <class 'dict'>
@@ -947,22 +947,22 @@ def load_optical_flow(
     >>> type(optical_flow["time_stamps"])
     <class 'numpy.ndarray'>
     >>> optical_flow["time_stamps"].shape
-    (98347,)
+    (1408,)
 
     >>> type(optical_flow["vel_pitch"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_pitch"].shape
-    (98347,)
+    (1408,)
 
     >>> type(optical_flow["vel_yaw"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_yaw"].shape
-    (98347,)
+    (1408,)
 
     >>> type(optical_flow["vel_roll"])
     <class 'numpy.ndarray'>
     >>> optical_flow["vel_roll"].shape
-    (98347,)
+    (1408,)
 
     >>> type(optical_flow["sensor0"])
     <class 'dict'>

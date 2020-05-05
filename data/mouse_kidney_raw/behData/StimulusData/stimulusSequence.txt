@@ -1,0 +1,6 @@
+Total time of the experiment: 2 s
+Stimulus Sequence:
+off, 200
+on, 500
+off, 300
+*, 2

@@ -254,15 +254,15 @@ def process_cam_line(line, capture_json):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
-    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
+    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     >>> line_names = ["Basler"]
     >>> (cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> set(np.diff(cam_line))
     {0, 8, 4294967288}
     >>> processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
     >>> set(np.diff(processed_cam_line))
-    {0, 1, -7440}
+    {0, 1, -60}
     >>> cam_line = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0])
     >>> utils2p.synchronization.process_cam_line(cam_line, capture_json=None)
     array([-1,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1])
@@ -395,7 +395,7 @@ def process_stimulus_line(line):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
     >>> line_names = ["CO2_Stim"]
     >>> (stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> set(stimulus_line)
@@ -443,14 +443,14 @@ def process_optical_flow_line(line):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
     >>> line_names = ["OpFlow"]
     >>> (optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> set(optical_flow_line)
     {0, 16}
     >>> processed_optical_flow_line = utils2p.synchronization.process_optical_flow_line(optical_flow_line)
     >>> len(set(processed_optical_flow_line))
-    98348
+    1409
     """
     processed_optical_flow_line = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
@@ -486,18 +486,18 @@ def crop_lines(mask, lines):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
     >>> line_names = ["Frame Counter", "Capture On", "CO2_Stim", "OpFlow"]
     >>> (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
     >>> len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)
-    (7632000, 7632000, 7632000, 7632000)
+    (117000, 117000, 117000, 117000)
     >>> mask = np.logical_and(frame_counter >= 0, capture_on)
     >>> np.sum(mask)
-    7466954
+    105869
     >>> (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.crop_lines(mask, (frame_counter, capture_on, stimulus_line, optical_flow_line,))
     >>> len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)
-    (7466954, 7466954, 7466954, 7466954)
+    (105869, 105869, 105869, 105869)
     >>> line = np.arange(10)
     >>> mask = np.ones(10, dtype=np.bool)
     >>> mask[0] = False
@@ -539,18 +539,19 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
     >>> line_names = ["Frame Counter", "Basler"]
     >>> (frame_counter, cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
-    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     >>> cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([0,]), cam_line, frame_counter)
-    array([0])
+    array([-1])
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([10,]), cam_line, frame_counter)
-    array([1])
-    >>> utils2p.synchronization.beh_idx_to_2p_idx(np.arange(20), cam_line, frame_counter)
-    array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2])
+    array([0])
+    >>> utils2p.synchronization.beh_idx_to_2p_idx(np.arange(30), cam_line, frame_counter)
+    array([-1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+            0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1])
     """
     thor_sync_indices = edges(cam_line)[0]
 
@@ -592,21 +593,21 @@ def reduce_during_2p_frame(frame_counter, values, function):
     >>> import utils2p
     >>> import utils2p.synchronization
     >>> import numpy as np
-    >>> h5_file = utils2p.find_sync_file("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/")
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
     >>> line_names = ["Frame Counter", "CO2_Stim"]
     >>> (frame_counter, stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
-    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
+    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=1)
     >>> stimulus_line = utils2p.synchronization.process_stimulus_line(stimulus_line)
     >>> np.max(frame_counter)
-    800
+    4
     >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.mean)
     >>> len(stimulus_during_2p_frames)
-    801
+    5
     >>> np.max(stimulus_during_2p_frames)
-    1.0
+    0.7136134613556422
     >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.max)
     >>> len(stimulus_during_2p_frames)
-    801
+    5
     >>> set(stimulus_during_2p_frames)
     {0.0, 1.0}
     """
@@ -648,7 +649,7 @@ class SyncMetadata(main._XMLFile):
     Examples
     --------
     >>> import utils2p.synchronization
-    >>> metadata = utils2p.synchronization.SyncMetadata("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml")
+    >>> metadata = utils2p.synchronization.SyncMetadata("data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml")
     >>> type(metadata)
     <class 'utils2p.synchronization.SyncMetadata'>
     """
@@ -674,7 +675,7 @@ class SyncMetadata(main._XMLFile):
         Examples
         --------
         >>> import utils2p.synchronization
-        >>> metadata = utils2p.synchronization.SyncMetadata("data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/2p/sync001/ThorRealTimeDataSettings.xml")
+        >>> metadata = utils2p.synchronization.SyncMetadata("data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml")
         >>> metadata.get_freq()
         30000
         """

@@ -113,4 +113,5 @@ venv.bak/
 # documentation build
 documentation/_build
 
-# Example Output
+# behaviour images
+data/mouse_kidney_raw/behData/images/*.jpg
