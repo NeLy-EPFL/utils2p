@@ -115,3 +115,6 @@ documentation/_build
 
 # behaviour images
 data/mouse_kidney_raw/behData/images/*.jpg
+
+# Example ouptut
+examples/*.tif
