@@ -193,14 +193,20 @@ def test_process_cam_line(capture_json):
         utils2p.synchronization.process_cam_line(line, metadata)
 
 
-def test_process_frame_counter():
+def test_process_frame_counter(metadata_obj):
     line = np.array([0, 0, 0, 3, 3, 3, 4, 4, 8, 8, 8, 10, 10, 10, 11, 11, 15, 15, 15, 15,])
     
     expected = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5,])
-    assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line))
+    assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=1))
+    
+    metadata = metadata_obj(flyback_frames=0) 
+    assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, metadata))
     
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,])
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=2))
+
+    metadata = metadata_obj(flyback_frames=1) 
+    assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, metadata))
 
 
 def test_process_stimulus_line():
