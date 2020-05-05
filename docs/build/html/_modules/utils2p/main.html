@@ -46,50 +46,68 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">synchronization</span>
 <span class="kn">from</span> <span class="nn">.external</span> <span class="kn">import</span> <span class="n">tifffile</span>
 
 <span class="n">package_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 
 
-<div class="viewcode-block" id="InvalidValueInMetaData"><a class="viewcode-back" href="../../main.html#utils2p.main.InvalidValueInMetaData">[docs]</a><span class="k">class</span> <span class="nc">InvalidValueInMetaData</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InvalidValueInMetaData</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This error should be raised when an invalid value</span>
 <span class="sd">    is encountered in an &#39;Experiement.xml&#39; file.&quot;&quot;&quot;</span>
 
-    <span class="k">pass</span></div>
+    <span class="k">pass</span>
 
+<span class="k">def</span> <span class="nf">_node_crawler</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">node</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hit dead end </span><span class="si">{node}</span><span class="s2"> has no children.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_node_crawler</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
 
-<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">_XMLFile</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class for managing ThorImage metadata.</span>
+<span class="sd">    Base class for xml based Metadata.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Loads metadata file &#39;Experiment.xml&#39; and returns the root of an ElementTree.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path : string</span>
-<span class="sd">            Path to xml file.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        Instance of class Metadata</span>
-<span class="sd">            Based on given xml file.</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; import utils2p</span>
-<span class="sd">        &gt;&gt;&gt; metadata = utils2p.Metadata(&quot;data/mouse_kidney_z_stack/Experiment.xml&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; type(metadata)</span>
-<span class="sd">        &lt;class &#39;utils2p.main.Metadata&#39;&gt;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Metadata.get_metadata_value"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_metadata_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">_node_crawler</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+
+<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">_XMLFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for managing ThorImage metadata.</span>
+<span class="sd">    Loads metadata file &#39;Experiment.xml&#39; and returns the root of an ElementTree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : string</span>
+<span class="sd">        Path to xml file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Instance of class Metadata</span>
+<span class="sd">        Based on given xml file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p</span>
+<span class="sd">    &gt;&gt;&gt; metadata = utils2p.Metadata(&quot;data/mouse_kidney_z_stack/Experiment.xml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; type(metadata)</span>
+<span class="sd">    &lt;class &#39;utils2p.main.Metadata&#39;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Metadata.get_metadata_value"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_metadata_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function returns a value from the metadata file &#39;Experiment.xml&#39;.</span>
 <span class="sd">    </span>
@@ -116,15 +134,9 @@
 <span class="sd">        &gt;&gt;&gt; metadata.get_metadata_value(&#39;LSM&#39;,&#39;pixelY&#39;)</span>
 <span class="sd">        &#39;128&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">node</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Metadata.get_n_time_points"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_n_time_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_time_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_n_time_points"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_time_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_time_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of time points for a given experiment metadata.</span>
 <span class="sd">     </span>
@@ -142,7 +154,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Timelapse&quot;</span><span class="p">,</span> <span class="s2">&quot;timepoints&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_num_x_pixels"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_num_x_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_x_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_num_x_pixels"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_num_x_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_x_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the image width for a given experiment metadata,</span>
 <span class="sd">        i.e. the number of pixels in the x direction.</span>
@@ -161,7 +173,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;pixelX&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_num_y_pixels"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_num_y_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_y_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_num_y_pixels"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_num_y_pixels">[docs]</a>    <span class="k">def</span> <span class="nf">get_num_y_pixels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the image height for a given experiment metadata,</span>
 <span class="sd">        i.e. the number of pixels in the y direction.</span>
@@ -180,7 +192,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;pixelY&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_area_mode"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_area_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_area_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_area_mode"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_area_mode">[docs]</a>    <span class="k">def</span> <span class="nf">get_area_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the area mode of a given experiment metadata, e.g.</span>
 <span class="sd">        square, rectangle, line, kymograph.</span>
@@ -211,7 +223,7 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{int_area_mode}</span><span class="s2"> is not a valid value for areaMode.&quot;</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Metadata.get_n_z"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_n_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_n_z"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_z">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number for z slices for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -229,7 +241,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;ZStage&quot;</span><span class="p">,</span> <span class="s2">&quot;steps&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_n_channels"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_n_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_n_channels"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of channels for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -247,7 +259,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Wavelengths&quot;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span></div>
 
-<div class="viewcode-block" id="Metadata.get_channels"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_channels"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retruns a tuple with the names of all channels.</span>
 <span class="sd">    </span>
@@ -263,13 +275,10 @@
 <span class="sd">        &gt;&gt;&gt; metadata.get_channels()</span>
 <span class="sd">        (&#39;ChanA&#39;, &#39;ChanB&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">wavelengths_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Wavelengths&quot;</span><span class="p">)</span>
-        <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">wavelengths_node</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Wavelength&quot;</span><span class="p">):</span>
-            <span class="n">channels</span> <span class="o">+=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]]</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Wavelengths&quot;</span><span class="p">,</span> <span class="s2">&quot;Wavelength&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">channels</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Metadata.get_pixel_size"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_pixel_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_pixel_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_pixel_size"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_pixel_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_pixel_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the pixel size for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -287,7 +296,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;pixelSizeUM&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_z_step_size"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_z_step_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_z_step_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_z_step_size"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_z_step_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_z_step_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the z step size for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -305,7 +314,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;ZStage&quot;</span><span class="p">,</span> <span class="s2">&quot;stepSizeUM&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_z_pixel_size"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_z_pixel_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_z_pixel_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_z_pixel_size"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_z_pixel_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_z_pixel_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the pixel size in z direction for a given experiment metadata.</span>
 <span class="sd">        This function is meant for &quot;kymograph&quot; and &quot;line&quot; recordings.</span>
@@ -335,7 +344,7 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;ZStage&quot;</span><span class="p">,</span> <span class="s2">&quot;stepSizeUM&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_dwell_time"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_dwell_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_dwell_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_dwell_time"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_dwell_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_dwell_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the dwell time for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -353,7 +362,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;dwellTime&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_n_flyback_frames"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_n_flyback_frames">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_flyback_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_n_flyback_frames"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_flyback_frames">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_flyback_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of flyback frames.</span>
 
@@ -365,7 +374,7 @@
         <span class="n">n_flyback</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Streaming&quot;</span><span class="p">,</span> <span class="s2">&quot;flybackFrames&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">n_flyback</span></div>
 
-<div class="viewcode-block" id="Metadata.get_frame_rate"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_frame_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_frame_rate"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_frame_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_frame_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the frame rate for a given experiment metadata.</span>
 <span class="sd">        When the frame rate is calculated flyback frames and</span>
@@ -388,7 +397,7 @@
         <span class="n">number_of_slices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_n_z</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">frame_rate_without_flybacks</span> <span class="o">/</span> <span class="p">(</span><span class="n">flyback_frames</span> <span class="o">+</span> <span class="n">number_of_slices</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Metadata.get_width"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_width"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returbns the image with in um for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -406,7 +415,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;widthUM&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_power_reg1_start"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_power_reg1_start">[docs]</a>    <span class="k">def</span> <span class="nf">get_power_reg1_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_power_reg1_start"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_power_reg1_start">[docs]</a>    <span class="k">def</span> <span class="nf">get_power_reg1_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the starting position of power regulator 1 for a given</span>
 <span class="sd">        experiment metadata. Unless a gradient is defined, this</span>
@@ -426,7 +435,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;PowerRegulator&quot;</span><span class="p">,</span> <span class="s2">&quot;start&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_gainA"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_gainA">[docs]</a>    <span class="k">def</span> <span class="nf">get_gainA</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_gainA"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_gainA">[docs]</a>    <span class="k">def</span> <span class="nf">get_gainA</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the gain of channel A for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -444,7 +453,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;PMT&quot;</span><span class="p">,</span> <span class="s2">&quot;gainA&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_gainB"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_gainB">[docs]</a>    <span class="k">def</span> <span class="nf">get_gainB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_gainB"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_gainB">[docs]</a>    <span class="k">def</span> <span class="nf">get_gainB</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the gain of channel B for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -462,7 +471,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;PMT&quot;</span><span class="p">,</span> <span class="s2">&quot;gainB&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Metadata.get_date_time"><a class="viewcode-back" href="../../metadata.html#utils2p.main.Metadata.get_date_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata.get_date_time"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_date_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_date_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the date and time of an experiment for a given experiment metadata.</span>
 <span class="sd">    </span>
@@ -481,7 +490,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="load_img"><a class="viewcode-back" href="../../load_save.html#utils2p.main.load_img">[docs]</a><span class="k">def</span> <span class="nf">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="load_img"><a class="viewcode-back" href="../../load_save.html#utils2p.load_img">[docs]</a><span class="k">def</span> <span class="nf">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions loads an image from file and returns as a numpy array.</span>
 <span class="sd">    </span>
@@ -508,7 +517,7 @@
     <span class="k">return</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_raw"><a class="viewcode-back" href="../../load_save.html#utils2p.main.load_raw">[docs]</a><span class="k">def</span> <span class="nf">load_raw</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="load_raw"><a class="viewcode-back" href="../../load_save.html#utils2p.load_raw">[docs]</a><span class="k">def</span> <span class="nf">load_raw</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function loads a raw image generated by ThorImage as a numpy array.</span>
 
@@ -528,8 +537,8 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
-<span class="sd">    &gt;&gt;&gt; metadata = utils2p.Metadata(&#39;data/mouse_kidney_raw/Experiment.xml&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; stack1, stack2 = utils2p.load_raw(&#39;data/mouse_kidney_raw/Image_0001_0001.raw&#39;,metadata)</span>
+<span class="sd">    &gt;&gt;&gt; metadata = utils2p.Metadata(&#39;data/mouse_kidney_raw/2p/Untitled_001/Experiment.xml&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; stack1, stack2 = utils2p.load_raw(&#39;data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw&#39;,metadata)</span>
 <span class="sd">    &gt;&gt;&gt; type(stack1), type(stack2)</span>
 <span class="sd">    (&lt;class &#39;numpy.ndarray&#39;&gt;, &lt;class &#39;numpy.ndarray&#39;&gt;)</span>
 <span class="sd">    &gt;&gt;&gt; utils2p.save_img(&#39;stack1.tif&#39;,stack1)</span>
@@ -605,7 +614,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">stacks</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="load_z_stack"><a class="viewcode-back" href="../../load_save.html#utils2p.main.load_z_stack">[docs]</a><span class="k">def</span> <span class="nf">load_z_stack</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+<div class="viewcode-block" id="load_z_stack"><a class="viewcode-back" href="../../load_save.html#utils2p.load_z_stack">[docs]</a><span class="k">def</span> <span class="nf">load_z_stack</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Loads tif files as saved when capturing a z-stack into a 3D numpy array.</span>
 
@@ -640,7 +649,7 @@
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">stacks</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">stacks</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]])</span></div>
 
 
-<div class="viewcode-block" id="concatenate_z"><a class="viewcode-back" href="../../misc_main.html#utils2p.main.concatenate_z">[docs]</a><span class="k">def</span> <span class="nf">concatenate_z</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
+<div class="viewcode-block" id="concatenate_z"><a class="viewcode-back" href="../../misc_main.html#utils2p.concatenate_z">[docs]</a><span class="k">def</span> <span class="nf">concatenate_z</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Concatenate in z direction for area mode &#39;line&#39; or &#39;kymograph&#39;,</span>
 <span class="sd">    e.g. coronal section. This is necessary because z steps are</span>
@@ -670,7 +679,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">res</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="save_img"><a class="viewcode-back" href="../../load_save.html#utils2p.main.save_img">[docs]</a><span class="k">def</span> <span class="nf">save_img</span><span class="p">(</span>
+<div class="viewcode-block" id="save_img"><a class="viewcode-back" href="../../load_save.html#utils2p.save_img">[docs]</a><span class="k">def</span> <span class="nf">save_img</span><span class="p">(</span>
     <span class="n">path</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="n">imagej</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">full_dynamic_range</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -766,7 +775,7 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="find_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.main.find_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the metadata file</span>
 <span class="sd">    &quot;Experiment.xml&quot; created by ThorImage and returns it.</span>
@@ -792,7 +801,7 @@
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Experiment.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_seven_camera_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.main.find_seven_camera_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_seven_camera_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_seven_camera_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the metadata file</span>
 <span class="sd">    &quot;capture_metadata.json&quot; created by seven camera</span>
@@ -813,13 +822,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
-<span class="sd">    &gt;&gt;&gt; utils2p.find_seven_camera_metadata_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
-<span class="sd">    &#39;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/images/capture_metadata.json&#39;</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_seven_camera_metadata_file(&quot;data/mouse_kidney_raw&quot;)</span>
+<span class="sd">    &#39;data/mouse_kidney_raw/behData/images/capture_metadata.json&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;capture_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;seven camera capture metadata&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_sync_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.main.find_sync_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_sync_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_sync_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the sync file</span>
 <span class="sd">    &quot;Episode001.h5&quot; created by ThorSync and returns it.</span>
@@ -845,7 +854,7 @@
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Episode001.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_optical_flow_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.main.find_optical_flow_file">[docs]</a><span class="k">def</span> <span class="nf">find_optical_flow_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_optical_flow_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_optical_flow_file">[docs]</a><span class="k">def</span> <span class="nf">find_optical_flow_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the optical flow file</span>
 <span class="sd">    &quot;OptFlow.txt&quot; created by seven camera software and returns it.</span>
@@ -865,13 +874,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
-<span class="sd">    &gt;&gt;&gt; utils2p.find_optical_flow_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
-<span class="sd">    &#39;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/behData/OptFlowData/OptFlow.txt&#39;</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_optical_flow_file(&quot;data/mouse_kidney_raw&quot;)</span>
+<span class="sd">    &#39;data/mouse_kidney_raw/behData/OptFlowData/OptFlow.txt&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;OptFlow.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;optical flow&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_raw_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.main.find_raw_file">[docs]</a><span class="k">def</span> <span class="nf">find_raw_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_raw_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_raw_file">[docs]</a><span class="k">def</span> <span class="nf">find_raw_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the raw file</span>
 <span class="sd">    &quot;Image_0001_0001.raw&quot; created by ThorImage and returns it.</span>
@@ -892,12 +901,39 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; utils2p.find_raw_file(&quot;data/mouse_kidney_raw&quot;)</span>
-<span class="sd">    &#39;data/mouse_kidney_raw/Image_0001_0001.raw&#39;</span>
+<span class="sd">    &#39;data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Image_0001_0001.raw&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_optical_flow"><a class="viewcode-back" href="../../load_save.html#utils2p.main.load_optical_flow">[docs]</a><span class="k">def</span> <span class="nf">load_optical_flow</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">find_sync_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function ifn the path to the synchonization</span>
+<span class="sd">    metadata file &quot;ThorRealTimeDataSettings.xml&quot; created</span>
+<span class="sd">    by ThorSync. If multiple files with this name are found,</span>
+<span class="sd">    it throws an exception.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">        Directory in which to search.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to synchronization metadata file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_sync_metadata_file(&quot;data/mouse_kidney_raw&quot;)</span>
+<span class="sd">    &#39;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;ThorRealTimeDataSettings.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization metadata&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_optical_flow"><a class="viewcode-back" href="../../load_save.html#utils2p.load_optical_flow">[docs]</a><span class="k">def</span> <span class="nf">load_optical_flow</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">:</span> <span class="nb">float</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -934,7 +970,7 @@
 <span class="sd">    &gt;&gt;&gt; gain_1_x = round(1 / 1.40, 2)</span>
 <span class="sd">    &gt;&gt;&gt; gain_1_y = round(1 / 1.36, 2)</span>
 
-<span class="sd">    &gt;&gt;&gt; optical_flow_file = utils2p.find_optical_flow_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; optical_flow_file = utils2p.find_optical_flow_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y)</span>
 <span class="sd">    &gt;&gt;&gt; type(optical_flow)</span>
 <span class="sd">    &lt;class &#39;dict&#39;&gt;</span>
@@ -944,22 +980,22 @@
 <span class="sd">    &gt;&gt;&gt; type(optical_flow[&quot;time_stamps&quot;])</span>
 <span class="sd">    &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow[&quot;time_stamps&quot;].shape</span>
-<span class="sd">    (98347,)</span>
+<span class="sd">    (1408,)</span>
 
 <span class="sd">    &gt;&gt;&gt; type(optical_flow[&quot;vel_pitch&quot;])</span>
 <span class="sd">    &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow[&quot;vel_pitch&quot;].shape</span>
-<span class="sd">    (98347,)</span>
+<span class="sd">    (1408,)</span>
 
 <span class="sd">    &gt;&gt;&gt; type(optical_flow[&quot;vel_yaw&quot;])</span>
 <span class="sd">    &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow[&quot;vel_yaw&quot;].shape</span>
-<span class="sd">    (98347,)</span>
+<span class="sd">    (1408,)</span>
 
 <span class="sd">    &gt;&gt;&gt; type(optical_flow[&quot;vel_roll&quot;])</span>
 <span class="sd">    &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow[&quot;vel_roll&quot;].shape</span>
-<span class="sd">    (98347,)</span>
+<span class="sd">    (1408,)</span>
 
 <span class="sd">    &gt;&gt;&gt; type(optical_flow[&quot;sensor0&quot;])</span>
 <span class="sd">    &lt;class &#39;dict&#39;&gt;</span>

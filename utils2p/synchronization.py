@@ -322,7 +322,7 @@ def process_cam_line(line, capture_json):
     return processed_line.astype(np.int)
 
 
-def process_frame_counter(line, steps_per_frame=1):
+def process_frame_counter(line, metadata=None, steps_per_frame=None):
     """
     Converts the frame counter line to an array with frame numbers for each
     time point.
@@ -331,6 +331,10 @@ def process_frame_counter(line, steps_per_frame=1):
     ----------
     line : numpy array
         Line signal from h5 file.
+    metadata : :class:`utils2p.Metadata`
+        :class:`utils2p.Metadata` object that holding the 2p imaging
+        metadata for the experiment. Optional. If metadata is not
+        given steps_per_frame has to be set.
     steps_per_frame : int
         Number of steps the frame counter takes per frame.
         This includes fly back frame, i.e. if you acquire one frame
@@ -353,13 +357,21 @@ def process_frame_counter(line, steps_per_frame=1):
     31
     >>> metadata_file = utils2p.find_metadata_file("data/mouse_kidney_z_stack")
     >>> metadata = utils2p.Metadata(metadata_file)
+    >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, metadata)
+    >>> len(set(processed_frame_counter))
+    9
     >>> steps_per_frame = 1 + metadata.get_n_flyback_frames()
     >>> steps_per_frame
     4
-    >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame)
+    >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
     >>> len(set(processed_frame_counter))
     9
     """
+    if metadata is not None:
+        steps_per_frame = 1 + metadata.get_n_flyback_frames()
+    elif steps_per_frame is None:
+        raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
+
     processed_frame_counter = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
     for i, index in enumerate(
