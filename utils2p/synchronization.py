@@ -157,7 +157,7 @@ def get_start_times(line, times):
     line : numpy array
         Line signal from h5 file.
     times : numpy array
-        Times returned by :func:`new_synchronization.get_times`
+        Times returned by :func:`utils2p.synchronization.get_times`
 
     Returns
     -------
