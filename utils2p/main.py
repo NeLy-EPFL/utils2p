@@ -208,6 +208,24 @@ class Metadata(_XMLFile):
         """
         return int(self.get_metadata_value("ZStage", "steps"))
 
+    def get_n_averaging(self):
+        """
+        Returns the number of frames that are averaged.
+
+        Returns
+        -------
+        n_averaging : int
+            Number of averaged frames.
+
+        Examples
+        --------
+        >>> import utils2p
+        >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
+        >>> metadata.get_n_averaging()
+        10
+        """
+        return int(self.get_value("LSM", "averageNum"))
+
     def get_n_channels(self):
         """
         Returns the number of channels for a given experiment metadata.

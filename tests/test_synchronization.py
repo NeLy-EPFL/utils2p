@@ -199,13 +199,13 @@ def test_process_frame_counter(metadata_obj):
     expected = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5,])
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=1))
     
-    metadata = metadata_obj(flyback_frames=0) 
+    metadata = metadata_obj(flyback_frames=0, average_num=1, n_z=1) 
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, metadata))
     
     expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,])
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=2))
 
-    metadata = metadata_obj(flyback_frames=1) 
+    metadata = metadata_obj(flyback_frames=1, average_num=1, n_z=1) 
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, metadata))
 
 

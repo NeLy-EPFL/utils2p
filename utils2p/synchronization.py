@@ -337,8 +337,9 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
         given steps_per_frame has to be set.
     steps_per_frame : int
         Number of steps the frame counter takes per frame.
-        This includes fly back frame, i.e. if you acquire one frame
-        and flyback frames is set to 3 this number should be 4.
+        This includes fly back frame and averaging, i.e. if you
+        acquire one frame and flyback frames is set to 3 this number
+        should be 4.
 
     Returns
     -------
@@ -353,22 +354,39 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_z_stack")
     >>> line_names = ["Frame Counter",]
     >>> (frame_counter,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
-    >>> len(set(frame_counter))
-    31
+    >>> set(frame_counter)
+    {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}
     >>> metadata_file = utils2p.find_metadata_file("data/mouse_kidney_z_stack")
     >>> metadata = utils2p.Metadata(metadata_file)
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, metadata)
-    >>> len(set(processed_frame_counter))
-    9
-    >>> steps_per_frame = 1 + metadata.get_n_flyback_frames()
+    >>> set(processed_frame_counter)
+    {0, -1}
+    >>> steps_per_frame = metadata.get_n_z() * metadata.get_n_averaging()
     >>> steps_per_frame
-    4
+    30
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
-    >>> len(set(processed_frame_counter))
-    9
+    >>> set(processed_frame_counter)
+    {0, -1}
+    
+    By default the function treat volumes as frames.
+    If you want to treat every slice of the volume as a separate frame,
+    you can do so by `steps_per_frame`. The example has three steps in z.
+    >>> steps_per_frame = metadata.get_n_averaging()
+    >>> steps_per_frame
+    10
+    >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
+    >>> set(processed_frame_counter)
+    {0, 1, 2, -1}
     """
     if metadata is not None:
-        steps_per_frame = 1 + metadata.get_n_flyback_frames()
+        if metadata.get_value("Streaming", "zFastEnable") == "0":
+            steps_per_frame = 1
+        else:
+            steps_per_frame = metadata.get_n_z() 
+            if metadata.get_value("Streaming", "enable") == "1":
+                steps_per_frame += metadata.get_n_flyback_frames()
+        if metadata.get_value("LSM", "averageMode") == "1":
+            steps_per_frame = steps_per_frame * metadata.get_n_averaging()
     elif steps_per_frame is None:
         raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
 

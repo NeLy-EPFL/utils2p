@@ -26,6 +26,10 @@ def metadata_xml(tmpdir):
         flyback_frames=3,
         power=1,
         date="12/20/2018 18:33:52",
+        z_fast_enable=1,
+        streaming_enable=1,
+        average_mode=1,
+        average_num=2,
     ):
         wavelength_strings = ""
         for channel in channels:
@@ -42,9 +46,9 @@ def metadata_xml(tmpdir):
             </Wavelengths>
             <ZStage steps="{n_z}" stepSizeUM="{z_step_size}" />
             <Timelapse timepoints="{timepoints}" />
-            <LSM pixelX="{x_pixels}" pixelY="{y_pixels}" areaMode="{area_mode}" pixelSizeUM="{pixel_size}" dwellTime="{dwell_time}" frameRate="{frame_rate}" widthUM="{width}" />
+            <LSM pixelX="{x_pixels}" pixelY="{y_pixels}" averageMode="{average_mode}" averageNum="{average_num}" areaMode="{area_mode}" pixelSizeUM="{pixel_size}" dwellTime="{dwell_time}" frameRate="{frame_rate}" widthUM="{width}" />
             <PMT gainA="{gain_a}" gainB="{gain_b}" />
-            <Streaming flybackFrames="{flyback_frames}" />
+            <Streaming enable="{streaming_enable}" flybackFrames="{flyback_frames}" zFastEnable="{z_fast_enable}" />
             <PowerRegulator start="{power}" />
         </ThorImageExperiment>
         """
@@ -85,6 +89,10 @@ def metadata_obj(metadata_xml):
         flyback_frames=3,
         power=1,
         date="12/20/2018 18:33:52",
+        z_fast_enable=1,
+        streaming_enable=1,
+        average_mode=1,
+        average_num=2,
     ):
         path = metadata_xml(
             timepoints=timepoints,
@@ -103,6 +111,10 @@ def metadata_obj(metadata_xml):
             flyback_frames=flyback_frames,
             power=power,
             date=date,
+            z_fast_enable=z_fast_enable,
+            streaming_enable=streaming_enable,
+            average_mode=average_mode,
+            average_num=average_num,
         )
         return utils2p.Metadata(str(path))
 
