@@ -778,12 +778,12 @@ def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camer
 
     mask = np.logical_and(processed_lines["Capture On"], processed_lines["Frame Counter"] >= 0)
     for line_name, line in processed_lines.items():
-        processed_lines[line_name] = crop_lines(mask, [processed_lines[line_name],])
+        processed_lines[line_name] = crop_lines(mask, [processed_lines[line_name],])[0]
     
     # Get times of ThorSync ticks
     metadata = SyncMetadata(sync_metadata_file)
     freq = metadata.get_freq()
     times = get_times(len(processed_lines["Frame Counter"]), freq)
-    processed_lines["times"] = times
+    processed_lines["Times"] = times
 
     return processed_lines
