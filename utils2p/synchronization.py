@@ -721,3 +721,69 @@ class SyncMetadata(main._XMLFile):
                     sample_rate = int(element.attrib["rate"])
                     set_for_device = True
         return sample_rate 
+
+
+def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camera_metadata_file=None):
+    """
+    This function extracts all the standard lines and processes them.
+    It works for both microscopes.
+
+    Parameters
+    ----------
+    sync_file : str
+        Path to the synchronization file.
+    sync_metadata_file : str
+        Path to the synchronization metadata file.
+    metadata_2p_file : str
+        Path to the ThorImage metadata file.
+    seven_camera_metadata_file : str
+        Path to the metadata file of the 7 camera system.
+
+    Returns
+    -------
+    processed_lines : dictionary
+        Dictionary with all processed lines.
+    
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> experiment_dir = "data/mouse_kidney_raw/"
+    >>> sync_file = utils2p.find_sync_file(experiment_dir)
+    >>> metadata_file = utils2p.find_metadata_file(experiment_dir)
+    >>> sync_metadata_file = utils2p.find_sync_metadata_file(experiment_dir)
+    >>> seven_camera_metadata_file = utils2p.find_seven_camera_metadata_file(experiment_dir)
+    >>> processed_lines = utils2p.synchronization.processed_lines(sync_file, sync_metadata_file, metadata_file, seven_camera_metadata_file)
+    """
+    processed_lines = {}
+    processed_lines["Capture On"], processed_lines["Frame Counter"] = get_lines_from_h5_file(sync_file, ["Capture On", "Frame Counter"])
+
+    try:
+        # For microscope 1
+        processed_lines["CO2"], processed_lines["Cameras"], processed_lines["Optical flow"] = get_lines_from_h5_file(sync_file, ["CO2_Stim", "Basler", "OpFlow",])
+    except KeyError:
+        # For microscope 2
+        processed_lines["CO2"], processed_lines["Cameras"] = get_lines_from_h5_file(sync_file, ["CO2", "Cameras",])
+
+
+    processed_lines["Cameras"] = process_cam_line(processed_lines["Cameras"], seven_camera_metadata_file)
+
+    metadata_2p = main.Metadata(metadata_2p_file)
+    processed_lines["Frame Counter"] = process_frame_counter(processed_lines["Frame Counter"], metadata_2p)
+
+    processed_lines["CO2"] = process_stimulus_line(processed_lines["CO2"])
+        
+    if "Optical flow" in processed_lines.keys():
+        processed_lines["Optical flow"] = process_optical_flow_line(processed_lines["Optical flow"])
+
+    mask = np.logical_and(processed_lines["Capture On"], processed_lines["Frame Counter"] >= 0)
+    for line_name, line in processed_lines.items():
+        processed_lines[line_name] = crop_lines(mask, [processed_lines[line_name],])
+    
+    # Get times of ThorSync ticks
+    metadata = SyncMetadata(sync_metadata_file)
+    freq = metadata.get_freq()
+    times = get_times(len(processed_lines["Frame Counter"]), freq)
+    processed_lines["times"] = times
+
+    return processed_lines
