@@ -37,7 +37,26 @@
 <dl class="class">
 <dt id="utils2p.Metadata">
 <em class="property">class </em><code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class for managing ThorImage metadata.</p>
+<dd><p>Class for managing ThorImage metadata.
+Loads metadata file ‘Experiment.xml’ and returns the root of an ElementTree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – Path to xml file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Based on given xml file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Instance of class Metadata</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_z_stack/Experiment.xml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+<span class="go">&lt;class &#39;utils2p.main.Metadata&#39;&gt;</span>
+</pre></div>
+</div>
 <dl class="method">
 <dt id="utils2p.Metadata.get_area_mode">
 <code class="sig-name descname">get_area_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_area_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_area_mode" title="Permalink to this definition">¶</a></dt>
@@ -475,6 +494,7 @@ For all other types of recordings it is equivalent to <a class="reference intern
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="main.html">Core functions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="main.html#core-module">Core module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Microscope metadata</a></li>
 <li class="toctree-l2"><a class="reference internal" href="file_discovery.html">File discovery</a></li>
 <li class="toctree-l2"><a class="reference internal" href="load_save.html">Loading and saving</a></li>

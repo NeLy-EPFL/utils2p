@@ -43,10 +43,12 @@
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<div class="viewcode-block" id="SynchronizationError"><a class="viewcode-back" href="../../synchronization.html#utils2p.synchronization.SynchronizationError">[docs]</a><span class="k">class</span> <span class="nc">SynchronizationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="kn">import</span> <span class="nn">utils2p.main</span> <span class="k">as</span> <span class="nn">main</span>
+
+<span class="k">class</span> <span class="nc">SynchronizationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;The input data is not consistent with synchronization assumption.&quot;&quot;&quot;</span>
 
-    <span class="k">pass</span></div>
+    <span class="k">pass</span>
 
 
 <div class="viewcode-block" id="get_lines_from_h5_file"><a class="viewcode-back" href="../../loading_preprocessing.html#utils2p.synchronization.get_lines_from_h5_file">[docs]</a><span class="k">def</span> <span class="nf">get_lines_from_h5_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">line_names</span><span class="p">):</span>
@@ -285,15 +287,15 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; capture_json = utils2p.find_seven_camera_metadata_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; capture_json = utils2p.find_seven_camera_metadata_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;Basler&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
 <span class="sd">    &gt;&gt;&gt; set(np.diff(cam_line))</span>
 <span class="sd">    {0, 8, 4294967288}</span>
 <span class="sd">    &gt;&gt;&gt; processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)</span>
 <span class="sd">    &gt;&gt;&gt; set(np.diff(processed_cam_line))</span>
-<span class="sd">    {0, 1, -7440}</span>
+<span class="sd">    {0, 1, -60}</span>
 <span class="sd">    &gt;&gt;&gt; cam_line = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0])</span>
 <span class="sd">    &gt;&gt;&gt; utils2p.synchronization.process_cam_line(cam_line, capture_json=None)</span>
 <span class="sd">    array([-1,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1])</span>
@@ -353,7 +355,7 @@
     <span class="k">return</span> <span class="n">processed_line</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="process_frame_counter"><a class="viewcode-back" href="../../loading_preprocessing.html#utils2p.synchronization.process_frame_counter">[docs]</a><span class="k">def</span> <span class="nf">process_frame_counter</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="process_frame_counter"><a class="viewcode-back" href="../../loading_preprocessing.html#utils2p.synchronization.process_frame_counter">[docs]</a><span class="k">def</span> <span class="nf">process_frame_counter</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts the frame counter line to an array with frame numbers for each</span>
 <span class="sd">    time point.</span>
@@ -362,6 +364,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    line : numpy array</span>
 <span class="sd">        Line signal from h5 file.</span>
+<span class="sd">    metadata : :class:`utils2p.Metadata`</span>
+<span class="sd">        :class:`utils2p.Metadata` object that holding the 2p imaging</span>
+<span class="sd">        metadata for the experiment. Optional. If metadata is not</span>
+<span class="sd">        given steps_per_frame has to be set.</span>
 <span class="sd">    steps_per_frame : int</span>
 <span class="sd">        Number of steps the frame counter takes per frame.</span>
 <span class="sd">        This includes fly back frame, i.e. if you acquire one frame</span>
@@ -384,13 +390,21 @@
 <span class="sd">    31</span>
 <span class="sd">    &gt;&gt;&gt; metadata_file = utils2p.find_metadata_file(&quot;data/mouse_kidney_z_stack&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; metadata = utils2p.Metadata(metadata_file)</span>
+<span class="sd">    &gt;&gt;&gt; processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, metadata)</span>
+<span class="sd">    &gt;&gt;&gt; len(set(processed_frame_counter))</span>
+<span class="sd">    9</span>
 <span class="sd">    &gt;&gt;&gt; steps_per_frame = 1 + metadata.get_n_flyback_frames()</span>
 <span class="sd">    &gt;&gt;&gt; steps_per_frame</span>
 <span class="sd">    4</span>
-<span class="sd">    &gt;&gt;&gt; processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame)</span>
+<span class="sd">    &gt;&gt;&gt; processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)</span>
 <span class="sd">    &gt;&gt;&gt; len(set(processed_frame_counter))</span>
 <span class="sd">    9</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">steps_per_frame</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get_n_flyback_frames</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">steps_per_frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;If no metadata object is given, the steps_per_frame argument has to be set.&quot;</span><span class="p">)</span>
+
     <span class="n">processed_frame_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
@@ -426,7 +440,7 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;CO2_Stim&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
 <span class="sd">    &gt;&gt;&gt; set(stimulus_line)</span>
@@ -474,14 +488,14 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;OpFlow&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
 <span class="sd">    &gt;&gt;&gt; set(optical_flow_line)</span>
 <span class="sd">    {0, 16}</span>
 <span class="sd">    &gt;&gt;&gt; processed_optical_flow_line = utils2p.synchronization.process_optical_flow_line(optical_flow_line)</span>
 <span class="sd">    &gt;&gt;&gt; len(set(processed_optical_flow_line))</span>
-<span class="sd">    98348</span>
+<span class="sd">    1409</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">processed_optical_flow_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
@@ -517,18 +531,18 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;Frame Counter&quot;, &quot;Capture On&quot;, &quot;CO2_Stim&quot;, &quot;OpFlow&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
 <span class="sd">    &gt;&gt;&gt; frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)</span>
 <span class="sd">    &gt;&gt;&gt; len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)</span>
-<span class="sd">    (7632000, 7632000, 7632000, 7632000)</span>
+<span class="sd">    (117000, 117000, 117000, 117000)</span>
 <span class="sd">    &gt;&gt;&gt; mask = np.logical_and(frame_counter &gt;= 0, capture_on)</span>
 <span class="sd">    &gt;&gt;&gt; np.sum(mask)</span>
-<span class="sd">    7466954</span>
+<span class="sd">    105869</span>
 <span class="sd">    &gt;&gt;&gt; (frame_counter, capture_on, stimulus_line, optical_flow_line,) = utils2p.synchronization.crop_lines(mask, (frame_counter, capture_on, stimulus_line, optical_flow_line,))</span>
 <span class="sd">    &gt;&gt;&gt; len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)</span>
-<span class="sd">    (7466954, 7466954, 7466954, 7466954)</span>
+<span class="sd">    (105869, 105869, 105869, 105869)</span>
 <span class="sd">    &gt;&gt;&gt; line = np.arange(10)</span>
 <span class="sd">    &gt;&gt;&gt; mask = np.ones(10, dtype=np.bool)</span>
 <span class="sd">    &gt;&gt;&gt; mask[0] = False</span>
@@ -570,18 +584,19 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;Frame Counter&quot;, &quot;Basler&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (frame_counter, cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
 <span class="sd">    &gt;&gt;&gt; frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)</span>
-<span class="sd">    &gt;&gt;&gt; capture_json = utils2p.find_seven_camera_metadata_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; capture_json = utils2p.find_seven_camera_metadata_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)</span>
 <span class="sd">    &gt;&gt;&gt; utils2p.synchronization.beh_idx_to_2p_idx(np.array([0,]), cam_line, frame_counter)</span>
-<span class="sd">    array([0])</span>
+<span class="sd">    array([-1])</span>
 <span class="sd">    &gt;&gt;&gt; utils2p.synchronization.beh_idx_to_2p_idx(np.array([10,]), cam_line, frame_counter)</span>
-<span class="sd">    array([1])</span>
-<span class="sd">    &gt;&gt;&gt; utils2p.synchronization.beh_idx_to_2p_idx(np.arange(20), cam_line, frame_counter)</span>
-<span class="sd">    array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2])</span>
+<span class="sd">    array([0])</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.synchronization.beh_idx_to_2p_idx(np.arange(30), cam_line, frame_counter)</span>
+<span class="sd">    array([-1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,</span>
+<span class="sd">            0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">thor_sync_indices</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">cam_line</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -623,21 +638,21 @@
 <span class="sd">    &gt;&gt;&gt; import utils2p</span>
 <span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; h5_file = utils2p.find_sync_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; line_names = [&quot;Frame Counter&quot;, &quot;CO2_Stim&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; (frame_counter, stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)</span>
-<span class="sd">    &gt;&gt;&gt; frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)</span>
+<span class="sd">    &gt;&gt;&gt; frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=1)</span>
 <span class="sd">    &gt;&gt;&gt; stimulus_line = utils2p.synchronization.process_stimulus_line(stimulus_line)</span>
 <span class="sd">    &gt;&gt;&gt; np.max(frame_counter)</span>
-<span class="sd">    800</span>
+<span class="sd">    4</span>
 <span class="sd">    &gt;&gt;&gt; stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.mean)</span>
 <span class="sd">    &gt;&gt;&gt; len(stimulus_during_2p_frames)</span>
-<span class="sd">    801</span>
+<span class="sd">    5</span>
 <span class="sd">    &gt;&gt;&gt; np.max(stimulus_during_2p_frames)</span>
-<span class="sd">    1.0</span>
+<span class="sd">    0.7136134613556422</span>
 <span class="sd">    &gt;&gt;&gt; stimulus_during_2p_frames = utils2p.synchronization.reduce_during_2p_frame(frame_counter, stimulus_line, np.max)</span>
 <span class="sd">    &gt;&gt;&gt; len(stimulus_during_2p_frames)</span>
-<span class="sd">    801</span>
+<span class="sd">    5</span>
 <span class="sd">    &gt;&gt;&gt; set(stimulus_during_2p_frames)</span>
 <span class="sd">    {0.0, 1.0}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -658,6 +673,69 @@
         <span class="n">reduced</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">])</span>
 
     <span class="k">return</span> <span class="n">reduced</span></div>
+
+
+<span class="k">class</span> <span class="nc">SyncMetadata</span><span class="p">(</span><span class="n">main</span><span class="o">.</span><span class="n">_XMLFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for managing ThorSync metadata.</span>
+<span class="sd">    Loads metadata file &#39;ThorRealTimeDataSettings.xml&#39;</span>
+<span class="sd">    and returns the root of an ElementTree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : string</span>
+<span class="sd">        Path to xml file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Instance of class Metadata</span>
+<span class="sd">        Based on given xml file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p.synchronization</span>
+<span class="sd">    &gt;&gt;&gt; metadata = utils2p.synchronization.SyncMetadata(&quot;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; type(metadata)</span>
+<span class="sd">    &lt;class &#39;utils2p.synchronization.SyncMetadata&#39;&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_active_devices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">active_devices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DaqDevices&quot;</span><span class="p">,</span> <span class="s2">&quot;AcquireBoard&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                <span class="n">active_devices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">active_devices</span>
+
+    
+    <span class="k">def</span> <span class="nf">get_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the frequency of the ThorSync</span>
+<span class="sd">        value acquisition, i.e. the sample rate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        freq : integer</span>
+<span class="sd">            Sample frequency in Hz.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import utils2p.synchronization</span>
+<span class="sd">        &gt;&gt;&gt; metadata = utils2p.synchronization.SyncMetadata(&quot;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; metadata.get_freq()</span>
+<span class="sd">        30000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sample_rate</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_active_devices</span><span class="p">():</span>
+            <span class="n">set_for_device</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">device</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;SampleRate&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;enable&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">set_for_device</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid metadata file. Multiple sample rates are enabled for device </span><span class="si">{device.type}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">sample_rate</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multiple devices are enabled.&quot;</span><span class="p">)</span>
+                    <span class="n">sample_rate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;rate&quot;</span><span class="p">])</span>
+                    <span class="n">set_for_device</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">sample_rate</span> 
 </pre></div>
 
           </div>

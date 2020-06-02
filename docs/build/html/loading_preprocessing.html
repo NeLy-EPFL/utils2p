@@ -110,15 +110,15 @@ If no frame is available for a given time the value is -1.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p.synchronization</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">capture_json</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">capture_json</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">line_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Basler&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">cam_line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">get_lines_from_h5_file</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">line_names</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">cam_line</span><span class="p">))</span>
 <span class="go">{0, 8, 4294967288}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">processed_cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">capture_json</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">processed_cam_line</span><span class="p">))</span>
-<span class="go">{0, 1, -7440}</span>
+<span class="go">{0, 1, -60}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cam_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">capture_json</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="go">array([-1,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1])</span>
@@ -128,13 +128,16 @@ If no frame is available for a given time the value is -1.</p>
 
 <dl class="function">
 <dt id="utils2p.synchronization.process_frame_counter">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_frame_counter</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">steps_per_frame=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_frame_counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_frame_counter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_frame_counter</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">metadata=None</em>, <em class="sig-param">steps_per_frame=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_frame_counter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_frame_counter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts the frame counter line to an array with frame numbers for each
 time point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference internal" href="metadata.html#utils2p.Metadata" title="utils2p.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils2p.Metadata</span></code></a>) – <a class="reference internal" href="metadata.html#utils2p.Metadata" title="utils2p.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils2p.Metadata</span></code></a> object that holding the 2p imaging
+metadata for the experiment. Optional. If metadata is not
+given steps_per_frame has to be set.</p></li>
 <li><p><strong>steps_per_frame</strong> (<em>int</em>) – Number of steps the frame counter takes per frame.
 This includes fly back frame, i.e. if you acquire one frame
 and flyback frames is set to 3 this number should be 4.</p></li>
@@ -158,10 +161,13 @@ If no frame was recorded at a time point the value is -1.</p>
 <span class="go">31</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metadata_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_z_stack&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">processed_frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_frame_counter</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">processed_frame_counter</span><span class="p">))</span>
+<span class="go">9</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">steps_per_frame</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get_n_flyback_frames</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">steps_per_frame</span>
 <span class="go">4</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">processed_frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_frame_counter</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">processed_frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_frame_counter</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="o">=</span><span class="n">steps_per_frame</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">processed_frame_counter</span><span class="p">))</span>
 <span class="go">9</span>
 </pre></div>
@@ -200,14 +206,14 @@ function.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p.synchronization</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">line_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;OpFlow&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">optical_flow_line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">get_lines_from_h5_file</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">line_names</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">set</span><span class="p">(</span><span class="n">optical_flow_line</span><span class="p">)</span>
 <span class="go">{0, 16}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">processed_optical_flow_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_optical_flow_line</span><span class="p">(</span><span class="n">optical_flow_line</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">processed_optical_flow_line</span><span class="p">))</span>
-<span class="go">98348</span>
+<span class="go">1409</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -233,7 +239,7 @@ stimulus line can contain values larger than 1.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p.synchronization</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h5_file</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">line_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CO2_Stim&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">stimulus_line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">get_lines_from_h5_file</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">line_names</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">set</span><span class="p">(</span><span class="n">stimulus_line</span><span class="p">)</span>
@@ -268,6 +274,7 @@ stimulus line can contain values larger than 1.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="main.html">Core functions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="synchronization.html">Synchronization functions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="synchronization.html#synchronization-module">Synchronization module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Loading and preprocessing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="conversion.html">Conversion of synchronization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="misc_sync.html">Miscellaneous</a></li>
