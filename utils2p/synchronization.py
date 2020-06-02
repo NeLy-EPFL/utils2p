@@ -385,10 +385,11 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
             steps_per_frame = metadata.get_n_z() 
             if metadata.get_value("Streaming", "enable") == "1":
                 steps_per_frame += metadata.get_n_flyback_frames()
-        if metadata.get_value("LSM", "averageMode") == "1":
+        if metadata.get_value("LSM", "averageMode") == "1" and metadata.get_area_mode() not in ["line", "kymograph"]:
             steps_per_frame = steps_per_frame * metadata.get_n_averaging()
     elif steps_per_frame is None:
         raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
+    print(steps_per_frame)
 
     processed_frame_counter = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
