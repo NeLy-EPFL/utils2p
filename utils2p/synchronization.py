@@ -778,6 +778,11 @@ def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camer
         processed_lines["Optical flow"] = process_optical_flow_line(processed_lines["Optical flow"])
 
     mask = np.logical_and(processed_lines["Capture On"], processed_lines["Frame Counter"] >= 0)
+
+    # Make sure the clipping start just before the acquisition of the first frame
+    indices = np.where(mask)[0]
+    mask[max(0, indices[0] - 1)] = True
+
     for line_name, line in processed_lines.items():
         processed_lines[line_name] = crop_lines(mask, [processed_lines[line_name],])[0]
     
