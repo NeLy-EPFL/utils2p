@@ -247,7 +247,7 @@ def process_cam_line(line, capture_json):
     -------
     processed_line : numpy array
         Array with frame number for each time point.
-        If no frame is available for a given time the value is -1.
+        If no frame is available for a given time the value is -9223372036854775808.
 
     Examples
     --------
@@ -262,10 +262,13 @@ def process_cam_line(line, capture_json):
     {0, 8, 4294967288}
     >>> processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
     >>> set(np.diff(processed_cam_line))
-    {0, 1, -60}
+    {0, 1, -9223372036854775808, 9223372036854775749}
     >>> cam_line = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0])
     >>> utils2p.synchronization.process_cam_line(cam_line, capture_json=None)
-    array([-1,  0,  0,  0,  0,  0,  1,  1,  1,  1,  1])
+    array([-9223372036854775808,                    0,                    0,
+                              0,                    0,                    0,
+                              1,                    1,                    1,
+                              1,                    1])
     """
     # Check that sequence is binary
     if len(set(line)) > 2:
@@ -309,7 +312,7 @@ def process_cam_line(line, capture_json):
         rising_edges.append(additional_edge)
         rising_edges = np.array(rising_edges)
 
-    processed_line = np.ones_like(line) * -1
+    processed_line = np.ones_like(line) * np.nan
 
     current_frame = 0
     first_camera_used = sorted(list(capture_info["Frame Counts"].keys()))[0]
@@ -345,7 +348,7 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     -------
     processed_frame_counter : numpy array
         Array with frame number for each time point.
-        If no frame was recorded at a time point the value is -1.
+        If no frame was recorded at a time point the value is -9223372036854775808.
 
     Examples
     --------
@@ -360,13 +363,13 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     >>> metadata = utils2p.Metadata(metadata_file)
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, metadata)
     >>> set(processed_frame_counter)
-    {0, -1}
+    {0, -9223372036854775808}
     >>> steps_per_frame = metadata.get_n_z() * metadata.get_n_averaging()
     >>> steps_per_frame
     30
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
     >>> set(processed_frame_counter)
-    {0, -1}
+    {0, -9223372036854775808}
     
     By default the function treat volumes as frames.
     If you want to treat every slice of the volume as a separate frame,
@@ -376,7 +379,7 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     10
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
     >>> set(processed_frame_counter)
-    {0, 1, 2, -1}
+    {0, 1, 2, -9223372036854775808}
     """
     if metadata is not None and steps_per_frame is not None:
         warnings.warn("metadata argument will be ignored because steps_per_frame argument was set.")
@@ -397,8 +400,14 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     elif steps_per_frame is None:
         raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
 
-    processed_frame_counter = np.ones_like(line) * -1
+    processed_frame_counter = np.ones_like(line) * np.nan
     rising_edges = edges(line, (0, np.inf))[0]
+    
+    #Case of one frame/volume only
+    if len(rising_edges) <= steps_per_frame:
+        processed_frame_counter[rising_edges[0] : ] = 0
+        return processed_frame_counter.astype(np.int)
+    
     for i, index in enumerate(
         range(0, len(rising_edges) - steps_per_frame, steps_per_frame)
     ):
@@ -452,7 +461,7 @@ def process_optical_flow_line(line):
     This function converts the optical flow line
     into a step function. The value corresponds
     to the index of optical flow value at this
-    time point. If the value is -1, no optical flow
+    time point. If the value is -9223372036854775808, no optical flow
     value was recorded for this time point.
 
     Note: Due to the time it take to transfer the data
@@ -489,7 +498,7 @@ def process_optical_flow_line(line):
     >>> len(set(processed_optical_flow_line))
     1409
     """
-    processed_optical_flow_line = np.ones_like(line) * -1
+    processed_optical_flow_line = np.ones_like(line) * np.nan
     rising_edges = edges(line, (0, np.inf))[0]
     for i in range(0, len(rising_edges) - 1):
         processed_optical_flow_line[
@@ -583,16 +592,24 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     >>> capture_json = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     >>> cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([0,]), cam_line, frame_counter)
-    array([-1])
+    array([-9223372036854775808])
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([10,]), cam_line, frame_counter)
     array([0])
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.arange(30), cam_line, frame_counter)
-    array([-1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-            0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  1,  1,  1])
+    array([-9223372036854775808,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    0,                    0,
+                              0,                    1,                    1,
+                              1,                    1,                    1,
+                              1,                    1,                    1])
     """
     thor_sync_indices = edges(cam_line)[0]
 
-    indices_2p = np.ones(len(beh_indices), dtype=np.int) * -1
+    indices_2p = np.ones(len(beh_indices), dtype=np.int) * np.nan
 
     for i, frame_num in enumerate(beh_indices):
         thor_sync_index = thor_sync_indices[frame_num]
@@ -657,7 +674,7 @@ def reduce_during_2p_frame(frame_counter, values, function):
     starts = thor_sync_indices
     stops = thor_sync_indices[1:] + (len(frame_counter),)
     
-    if frame_counter[0] != -1:
+    if not frame_counter[0] == -9223372036854775808:
         starts = (0,) + starts
         stops = (thor_sync_indices[0],) + stops
 

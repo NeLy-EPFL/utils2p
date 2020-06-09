@@ -149,29 +149,29 @@ def test__capture_metadata():
 
 def test_process_cam_line(capture_json):
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1])
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2])
     result = utils2p.synchronization.process_cam_line(line, None)
     assert np.allclose(result, expected)
 
     metadata = capture_json([2,])
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, -1])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, -9223372036854775808])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
 
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, -1])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, -9223372036854775808])
     metadata = capture_json([4,])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, -1])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, -9223372036854775808])
     metadata = capture_json([3,], dropped_frames=[[2,],])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, ])
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 0, 1,])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1,])
     result = utils2p.synchronization.process_cam_line(line, None)
     assert np.allclose(result, expected)
 
@@ -196,13 +196,13 @@ def test_process_cam_line(capture_json):
 def test_process_frame_counter(metadata_obj):
     line = np.array([0, 0, 0, 3, 3, 3, 4, 4, 8, 8, 8, 10, 10, 10, 11, 11, 15, 15, 15, 15,])
     
-    expected = np.array([-1, -1, -1, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5,])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5,])
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=1))
     
     metadata = metadata_obj(flyback_frames=0, average_num=1, n_z=1) 
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, metadata))
     
-    expected = np.array([-1, -1, -1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,])
+    expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2,])
     assert np.allclose(expected, utils2p.synchronization.process_frame_counter(line, steps_per_frame=2))
 
     metadata = metadata_obj(flyback_frames=1, average_num=1, n_z=1) 
@@ -233,15 +233,15 @@ def test_crop_lines():
 
 def test_process_optical_flow_line():
     raw_line = np.array([0, 0, 16, 16, 16, 0, 0, 0, 0, 0, 16, 16, 16, 16, 0])
-    expected = np.array([-1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+    expected = np.array([-9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
     processed = utils2p.synchronization.process_optical_flow_line(raw_line)
     assert np.allclose(expected, processed)
 
 
 def test_beh_idx_to_2p_idx():
     beh_indices = np.array([2, 4])
-    cam_line = np.array([-1, -1, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4])
-    frame_counter = np.array([-1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2])
+    cam_line = np.array([-9223372036854775808, -9223372036854775808, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4])
+    frame_counter = np.array([-9223372036854775808, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2])
     expected = np.array([1, 2])
     np.allclose(expected, utils2p.synchronization.beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter))
 
@@ -258,7 +258,7 @@ def test_reduce_during_2p_frame():
     expected_result_max = np.array([0, 3, 5, 9])
     assert np.allclose(output_max, expected_result_max)
 
-    frame_counter = np.array([-1, 0, 1, 1, 2, 2, 3, 3, 3, 3])
+    frame_counter = np.array([-9223372036854775808, 0, 1, 1, 2, 2, 3, 3, 3, 3])
     output_mean = utils2p.synchronization.reduce_during_2p_frame(frame_counter, values, np.mean)
     expected_result_mean = np.array([1, 2.5, 4.5, 7.5])
     assert np.allclose(output_mean, expected_result_mean)
