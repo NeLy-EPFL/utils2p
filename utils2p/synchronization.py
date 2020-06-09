@@ -378,7 +378,14 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     >>> set(processed_frame_counter)
     {0, 1, 2, -1}
     """
-    if metadata is not None:
+    if metadata is not None and steps_per_frame is not None:
+        warnings.warn("metadata argument will be ignored because steps_per_frame argument was set.")
+    if metadata is not None and type(metadata) != main.Metadata:
+        raise TypeError("metadata argument must be of type utils2p.Metadata or None.")
+    if steps_per_frame is not None and type(steps_per_frame) != int:
+        raise TypeError("steps_per_frame has to be of type int")
+
+    if metadata is not None and steps_per_frame is None:
         if metadata.get_value("Streaming", "zFastEnable") == "0":
             steps_per_frame = 1
         else:
@@ -389,7 +396,6 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
             steps_per_frame = steps_per_frame * metadata.get_n_averaging()
     elif steps_per_frame is None:
         raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
-    print(steps_per_frame)
 
     processed_frame_counter = np.ones_like(line) * -1
     rising_edges = edges(line, (0, np.inf))[0]
