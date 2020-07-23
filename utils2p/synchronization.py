@@ -665,18 +665,72 @@ def reduce_during_2p_frame(frame_counter, values, function):
     >>> set(stimulus_during_2p_frames)
     {0.0, 1.0}
     """
-    if len(frame_counter) != len(values):
-        raise ValueError("frame_counter and values need to have the same length.")
+    import warnings
+    warnings.warn("reduce_during_2p_frame is deprecated use reduce_during_frame instead", DeprecationWarning)
+    return reduce_during_frame(frame_counter, values, function)
+
+def reduce_during_frame(line, values, function):
+    """
+    Reduces all values occuring during the acquisition of a
+    frame to a single value using the `function` given by the user.
+    The line function should be of the resolution of
+    the ThorSync ticks and have the frame index as values.
+    Possible choices are the processed frame_counter line or the
+    processed cam_line.
+
+    Parameters
+    ----------
+    line : numpy array
+        Line holding frame indices.
+    values : numpy array
+        Values upsampled to the frequency of ThorSync,
+        i.e. 1D numpy array of the same length as
+        `frame_counter`.
+    function : function
+        Function used to reduce the value,
+        e.g. np.mean.
+
+    Returns
+    -------
+    reduced : numpy array
+        Numpy array with value for each 2p frame.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> import utils2p.synchronization
+    >>> import numpy as np
+    >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
+    >>> line_names = ["Frame Counter", "CO2_Stim"]
+    >>> (frame_counter, stimulus_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
+    >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=1)
+    >>> stimulus_line = utils2p.synchronization.process_stimulus_line(stimulus_line)
+    >>> np.max(frame_counter)
+    4
+    >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_frame(frame_counter, stimulus_line, np.mean)
+    >>> len(stimulus_during_2p_frames)
+    5
+    >>> np.max(stimulus_during_2p_frames)
+    0.7136134613556422
+    >>> stimulus_during_2p_frames = utils2p.synchronization.reduce_during_frame(frame_counter, stimulus_line, np.max)
+    >>> len(stimulus_during_2p_frames)
+    5
+    >>> set(stimulus_during_2p_frames)
+    {0.0, 1.0}
+    """
+    if len(line) != len(values):
+        raise ValueError("line and values need to have the same length.")
     
-    reduced = np.ones(np.max(frame_counter) + 1) * np.nan
-    thor_sync_indices = tuple(edges(frame_counter, (0, np.inf))[0])
+    thor_sync_indices = tuple(edges(line, (0, np.inf))[0])
     
     starts = thor_sync_indices
-    stops = thor_sync_indices[1:] + (len(frame_counter),)
+    stops = thor_sync_indices[1:] + (len(line),)
     
-    if not frame_counter[0] == -9223372036854775808:
+    if not line[0] == -9223372036854775808:
         starts = (0,) + starts
         stops = (thor_sync_indices[0],) + stops
+    
+    reduced = np.ones(len(starts)) * np.nan
 
     for i, (start, stop) in enumerate(zip(starts, stops)):
         reduced[i] = function(values[start:stop])

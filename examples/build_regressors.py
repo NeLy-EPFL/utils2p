@@ -45,8 +45,8 @@ co2_line, cam_line, opt_flow_line, frame_counter = utils2p.synchronization.crop_
     
 # Build regressors
 regressors = {}
-regressors["CO2 onset"] = utils2p.synchronization.reduce_during_2p_frame(frame_counter, co2_line, lambda x: np.max(np.diff(x)))
-regressors["CO2"] = utils2p.synchronization.reduce_during_2p_frame(frame_counter, co2_line, np.mean)
-regressors["pitch"] = utils2p.synchronization.reduce_during_2p_frame(frame_counter, optical_flow["vel_pitch"][opt_flow_line], np.mean)
-regressors["roll"] = utils2p.synchronization.reduce_during_2p_frame(frame_counter, optical_flow["vel_roll"][opt_flow_line], np.mean)
-regressors["yaw"] = utils2p.synchronization.reduce_during_2p_frame(frame_counter, optical_flow["vel_yaw"][opt_flow_line], np.mean)
+regressors["CO2 onset"] = utils2p.synchronization.reduce_during_frame(frame_counter, co2_line, lambda x: np.max(np.diff(x)))
+regressors["CO2"] = utils2p.synchronization.reduce_during_frame(frame_counter, co2_line, np.mean)
+regressors["pitch"] = utils2p.synchronization.reduce_during_frame(frame_counter, optical_flow["vel_pitch"][opt_flow_line], np.mean)
+regressors["roll"] = utils2p.synchronization.reduce_during_frame(frame_counter, optical_flow["vel_roll"][opt_flow_line], np.mean)
+regressors["yaw"] = utils2p.synchronization.reduce_during_frame(frame_counter, optical_flow["vel_yaw"][opt_flow_line], np.mean)

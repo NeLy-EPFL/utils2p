@@ -265,3 +265,30 @@ def test_reduce_during_2p_frame():
 
     with pytest.raises(ValueError):
         utils2p.synchronization.reduce_during_2p_frame(np.zeros(3), np.zeros(4), np.mean)
+
+
+def test_reduce_during_frame():
+    frame_counter = np.array([0, 1, 1, 1, 2, 2, 3, 3, 3, 3])
+    values = np.arange(len(frame_counter))
+    
+    output_mean = utils2p.synchronization.reduce_during_frame(frame_counter, values, np.mean)
+    expected_result_mean = np.array([0, 2, 4.5, 7.5])
+    assert np.allclose(output_mean, expected_result_mean)
+
+    output_max = utils2p.synchronization.reduce_during_frame(frame_counter, values, np.max)
+    expected_result_max = np.array([0, 3, 5, 9])
+    assert np.allclose(output_max, expected_result_max)
+
+    frame_counter = np.array([-9223372036854775808, 0, 1, 1, 2, 2, 3, 3, 3, 3])
+    output_mean = utils2p.synchronization.reduce_during_frame(frame_counter, values, np.mean)
+    expected_result_mean = np.array([1, 2.5, 4.5, 7.5])
+    assert np.allclose(output_mean, expected_result_mean)
+
+    # Missing frames
+    frame_counter = np.array([-9223372036854775808, 0, 1, 1, 3, 3, 7, 7, 7, 7])
+    output_mean = utils2p.synchronization.reduce_during_frame(frame_counter, values, np.mean)
+    expected_result_mean = np.array([1, 2.5, 4.5, 7.5])
+    assert np.allclose(output_mean, expected_result_mean)
+
+    with pytest.raises(ValueError):
+        utils2p.synchronization.reduce_during_frame(np.zeros(3), np.zeros(4), np.mean)
