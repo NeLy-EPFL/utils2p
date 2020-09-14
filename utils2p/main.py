@@ -919,7 +919,7 @@ def find_sync_metadata_file(directory):
 
 
 def load_optical_flow(
-    path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float
+    path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float, smoothing_kernel=None
 ):
     """
     This function loads the optical flow data from
@@ -940,6 +940,11 @@ def load_optical_flow(
         Gain for the x direction of sensor 1.
     gain_1_y: float
         Gain for the y direction of sensor 1.
+    smoothing_kernel: numpy array, optional
+        Default is None, in which case the sensor signals
+        are not smoothed. The signal is convolved with this
+        kernel. A reasonable choice seems to be a moving average
+        filter of length 300: np.ones(300) / 300.
 
     Returns
     -------
@@ -986,8 +991,16 @@ def load_optical_flow(
     <class 'dict'>
     >>> optical_flow["sensor0"].keys()
     dict_keys(['x', 'y', 'gain_x', 'gain_y'])
+    
+    >>> optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y, smoothing_kernel=np.ones(300) / 300)
+    >>> optical_flow["vel_pitch"].shape
+    (1408,)
     """
     raw_data = np.genfromtxt(path, delimiter=",")
+    if smoothing_kernel is not None:
+        if len(smoothing_kernel) >= raw_data.shape[0]:
+            raise ValueError(f"smoothing_kernel of shape {smoothing_kernel.shape} is longer than optical flow data of shape {raw_data.shape}.")
+        raw_data = np.apply_along_axis(lambda m: np.convolve(m, smoothing_kernel, mode="same"), axis=0, arr=raw_data)
     data = {
         "sensor0": {
             "x": raw_data[:, 0],

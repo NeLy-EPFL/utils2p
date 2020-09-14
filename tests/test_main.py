@@ -544,15 +544,20 @@ def test_load_optical_flow(tmpdir):
     file_name = os.path.join(tmpdir, "OpFlow.txt")
     np.savetxt(file_name, opt_flow_data, delimiter=",")
 
-    result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4)
-    assert len(result["sensor0"]["x"]) == n_timepoints
-    assert len(result["sensor0"]["y"]) == n_timepoints
-    assert len(result["sensor1"]["x"]) == n_timepoints
-    assert len(result["sensor1"]["y"]) == n_timepoints
-    assert result["sensor0"]["gain_x"] == 1
-    assert result["sensor0"]["gain_y"] == 2
-    assert result["sensor1"]["gain_x"] == 3
-    assert result["sensor1"]["gain_y"] == 4
-    assert len(result["vel_pitch"]) == n_timepoints
-    assert len(result["vel_yaw"]) == n_timepoints
-    assert len(result["vel_roll"]) == n_timepoints
+    for smoothing_kernel in [None, np.ones(3) / 3]:
+        result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4, smoothing_kernel=smoothing_kernel)
+        assert len(result["sensor0"]["x"]) == n_timepoints
+        assert len(result["sensor0"]["y"]) == n_timepoints
+        assert len(result["sensor1"]["x"]) == n_timepoints
+        assert len(result["sensor1"]["y"]) == n_timepoints
+        assert result["sensor0"]["gain_x"] == 1
+        assert result["sensor0"]["gain_y"] == 2
+        assert result["sensor1"]["gain_x"] == 3
+        assert result["sensor1"]["gain_y"] == 4
+        assert len(result["vel_pitch"]) == n_timepoints
+        assert len(result["vel_yaw"]) == n_timepoints
+        assert len(result["vel_roll"]) == n_timepoints
+
+    with pytest.raises(ValueError):
+        kernel_length = n_timepoints + 1
+        result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4, smoothing_kernel=np.ones(kernel_length) / kernel_length)
