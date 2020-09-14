@@ -283,6 +283,17 @@ def test_load_img(random_tif_file):
     assert np.allclose(utils2p.load_img(file_path), img_stack)
 
 
+def test_load_stack_batches(random_tif_file):
+    file_path, img_stack = random_tif_file()
+    substacks = []
+    batch_size = 3
+    for substack in utils2p.load_stack_batches(file_path, batch_size):
+        assert substack.shape[0] <= batch_size
+        substacks.append(substack)
+    loaded_stack = np.concatenate(substacks, axis=0)
+    assert np.allclose(loaded_stack, img_stack)
+
+
 @pytest.mark.parametrize(
     "area_mode,shape,timepoints,channels,n_z,flyback_frames",
     [
