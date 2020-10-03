@@ -150,7 +150,7 @@ Has the following dimensions: TZYX or TYX for planar images.</p>
 
 <dl class="function">
 <dt id="utils2p.load_optical_flow">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_optical_flow</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">gain_0_x: float</em>, <em class="sig-param">gain_0_y: float</em>, <em class="sig-param">gain_1_x: float</em>, <em class="sig-param">gain_1_y: float</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_optical_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_optical_flow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_optical_flow</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">gain_0_x: float</em>, <em class="sig-param">gain_0_y: float</em>, <em class="sig-param">gain_1_x: float</em>, <em class="sig-param">gain_1_y: float</em>, <em class="sig-param">smoothing_kernel=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_optical_flow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_optical_flow" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function loads the optical flow data from
 the file specified in path. By default it is
 directly converted into ball rotation. Gain values
@@ -164,6 +164,10 @@ optical flow sensors.</p>
 <li><p><strong>gain_0_y</strong> (<em>float</em>) – Gain for the y direction of sensor 0.</p></li>
 <li><p><strong>gain_1_x</strong> (<em>float</em>) – Gain for the x direction of sensor 1.</p></li>
 <li><p><strong>gain_1_y</strong> (<em>float</em>) – Gain for the y direction of sensor 1.</p></li>
+<li><p><strong>smoothing_kernel</strong> (<em>numpy array</em><em>, </em><em>optional</em>) – Default is None, in which case the sensor signals
+are not smoothed. The signal is convolved with this
+kernel. A reasonable choice seems to be a moving average
+filter of length 300: np.ones(300) / 300.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -218,6 +222,11 @@ optical flow sensors.</p>
 <span class="go">&lt;class &#39;dict&#39;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;sensor0&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 <span class="go">dict_keys([&#39;x&#39;, &#39;y&#39;, &#39;gain_x&#39;, &#39;gain_y&#39;])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_optical_flow</span><span class="p">(</span><span class="n">optical_flow_file</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">,</span> <span class="n">smoothing_kernel</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span> <span class="o">/</span> <span class="mi">300</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_pitch&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1408,)</span>
 </pre></div>
 </div>
 </dd></dl>

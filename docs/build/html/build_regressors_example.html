@@ -1,0 +1,172 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Building regressors synchronized to the 2p frames &#8212; utils2p  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Synchronization of 2p data to behaviour frames for videos" href="synchronization_for_videos_example.html" />
+    <link rel="prev" title="Loading z-stacks" href="load_z_stack_example.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="building-regressors-synchronized-to-the-2p-frames">
+<h1>Building regressors synchronized to the 2p frames<a class="headerlink" href="#building-regressors-synchronized-to-the-2p-frames" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">utils2p</span>
+
+
+<span class="n">experiment_dir</span><span class="o">=</span> <span class="s2">&quot;data/181227_R15E08-tdTomGC6fopt/Fly2/001_CO2xzGG&quot;</span>
+
+
+<span class="c1"># Load optical flow data</span>
+<span class="n">optical_flow_path</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_optical_flow_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
+
+<span class="n">gain_0_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.45</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">gain_0_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.41</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">gain_1_x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.40</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">gain_1_y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mf">1.36</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">optical_flow</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_optical_flow</span><span class="p">(</span><span class="n">optical_flow_path</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">)</span>
+
+
+<span class="c1"># Load synchronization information</span>
+<span class="n">h5_path</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
+<span class="n">co2_line</span><span class="p">,</span> <span class="n">cam_line</span><span class="p">,</span> <span class="n">opt_flow_line</span><span class="p">,</span> <span class="n">frame_counter</span><span class="p">,</span> <span class="n">capture_on</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">get_lines_from_h5_file</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;CO2_Stim&quot;</span><span class="p">,</span> <span class="s2">&quot;Basler&quot;</span><span class="p">,</span> <span class="s2">&quot;OpFlow&quot;</span><span class="p">,</span> <span class="s2">&quot;Frame Counter&quot;</span><span class="p">,</span> <span class="s2">&quot;Capture On&quot;</span><span class="p">])</span>
+
+
+<span class="c1"># Load metadata files</span>
+<span class="n">capture_json</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
+
+<span class="n">metadata_2p</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_metadata_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_2p</span><span class="p">)</span>
+
+
+<span class="c1"># Pre-process synchronization information</span>
+<span class="n">cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">capture_json</span><span class="p">)</span>
+
+<span class="n">opt_flow_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_optical_flow_line</span><span class="p">(</span><span class="n">opt_flow_line</span><span class="p">)</span>
+
+<span class="n">n_flyback_frames</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get_n_flyback_frames</span><span class="p">()</span>
+<span class="n">n_steps</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get_n_z</span><span class="p">()</span>
+<span class="n">frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_frame_counter</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">n_flyback_frames</span> <span class="o">+</span> <span class="n">n_steps</span><span class="p">)</span>
+
+<span class="n">co2_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_stimulus_line</span><span class="p">(</span><span class="n">co2_line</span><span class="p">)</span>
+
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">capture_on</span><span class="p">,</span> <span class="n">frame_counter</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">co2_line</span><span class="p">,</span> <span class="n">cam_line</span><span class="p">,</span> <span class="n">opt_flow_line</span><span class="p">,</span> <span class="n">frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">crop_lines</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="p">[</span><span class="n">co2_line</span><span class="p">,</span> <span class="n">cam_line</span><span class="p">,</span> <span class="n">opt_flow_line</span><span class="p">,</span> <span class="n">frame_counter</span><span class="p">])</span>
+    
+<span class="c1"># Build regressors</span>
+<span class="n">regressors</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;CO2 onset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">co2_line</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+<span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;CO2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">co2_line</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+<span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;pitch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_pitch&quot;</span><span class="p">][</span><span class="n">opt_flow_line</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+<span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;roll&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_roll&quot;</span><span class="p">][</span><span class="n">opt_flow_line</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+<span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;yaw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_yaw&quot;</span><span class="p">][</span><span class="n">opt_flow_line</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">utils2p</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Core functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronization functions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="examples.html">Examples</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="convert_from_raw_example.html">Conversion of a raw file into tif file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_z_stack_example.html">Loading z-stacks</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Building regressors synchronized to the 2p frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="synchronization_for_videos_example.html">Synchronization of 2p data to behaviour frames for videos</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="examples.html">Examples</a><ul>
+      <li>Previous: <a href="load_z_stack_example.html" title="previous chapter">Loading z-stacks</a></li>
+      <li>Next: <a href="synchronization_for_videos_example.html" title="next chapter">Synchronization of 2p data to behaviour frames for videos</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Florian Aymanns.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/build_regressors_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
