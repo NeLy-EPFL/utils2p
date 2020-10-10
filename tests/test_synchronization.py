@@ -292,3 +292,12 @@ def test_reduce_during_frame():
 
     with pytest.raises(ValueError):
         utils2p.synchronization.reduce_during_frame(np.zeros(3), np.zeros(4), np.mean)
+
+
+    # Reduce array of strings
+    frame_counter = np.array([0, 1, 1, 1, 2, 2, 3, 3, 3, 3])
+    values = np.array(["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"])
+    concat = lambda x: " ".join(x)
+    output = utils2p.synchronization.reduce_during_frame(frame_counter, values, concat)
+    expected_result = np.array(["a", "b c d", "e f", "g h i j"])
+    assert np.all(output == expected_result)

@@ -730,7 +730,12 @@ def reduce_during_frame(line, values, function):
         starts = (0,) + starts
         stops = (thor_sync_indices[0],) + stops
     
-    reduced = np.ones(len(starts)) * np.nan
+    dtype = values.dtype
+    if np.issubdtype(dtype, np.number):
+        dtype = np.float
+    else:
+        dtype = np.object
+    reduced = np.empty(len(starts), dtype=dtype)
 
     for i, (start, stop) in enumerate(zip(starts, stops)):
         reduced[i] = function(values[start:stop])
