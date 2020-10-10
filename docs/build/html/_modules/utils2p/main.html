@@ -241,6 +241,24 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;ZStage&quot;</span><span class="p">,</span> <span class="s2">&quot;steps&quot;</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="Metadata.get_n_averaging"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_averaging">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_averaging</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of frames that are averaged.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        n_averaging : int</span>
+<span class="sd">            Number of averaged frames.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import utils2p</span>
+<span class="sd">        &gt;&gt;&gt; metadata = Metadata(&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; metadata.get_n_averaging()</span>
+<span class="sd">        10</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LSM&quot;</span><span class="p">,</span> <span class="s2">&quot;averageNum&quot;</span><span class="p">))</span></div>
+
 <div class="viewcode-block" id="Metadata.get_n_channels"><a class="viewcode-back" href="../../metadata.html#utils2p.Metadata.get_n_channels">[docs]</a>    <span class="k">def</span> <span class="nf">get_n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the number of channels for a given experiment metadata.</span>
@@ -515,6 +533,38 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">load_stack_batches</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function loads a stack in several batches to make sure</span>
+<span class="sd">    the system does not run out of memory. It returns a generator</span>
+<span class="sd">    the yields consecutive chunks of `batch_size` frames of the stack.</span>
+<span class="sd">    The remaining memory is freed up by the function until the generator</span>
+<span class="sd">    is called again.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : string</span>
+<span class="sd">        Path to stack.</span>
+<span class="sd">    batch_size : int</span>
+<span class="sd">        Number of frames in one chunk.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    generator</span>
+<span class="sd">        Generator that yields chunks of `batch_size` frames of the</span>
+<span class="sd">        stack.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">stack</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path does not point to a stack. The shape is </span><span class="si">{stack.shape}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="n">n_batches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_batches</span><span class="p">):</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">substack</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">stack</span>
+        <span class="k">yield</span> <span class="n">substack</span>
 
 
 <div class="viewcode-block" id="load_raw"><a class="viewcode-back" href="../../load_save.html#utils2p.load_raw">[docs]</a><span class="k">def</span> <span class="nf">load_raw</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
@@ -934,7 +984,7 @@
 
 
 <div class="viewcode-block" id="load_optical_flow"><a class="viewcode-back" href="../../load_save.html#utils2p.load_optical_flow">[docs]</a><span class="k">def</span> <span class="nf">load_optical_flow</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gain_0_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_0_y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gain_1_y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">smoothing_kernel</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function loads the optical flow data from</span>
@@ -955,6 +1005,11 @@
 <span class="sd">        Gain for the x direction of sensor 1.</span>
 <span class="sd">    gain_1_y: float</span>
 <span class="sd">        Gain for the y direction of sensor 1.</span>
+<span class="sd">    smoothing_kernel: numpy array, optional</span>
+<span class="sd">        Default is None, in which case the sensor signals</span>
+<span class="sd">        are not smoothed. The signal is convolved with this</span>
+<span class="sd">        kernel. A reasonable choice seems to be a moving average</span>
+<span class="sd">        filter of length 300: np.ones(300) / 300.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1001,8 +1056,16 @@
 <span class="sd">    &lt;class &#39;dict&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; optical_flow[&quot;sensor0&quot;].keys()</span>
 <span class="sd">    dict_keys([&#39;x&#39;, &#39;y&#39;, &#39;gain_x&#39;, &#39;gain_y&#39;])</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y, smoothing_kernel=np.ones(300) / 300)</span>
+<span class="sd">    &gt;&gt;&gt; optical_flow[&quot;vel_pitch&quot;].shape</span>
+<span class="sd">    (1408,)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">smoothing_kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">smoothing_kernel</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;smoothing_kernel of shape </span><span class="si">{smoothing_kernel.shape}</span><span class="s2"> is longer than optical flow data of shape </span><span class="si">{raw_data.shape}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">smoothing_kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="n">raw_data</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;sensor0&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">raw_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span>

@@ -238,6 +238,27 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="utils2p.Metadata.get_n_averaging">
+<code class="sig-name descname">get_n_averaging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_averaging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_averaging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of frames that are averaged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>n_averaging</strong> – Number of averaged frames.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_n_averaging</span><span class="p">()</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="utils2p.Metadata.get_n_channels">
 <code class="sig-name descname">get_n_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of channels for a given experiment metadata.</p>
