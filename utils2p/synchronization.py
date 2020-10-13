@@ -57,13 +57,17 @@ def get_lines_from_h5_file(file_path, line_names):
         for name in line_names:
             try:
                 try:
-                    lines.append(f["DI"][name][:].squeeze())
+                    try:
+                        lines.append(f["DI"][name][:].squeeze())
+                    except KeyError:
+                        lines.append(f["CI"][name][:].squeeze())
                 except KeyError:
-                    lines.append(f["CI"][name][:].squeeze())
+                    lines.append(f["AI"][name][:].squeeze())
             except KeyError:
                 DI_keys = list(f["DI"].keys())
                 CI_keys = list(f["CI"].keys())
-                raise KeyError(f"No line named '{name}' exists. The digital lines are {DI_keys} and the continuous lines are {CI_keys}.")
+                AI_keys = list(f["AI"].keys())
+                raise KeyError(f"No line named '{name}' exists. The digital lines are {DI_keys}, the continuous lines are {CI_keys}, and  the analogue inputs are {AI_keys}.")
     return tuple(lines)
 
 
