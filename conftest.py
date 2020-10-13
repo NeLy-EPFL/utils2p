@@ -23,5 +23,6 @@ def cleanup_files(monkeypatch):
     monkeypatch.setattr(builtins, 'open', patch_open(builtins.open, files))
     monkeypatch.setattr(io, 'open', patch_open(io.open, files))
     yield
-    for file in files:
-        os.remove(file)
+    for f in files:
+        if type(f) is not int:
+            os.remove(f)
