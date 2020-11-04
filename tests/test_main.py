@@ -569,6 +569,12 @@ def test_load_optical_flow(tmpdir):
         assert len(result["vel_yaw"]) == n_timepoints
         assert len(result["vel_roll"]) == n_timepoints
 
+    no_soomthing_result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4, smoothing_kernel=None)
+    null_kernel = np.array([0, 1, 0])
+    soomthing_result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4, smoothing_kernel=null_kernel)
+    for vel in ["vel_pitch", "vel_yaw", "vel_roll"]:
+        assert np.allclose(no_soomthing_result[vel], soomthing_result[vel])
+
     with pytest.raises(ValueError):
         kernel_length = n_timepoints + 1
         result = utils2p.load_optical_flow(file_name, 1, 2, 3, 4, smoothing_kernel=np.ones(kernel_length) / kernel_length)
