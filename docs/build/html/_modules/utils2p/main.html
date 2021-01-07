@@ -1175,6 +1175,9 @@
 <span class="sd">    (1408,)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        
+    <span class="c1">#raw_data = np.apply_along_axis(lambda m: np.convolve(m, np.ones(100) / 100, mode=&quot;same&quot;), axis=0, arr=raw_data)</span>
+    
     <span class="k">if</span> <span class="n">smoothing_kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">smoothing_kernel</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;smoothing_kernel of shape </span><span class="si">{smoothing_kernel.shape}</span><span class="s2"> is longer than optical flow data of shape </span><span class="si">{raw_data.shape}</span><span class="s2">.&quot;</span><span class="p">)</span>

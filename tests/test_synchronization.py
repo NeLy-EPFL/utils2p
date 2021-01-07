@@ -124,16 +124,40 @@ def test_get_lines_from_h5_file(h5_file):
 
 
 def test_edges():
-    line = np.array([0, 1, 1, 2, 2, 2, 0, -1, -1, -1, 5, 5])
+    line = np.array([0, 1, 1, 2, 2, 2, 0, 0, -1, -1, -1, 5, 5])
 
-    expected = np.array([1, 3, 10])
+    expected = np.array([1, 3, 11])
     assert np.all(expected == utils2p.synchronization.edges(line, (0, np.inf))[0])
     
-    expected = np.array([6, 7])
+    expected = np.array([6, 8])
     assert np.all(expected == utils2p.synchronization.edges(line, (np.NINF, 0)))
     
-    expected = np.array([10,])
+    expected = np.array([11,])
     assert np.all(expected == utils2p.synchronization.edges(line, 2))
+
+
+def test_correct_split_edges():
+    # rising
+    line = np.array([0, 0, 0, 1, 2, 2, 4, 4, 4, 5, 6, 6])
+    expected = np.array([0, 0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+    
+    # falling
+    line = line[::-1]
+    expected = expected[::-1]
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+
+    # Wider spread
+    line = np.array([0, 0, 0, 0, 1, 2, 3, 3, 6, 6, 6, 8, 9, 9, 9])
+    expected = np.array([0, 0, 0, 0, 3, 3, 3, 3, 6, 6, 6, 9, 9, 9, 9])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+
+    assert np.all(expected[::-1] == utils2p.synchronization.correct_split_edges(line[::-1]))
+
+    # Falling and rising
+    line = np.array([0, 0, 0, 1, 2, 3, 3, 3, 2, 1, 0, 0, 0])
+    expected = np.array([0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
 
 
 def test_get_start_times():

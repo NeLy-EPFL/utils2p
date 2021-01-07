@@ -98,7 +98,7 @@ def get_times(length, freq):
     return times
 
 
-def edges(line, size=0):
+def edges(line, size=0, correct_possible_split_edges=True):
     """
     Returns the indices of edges in a line. An
     edge is change in value of the line. A size
@@ -115,6 +115,12 @@ def edges(line, size=0):
         Tuples specify a range. To get falling edges use negative values.
         Only one boundary can be applied using np.inf as on of the values.
         All boundaries are exclusive the specified value.
+    correct_possible_split_edges : boolean
+        The rise or fall of an edge can in some cases be spread over
+        several ticks. If True theses "blurry" edges are sharpened
+        with :func:`utils2p.synchronization.correct_split_edges`.
+        Default is True.
+
     Returns
     -------
     indices : list
@@ -139,6 +145,8 @@ def edges(line, size=0):
     >>> utils2p.synchronization.edges(continuous_line, size=(-np.inf, 3))
     (array([5, 9]),)
     """
+    if correct_possible_split_edges:
+        line = correct_split_edges(line)
     diff = np.diff(line.astype(np.float64))
     if type(size) == tuple:
         zero_elements = np.isclose(diff, np.zeros_like(diff))
@@ -149,6 +157,49 @@ def edges(line, size=0):
         indices = np.where(diff > size)
     indices = tuple([i + 1 for i in indices])
     return indices
+
+
+def correct_split_edges(line):
+    """
+    This function corrects edges that are spread over multiple ticks.
+
+    Parameters
+    ----------
+    line : numpy array
+        The line for which the edges should be corrected.
+
+    Returns
+    -------
+    line : numpy array
+        Line with corrected edges.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import utils2p.synchronization
+    >>> line = np.array([0, 0, 0, 1, 2, 3, 3, 3, 2, 1, 0, 0, 0])
+    >>> utils2p.synchronization.correct_split_edges(line)
+    array([0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0])
+    """
+    rising_edges = np.where(np.diff(line) > 0)[0] + 1
+    falling_edges = np.where(np.diff(line) < 0)[0]
+    
+    split_rising_edges = np.where(np.diff(rising_edges) == 1)[0]
+    split_falling_edges = np.where(np.diff(falling_edges) == 1)[0]
+    
+    if len(split_rising_edges) == 0 and len(split_falling_edges) == 0:
+        return line
+    
+    first_halfs_rising = rising_edges[split_rising_edges]
+    second_halfs_rising = rising_edges[split_rising_edges + 1]
+    line[first_halfs_rising] = line[second_halfs_rising]
+    
+    first_halfs_falling = falling_edges[split_falling_edges]
+    second_halfs_falling = falling_edges[split_falling_edges + 1]
+    line[second_halfs_falling] = line[first_halfs_falling]
+
+    # Recursive to get edges spread over more than two ticks
+    return correct_split_edges(line)
 
 
 def get_start_times(line, times):
@@ -612,6 +663,8 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
                               1,                    1,                    1])
     """
     thor_sync_indices = edges(cam_line)[0]
+    if not cam_line[0] < 0:
+        thor_sync_indices = np.append(np.array([0]), thor_sync_indices)
 
     indices_2p = np.ones(len(beh_indices), dtype=np.int) * np.nan
 
