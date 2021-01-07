@@ -92,6 +92,7 @@ def test_get_lines_from_h5_file(h5_file):
     expected_cam_line = np.ones((1000, 1), dtype=np.dtype("<u4")) * 2
     expected_stim_line = np.ones((1000, 1), dtype=np.dtype("<u4")) * 3
     expected_capture_on = np.ones((1000, 1), dtype=np.dtype("<u4")) * 4
+    expected_piezo_monitor = np.sin(np.linspace(0, 10 * np.pi, 1000, dtype=np.float64))[:, np.newaxis]
     content = {
             "DI": {
                 "Frame Counter": expected_frame_counter,
@@ -101,9 +102,12 @@ def test_get_lines_from_h5_file(h5_file):
                 "CO2": expected_stim_line,
                 "Capture On": expected_capture_on,
             },
+            "AI": {
+                "Piezo Monitor": expected_piezo_monitor,
+            },
         }
     path = h5_file(content)
-    cam_line, frame_counter, stimulus_line, capture_on = utils2p.synchronization.get_lines_from_h5_file(path, ["Cameras", "Frame Counter", "CO2", "Capture On"])
+    cam_line, frame_counter, stimulus_line, capture_on, piezo_monitor = utils2p.synchronization.get_lines_from_h5_file(path, ["Cameras", "Frame Counter", "CO2", "Capture On", "Piezo Monitor"])
     assert cam_line.ndim == 1
     assert np.all(expected_cam_line == cam_line)
     assert frame_counter.ndim == 1
@@ -112,22 +116,48 @@ def test_get_lines_from_h5_file(h5_file):
     assert np.all(expected_stim_line == stimulus_line)
     assert capture_on.ndim == 1
     assert np.all(expected_capture_on == capture_on)
+    assert piezo_monitor.ndim == 1
+    assert np.allclose(expected_piezo_monitor.squeeze(), piezo_monitor)
 
     with pytest.raises(KeyError):
         utils2p.synchronization.get_lines_from_h5_file(path, ["Some none existing line",])
 
 
 def test_edges():
-    line = np.array([0, 1, 1, 2, 2, 2, 0, -1, -1, -1, 5, 5])
+    line = np.array([0, 1, 1, 2, 2, 2, 0, 0, -1, -1, -1, 5, 5])
 
-    expected = np.array([1, 3, 10])
+    expected = np.array([1, 3, 11])
     assert np.all(expected == utils2p.synchronization.edges(line, (0, np.inf))[0])
     
-    expected = np.array([6, 7])
+    expected = np.array([6, 8])
     assert np.all(expected == utils2p.synchronization.edges(line, (np.NINF, 0)))
     
-    expected = np.array([10,])
+    expected = np.array([11,])
     assert np.all(expected == utils2p.synchronization.edges(line, 2))
+
+
+def test_correct_split_edges():
+    # rising
+    line = np.array([0, 0, 0, 1, 2, 2, 4, 4, 4, 5, 6, 6])
+    expected = np.array([0, 0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+    
+    # falling
+    line = line[::-1]
+    expected = expected[::-1]
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+
+    # Wider spread
+    line = np.array([0, 0, 0, 0, 1, 2, 3, 3, 6, 6, 6, 8, 9, 9, 9])
+    expected = np.array([0, 0, 0, 0, 3, 3, 3, 3, 6, 6, 6, 9, 9, 9, 9])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
+
+    assert np.all(expected[::-1] == utils2p.synchronization.correct_split_edges(line[::-1]))
+
+    # Falling and rising
+    line = np.array([0, 0, 0, 1, 2, 3, 3, 3, 2, 1, 0, 0, 0])
+    expected = np.array([0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0])
+    assert np.all(expected == utils2p.synchronization.correct_split_edges(line))
 
 
 def test_get_start_times():

@@ -534,6 +534,119 @@ def load_stack_batches(path, batch_size):
         yield substack
 
 
+def load_stack_patches(path, patch_size, padding=0, return_indices=False):
+    """
+    Returns a generator that yields patches of the stack of images.
+    This is useful when multiple stacks should be processed but they
+    don't fit in memory, e.g. when computing an overall fluorescence
+    baseline for all trials of a fly.
+
+    Parameters
+    ----------
+    path : string
+       Path to stack.
+    patch_size : tuple of two integers
+       Size of the patch returned.
+    padding : integer or tuple of two integers
+       The amount of overlap between patched. Note that this increases
+       the effective patch size. Default is 0. For tuples different padding
+       if used for the dimensions.
+    return_indices : boolean
+       If True, the indices necessary for slicing to generate the patch and
+       the indices necessary for slicing to remove the padding from the
+       returned patch are returned. Default is False.
+       The values are retuned in the following form:
+       ```
+       indices = [[start_patch_dim_0, stop_patch_dim_0],
+                 [start_patch_dim_1, stop_patch_dim_1],]
+       patch_indices = [[start_after_padding_dim_0, stop_after_padding_dim_0],
+                        [start_after_padding_dim_1, stop_after_padding_dim_1],]
+       ```
+
+    Returns
+    -------
+    patch : numpy array
+        Patch of the stack.
+    indices : tuples of integers, optional
+        See description of the `return_indices` parameter above
+        and examples below.
+    patch_indices : tuples of integers, optinal
+        See description of the `return_indices` parameter above
+        and examples below.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import utils2p
+    >>> metadata = utils2p.Metadata('data/mouse_kidney_raw/2p/Untitled_001/Experiment.xml')
+    >>> stack1, stack2 = utils2p.load_raw('data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw',metadata)
+    >>> print(stack1.shape)
+    (5, 256, 256)
+    >>> utils2p.save_img('stack1.tif',stack1)
+    >>> generator = utils2p.load_stack_patches('stack1.tif', (5, 4))
+    >>> first_patch = next(generator)
+    >>> print(first_patch.shape)
+    (5, 5, 4)
+    >>> generator = utils2p.load_stack_patches('stack1.tif', (15, 20), padding=3, return_indices=True)
+    >>> first_patch, indices, patch_indices = next(generator)
+    >>> print(first_patch.shape)
+    (5, 18, 23)
+    >>> print(patch_indices)
+    [[0, 15], [0, 20]]
+    >>> print(indices)
+    [[0, 15], [0, 20]]
+    >>> first_patch_without_padding = first_patch[:, patch_indices[0][0] : patch_indices[0][1], patch_indices[1][0] : patch_indices[1][1]]
+    >>> print(first_patch_without_padding.shape)
+    (5, 15, 20)
+    >>> np.all(stack1[:, indices[0][0] : indices[0][1], indices[1][0] : indices[1][1]] == first_patch_without_padding)
+    True
+
+    Note that the patch has not padding at the edges.
+    When looking at the second patch we see that it is padded on both side
+    in the second dimension but still only on one side of the first dimension.
+
+    >>> second_patch, indices, patch_indices = next(generator)
+    >>> print(second_patch.shape)
+    (5, 18, 26)
+    >>> print(patch_indices)
+    [[0, 15], [3, 23]]
+    >>> print(indices)
+    [[0, 15], [20, 40]]
+    >>> second_patch_without_padding = second_patch[:, patch_indices[0][0] : patch_indices[0][1], patch_indices[1][0] : patch_indices[1][1]]
+    >>> print(second_patch_without_padding.shape)
+    (5, 15, 20)
+    """
+    stack = load_img(path)
+    dims = stack.shape[1:]
+    n_patches_0 = math.ceil(dims[0] / patch_size[0])
+    n_patches_1 = math.ceil(dims[1] / patch_size[1])
+    if isinstance(padding, int):
+        padding = (padding, padding)
+    for i in range(n_patches_0):
+        for j in range(n_patches_1):
+            indices = [
+                       [patch_size[0] * i, patch_size[0] * (i + 1)],
+                       [patch_size[1] * j, patch_size[1] * (j + 1)],
+                      ]
+            start_dim_0 = max(indices[0][0] - padding[0], 0)
+            start_dim_1 = max(indices[1][0] - padding[1], 0)
+            stop_dim_0 = min(indices[0][1] + padding[0], dims[0])
+            stop_dim_1 = min(indices[1][1] + padding[1], dims[1])
+            patch = stack[:, start_dim_0:stop_dim_0, start_dim_1:stop_dim_1].copy()
+            del stack
+            if not return_indices:
+                yield patch
+            else:
+                offset_dim_0 = indices[0][0] - start_dim_0
+                offset_dim_1 = indices[1][0] - start_dim_1
+                patch_indices = [
+                        [offset_dim_0, patch_size[0] + offset_dim_0],
+                        [offset_dim_1, patch_size[1] + offset_dim_1],
+                ]
+                yield patch, indices, patch_indices
+            stack = load_img(path)
+
+
 def load_raw(path, metadata):
     """
     This function loads a raw image generated by ThorImage as a numpy array.

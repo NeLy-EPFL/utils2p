@@ -294,6 +294,28 @@ def test_load_stack_batches(random_tif_file):
     assert np.allclose(loaded_stack, img_stack)
 
 
+@pytest.mark.parametrize("patch_size,padding",
+        [
+            ((2, 2), 1),
+            ((5, 5), 1),
+            ((5, 1), (3, 1)),
+            ((3, 4), (2, 3)),
+        ],
+)
+def test_load_stack_patches(random_tif_file, patch_size, padding):
+    file_path, img_stack = random_tif_file()
+    reconstructed_stack = np.zeros_like(img_stack)
+    for patch, indices, patch_indices in utils2p.load_stack_patches(file_path, patch_size, padding=padding, return_indices=True):
+        patch_wo_padding = patch[:,
+                                 patch_indices[0][0] : patch_indices[0][1],
+                                 patch_indices[1][0] : patch_indices[1][1]
+                                ]
+        reconstructed_stack[:,
+                            indices[0][0] : indices[0][1],
+                            indices[1][0] : indices[1][1]
+                           ] = patch_wo_padding
+    assert np.allclose(reconstructed_stack, img_stack)
+
 @pytest.mark.parametrize(
     "area_mode,shape,timepoints,channels,n_z,flyback_frames",
     [
