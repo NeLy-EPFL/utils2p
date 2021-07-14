@@ -359,3 +359,31 @@ def test_process_odor_line():
     expected_result[59902 : 89997] = "One"
     expected_result[150307 : 209746] = "Two"
     assert np.all(result == expected_result)
+
+
+def test_event_based_frame_indices():
+    event_indicator = np.array([0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1], dtype=bool)
+    expected_event_based_indices = np.array([-2, -1, 0, 1, 2, -4, -3 , -2 , -1, 0, 1, -1, 0, -3, -2, -1, 0, 1, 2], dtype=int)
+    expected_event_number = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4], dtype=int)
+
+    event_based_indices, event_number = utils2p.synchronization.event_based_frame_indices(event_indicator)
+    assert np.all(event_based_indices == expected_event_based_indices)
+    assert np.all(event_number == expected_event_number)
+    
+    # Test stop after last event
+    event_indicator = np.array([0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0], dtype=bool)
+    expected_event_based_indices = np.array([-2, -1, 0, 1, 2, -4, -3 , -2 , -1, 0, 1, -1, 0, -3, -2, -1, 0, 1, 2, -2, -1], dtype=int)
+    expected_event_number = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, -1, -1], dtype=int)
+
+    event_based_indices, event_number = utils2p.synchronization.event_based_frame_indices(event_indicator)
+    assert np.all(event_based_indices == expected_event_based_indices)
+    assert np.all(event_number == expected_event_number)
+    
+    # Test start with event
+    event_indicator = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0], dtype=bool)
+    expected_event_based_indices = np.array([0, 1, 2, 3, 4, -4, -3 , -2 , -1, 0, 1, -1, 0, -3, -2, -1, 0, 1, 2, -2, -1], dtype=int)
+    expected_event_number = np.array([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, -1, -1], dtype=int)
+
+    event_based_indices, event_number = utils2p.synchronization.event_based_frame_indices(event_indicator)
+    assert np.all(event_based_indices == expected_event_based_indices)
+    assert np.all(event_number == expected_event_number)

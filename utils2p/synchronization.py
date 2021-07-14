@@ -1004,3 +1004,69 @@ def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor
         filtered_mask = epoch_length_filter(mask, freq)
         indices[mask & ~filtered_mask] = 0
     return np.array(arduino_commands)[indices]
+            
+
+def event_based_frame_indices(event_indicator):
+    """
+    Calculates frame indices based on events.
+    Frames before an event have negative numbers.
+    The event onset has frame number 0 and the frames
+    count up for the duration of the event.
+    To be able to distinguish multiple events in the
+    `event_indicator` an array with event numbers is
+    returned.
+
+    Parameters
+    ----------
+    event_indicator : numpy array of type bool
+        True indicates some event happening.
+
+    Returns
+    -------
+    event_based_indices : numpy array of type int
+        Event based indices as described above.
+    event_number : numpy array of type int
+        Array of the same length as `event_based_indices`
+        counting the number of events in event indicator.
+    """
+    mask = event_indicator.astype(bool)
+    inv_mask = ~mask
+    inv_mask = inv_mask[::-1]
+    mask = mask.astype(np.int8)
+    inv_mask = inv_mask.astype(np.int8)
+    mask = np.concatenate(([0,], mask))
+    inv_mask = np.concatenate((inv_mask, [0,]))
+    
+    event_numbers = np.cumsum(np.clip(np.diff(mask), 0, None))
+    inv_event_numbers = np.cumsum(np.clip(np.diff(inv_mask), 0, None))
+
+    mask = mask[1:]
+    inv_mask = inv_mask[:-1]
+    
+    # Count up from zero during the event
+    event_frame_indices = np.cumsum(mask)
+    inv_event_frame_indices = np.cumsum(inv_mask)
+    n_events = max(event_numbers)
+    for event in np.arange(1, n_events + 1):
+        i = np.where(event_numbers == event)
+        event_frame_indices[i] = event_frame_indices[i] - event_frame_indices[i[0][0]] 
+    event_frame_indices[~mask.astype(np.bool)] = 0
+    
+    # Count down from zero before each event
+    n_inv_event = max(inv_event_numbers)
+    for inv_event in np.arange(1, n_inv_event + 1):
+        i = np.where(inv_event_numbers == inv_event)
+        inv_event_frame_indices[i] = inv_event_frame_indices[i] - inv_event_frame_indices[i[0][0]]
+    inv_event_frame_indices[~inv_mask.astype(np.bool)] = 0
+    inv_event_frame_indices = -inv_event_frame_indices[::-1]
+    
+    event_frame_indices[~mask.astype(bool)] = inv_event_frame_indices[~mask.astype(bool)]
+    
+    event_numbers = np.cumsum(-1 * np.clip(np.diff(np.concatenate(([2], event_frame_indices))), -1, 0))
+    # Make sure the last frames are not counted as the pre-event frames of a new event
+    n_events = max(event_numbers)
+    last_event = np.where(event_numbers == n_events)
+    if np.all(event_frame_indices[last_event] < 0):
+        event_numbers[last_event] = -1
+
+    return event_frame_indices, event_numbers
