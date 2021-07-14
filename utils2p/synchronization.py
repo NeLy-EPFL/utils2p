@@ -9,6 +9,7 @@ acquired with Thor Sync during imaging.
 import numpy as np
 import h5py
 import json
+import scipy.signal
 
 import utils2p.main as main
 
@@ -932,3 +933,74 @@ def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camer
     processed_lines["Times"] = times
 
     return processed_lines
+
+
+def epoch_length_filter(line, cut_off):
+    """
+    This function filters a binary based on the length
+    of each event.
+
+    Parameters
+    ----------
+    line : numpy array of type bool
+        Binary trace that is filtered.
+    cut_off : int
+        The minimal event length. All event shorter
+        than `cut_off` are set to `False`.
+
+    Returns
+    -------
+    filtered : numpy array of type bool
+        The filtered binary trace.
+    """
+    diff = np.diff(np.pad(line.astype(int), 1, "constant", constant_values=0))
+    rising_edges = np.where(diff > 0)[0]
+    falling_edges = np.where(diff < 0)[0]
+    epoch_length = falling_edges - rising_edges
+    
+    discarded_epochs = (epoch_length < cut_off)
+    
+    discarded_rising_edges = rising_edges[discarded_epochs]
+    discarded_falling_edges = falling_edges[discarded_epochs]
+
+    filtered = line.copy()
+    for start, stop in zip(discarded_rising_edges, discarded_falling_edges):
+        filtered[start:stop] = 0
+    
+    return filtered.astype(bool)
+
+
+def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor2", "Odor3", "Odor4", "Odor5", "Odor6"), step_size=0.65):
+    """
+    The odor line is based on a PWM signal for the Arduino controlling the valves.
+    This function applies a Butterworth filter and converts the resulting voltages
+    to level indices. The corresponding the setting of the valves are given by
+    the `arduino_commands` argument.
+
+    Parameters
+    ----------
+    line : numpy array
+        Unprocessed odor line from h5 file.
+    freq : int
+        Frequency of ThorSync. Necessary for the Butterworth filter.
+    arduino_commands : list of strings
+        Description of the valve settings for commands sent to arduino.
+        Note: The order matters since the serial communications between computer
+        and Arduino is based on the index in the list. This index is converted
+        to a PWM signal that is recorded by ThorSync.
+    step_size : float
+        The voltage step size between different levels of the PWM. This is used
+        to convert the voltage to indices.
+
+    Returns
+    -------
+    numpy array of strings
+    """
+    b, a = scipy.signal.butter(3, 10, fs=freq)
+    filtered_line = scipy.signal.filtfilt(b, a, line)
+    indices = np.rint(filtered_line / step_size).astype(int)
+    for index in np.unique(indices):
+        mask = (indices == index)
+        filtered_mask = epoch_length_filter(mask, freq)
+        indices[mask & ~filtered_mask] = 0
+    return np.array(arduino_commands)[indices]

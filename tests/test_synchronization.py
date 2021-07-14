@@ -331,3 +331,31 @@ def test_reduce_during_frame():
     output = utils2p.synchronization.reduce_during_frame(frame_counter, values, concat)
     expected_result = np.array(["a", "b c d", "e f", "g h i j"])
     assert np.all(output == expected_result)
+
+
+def test_epoch_length_filter():
+    binary_sequence = np.array([0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 1], dtype=bool)
+    
+    results = utils2p.synchronization.epoch_length_filter(binary_sequence, 3)
+    expected_result = np.array([0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1], dtype=bool)
+    assert np.all(results == expected_result)
+    
+    results = utils2p.synchronization.epoch_length_filter(binary_sequence, 4)
+    expected_result = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=bool)
+    assert np.all(results == expected_result)
+
+
+def test_process_odor_line():
+    freq = 30000
+    line = np.zeros(freq * 10)
+    dutycycle = 64
+    for i in range(dutycycle):
+        line[60000 + i : 90000 + i : 255] = 5
+    dutycycle = 128
+    for i in range(dutycycle):
+        line[150000 + i : 210000 + i : 255] = 5
+    result = utils2p.synchronization.process_odor_line(line, freq=freq, arduino_commands=("None", "One", "Two"), step_size=1.25)
+    expected_result = np.array(["None",] * 10 * freq)
+    expected_result[59902 : 89997] = "One"
+    expected_result[150307 : 209746] = "Two"
+    assert np.all(result == expected_result)
