@@ -31,6 +31,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/NeLy-EPFL/utils2p",
-    install_requires=["pytest", "h5py"],
+    install_requires=["pytest", "h5py", "scipy"],
     ext_modules=[external],
 )
