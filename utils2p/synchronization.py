@@ -203,10 +203,18 @@ def correct_split_edges(line):
     return correct_split_edges(line)
 
 
-def get_start_times(line, times):
+def get_start_times(line, times, zero_based_counter=False):
     """
     Get the start times of a digital signal,
     i.e. the times of the rising edges.
+    If the line is a zero based counter, such as the processed 
+    `frame_counter` or the processed `cam_line`, there is a
+    possibility that the first element in line is already zero.
+    This corresponds to the case where the acquisition of the
+    first frame was triggered before ThorSync started.
+    If `zero_based_counter` is `False` this frame will be
+    dropped, i.e. no time for the frame is returned, since
+    there is no rising edge corresponding to the frame.
 
     Parameters
     ----------
@@ -214,6 +222,8 @@ def get_start_times(line, times):
         Line signal from h5 file.
     times : numpy array
         Times returned by :func:`utils2p.synchronization.get_times`
+    zero_based_counter : boolean
+        Indicates whether the line is a zero based counter.
 
     Returns
     -------
@@ -232,6 +242,12 @@ def get_start_times(line, times):
     array([0.05, 0.2 ])
     """
     indices = edges(line, size=(0, np.inf))
+    if zero_based_counter and line[0] >= 0:
+        if line[0] > 0:
+            warnings.warn(f"The counters start with value {line[0]}")
+        indices_with_first_frame = np.zeros(len(indices[0]) + 1, dtype=int)
+        indices_with_first_frame[1:] = indices[0]
+        indices = (indices_with_first_frame,)
     time_points = times[indices]
     return time_points
 

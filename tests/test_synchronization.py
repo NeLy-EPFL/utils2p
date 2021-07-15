@@ -164,6 +164,11 @@ def test_get_start_times():
     line = np.array([0, 0, 1, 1, 1, 2, 2, 0, 0, 3])
     times = np.arange(len(line))
     assert np.allclose(np.array([2, 5, 9]), utils2p.synchronization.get_start_times(line, times))
+    
+    # Test zero_based_counter
+    line = np.array([0, 0, 1, 1, 1, 2, 2, 3, 3, 3])
+    assert np.allclose(np.array([2, 5, 7]), utils2p.synchronization.get_start_times(line, times))
+    assert np.allclose(np.array([0, 2, 5, 7]), utils2p.synchronization.get_start_times(line, times, zero_based_counter=True))
 
 
 def test__capture_metadata():
