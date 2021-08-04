@@ -986,7 +986,7 @@ def epoch_length_filter(line, cut_off):
     return filtered.astype(bool)
 
 
-def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor2", "Odor3", "Odor4", "Odor5", "Odor6"), step_size=0.65):
+def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor2", "Odor3", "Odor4", "Odor5", "Odor6"), step_size=0.65, filter_only=False):
     """
     The odor line is based on a PWM signal for the Arduino controlling the valves.
     This function applies a Butterworth filter and converts the resulting voltages
@@ -1007,6 +1007,9 @@ def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor
     step_size : float
         The voltage step size between different levels of the PWM. This is used
         to convert the voltage to indices.
+    filter_only : bool
+        If `True`, only the filtered line is returned instead of the odors based
+        on the `arduino_commands`. This is useful for determining the `step_size`.
 
     Returns
     -------
@@ -1014,6 +1017,8 @@ def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor
     """
     b, a = scipy.signal.butter(3, 10, fs=freq)
     filtered_line = scipy.signal.filtfilt(b, a, line)
+    if filter_only:
+        return filtered_line
     indices = np.rint(filtered_line / step_size).astype(int)
     for index in np.unique(indices):
         mask = (indices == index)
