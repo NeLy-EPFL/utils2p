@@ -895,7 +895,7 @@ def _find_file(directory, name, file_type):
     path : str
         Path to file.
     """
-    file_names = list(Path(directory).rglob("*" + name))
+    file_names = list(Path(directory).rglob(name))
     if len(file_names) > 1:
         raise RuntimeError(
             f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
@@ -1063,6 +1063,36 @@ def find_sync_metadata_file(directory):
     return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata")
 
 
+def find_fictrac_file(directory, camera=3):
+    """
+    This function ifn the path to the output file of
+    fictrac of the form `camera_{cam}*.dat`, where
+    `{cam}` is the values specified in the `camera`
+    argument.
+    If multiple files with this name are found,
+    it throws an exception.
+
+    Parameters
+    ----------
+    directory : str
+        Directory in which to search.
+    camera : int
+        The camera used for fictrac.
+
+    Returns
+    -------
+    path : str
+        Path to fictrac output file.
+
+    Examples
+    --------
+    >>> import utils2p
+    >>> utils2p.find_fictrac_file("data")
+    'data/camera_3-20210802_083044.dat'
+    """
+    return _find_file(directory, f"camera_{camera}*.dat", "fictrac output")
+
+
 def load_optical_flow(
     path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float, smoothing_kernel=None
 ):
@@ -1174,5 +1204,42 @@ def load_optical_flow(
         data["sensor0"]["y"] * data["sensor0"]["gain_y"]
         - data["sensor1"]["y"] * data["sensor1"]["gain_y"]
     ) * np.sin(np.deg2rad(45))
+
+    return data
+
+
+def load_fictrac(path, ball_radius=10, fps=100, camera=3):
+    col_names = ["Frame_counter",
+                 "delta_rot_cam_right", "delta_rot_cam_down", "delta_rot_cam_forward",
+                 "delta_rot_error",
+                 "delta_rot_lab_side", "delta_rot_lab_forward", "delta_rot_lab_turn",
+                 "abs_rot_cam_right", "abs_rot_cam_down", "abs_rot_cam_forward",
+                 "abs_rot_lab_side", "abs_rot_lab_forward", "abs_rot_lab_turn",
+                 "integrated_lab_x", "integrated_lab_y",
+                 "integrated_lab_heading",
+                 "animal_movement_direction_lab",
+                 "animal_movement_speed",
+                 "integrated_forward_movement", "integrated_side_movement",
+                 "timestamp",
+                 "seq_counter",
+                 "delta_time",
+                 "alt_time"
+                ]
+    
+    dat_table = np.genfromtxt(path, delimiter=",")
+    data = {}
+    for i, col in enumerate(col_names):
+        data[col] = dat_table[:, i] 
+    data["Speed"] = data["animal_movement_speed"] * ball_radius * fps
+    data["x"] = data["integrated_lab_x"] * ball_radius
+    data["y"] = data["integrated_lab_y"] * ball_radius
+    data["forward_pos"] = data["integrated_forward_movement"] * ball_radius
+    data["side_pos"] = data["integrated_side_movement"] * ball_radius
+    data["delta_rot_lab_side"] = data["delta_rot_lab_side"] * ball_radius * fps
+    data["delta_rot_lab_forward"] = data["delta_rot_lab_forward"] * ball_radius * fps
+    data["delta_rot_lab_turn"] = data["delta_rot_lab_turn"] / 2 / np.pi * 360 * fps
+    data["integrated_forward_movement"] = data["integrated_forward_movement"] * ball_radius
+    data["integrated_side_movement"] = data["integrated_side_movement"] * ball_radius
+    data["Time"] = data["Frame_counter"] / fps
 
     return data
