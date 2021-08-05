@@ -878,7 +878,7 @@ def save_img(
         raise NotImplemented("Saving of metadata is not yet implemented")
 
 
-def _find_file(directory, name, file_type):
+def _find_file(directory, name, file_type, most_recent=True):
     """
     This function finds a unique file with a given name in
     in the directory.
@@ -887,8 +887,15 @@ def _find_file(directory, name, file_type):
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
     name : str
         Name of the file.
+    most_recent : bool
+        If True, the most recently modified file is returned
+        and no error is raised if multiple files were found.
 
     Returns
     -------
@@ -897,25 +904,34 @@ def _find_file(directory, name, file_type):
     """
     file_names = list(Path(directory).rglob(name))
     if len(file_names) > 1:
-        raise RuntimeError(
-            f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
+        if most_recent:
+            change_times = [os.stat(path).st_mtime for path in file_names]
+            file_names = (file_names[np.argmax(change_times)],)
+        else:
+            raise RuntimeError(
+                f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
         )
     elif len(file_names) == 0:
         raise FileNotFoundError(f"No {file_type} file found in {directory}")
     return str(file_names[0])
 
 
-def find_metadata_file(directory):
+def find_metadata_file(directory, most_recent=False):
     """
     This functions find the path to the metadata file
     "Experiment.xml" created by ThorImage and returns it.
     If multiple files with this name are found, it throws
-    and exception.
+    an exception unless `most_recent` is `True`, in which case
+    the file with the most recent change time is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -928,21 +944,26 @@ def find_metadata_file(directory):
     >>> utils2p.find_metadata_file("data/mouse_kidney_z_stack")
     'data/mouse_kidney_z_stack/Experiment.xml'
     """
-    return _find_file(directory, "Experiment.xml", "metadata")
+    return _find_file(directory, "Experiment.xml", "metadata", most_recent=most_recent)
 
 
-def find_seven_camera_metadata_file(directory):
+def find_seven_camera_metadata_file(directory, most_recent=False):
     """
     This functions find the path to the metadata file
     "capture_metadata.json" created by seven camera
     setup and returns it.
     If multiple files with this name are found, it throws
-    and exception.
+    an exception unless `most_recent` is `True`,in which case
+    the file with the most recent change time is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -955,20 +976,25 @@ def find_seven_camera_metadata_file(directory):
     >>> utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/behData/images/capture_metadata.json'
     """
-    return _find_file(directory, "capture_metadata.json", "seven camera capture metadata")
+    return _find_file(directory, "capture_metadata.json", "seven camera capture metadata", most_recent=most_recent)
 
 
-def find_sync_file(directory):
+def find_sync_file(directory, most_recent=False):
     """
     This functions find the path to the sync file
     "Episode001.h5" created by ThorSync and returns it.
     If multiple files with this name are found, it throws
-    and exception.
+    an exception unless `most_recent` is `True`, in which case
+    the file with the most recent change time is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -981,20 +1007,25 @@ def find_sync_file(directory):
     >>> utils2p.find_sync_file("data/mouse_kidney_z_stack")
     'data/mouse_kidney_z_stack/Episode001.h5'
     """
-    return _find_file(directory, "Episode001.h5", "synchronization")
+    return _find_file(directory, "Episode001.h5", "synchronization", most_recent=most_recent)
 
 
-def find_optical_flow_file(directory):
+def find_optical_flow_file(directory, most_recent=False):
     """
     This functions find the path to the optical flow file
     "OptFlow.txt" created by seven camera software and returns it.
     If multiple files with this name are found, it throws
-    and exception.
+    an exception unless `most_recent` is `True`,in which case
+    the file with the most recent change time is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -1007,20 +1038,25 @@ def find_optical_flow_file(directory):
     >>> utils2p.find_optical_flow_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/behData/OptFlowData/OptFlow.txt'
     """
-    return _find_file(directory, "OptFlow.txt", "optical flow")
+    return _find_file(directory, "OptFlow.txt", "optical flow", most_recent=most_recent)
 
 
-def find_raw_file(directory):
+def find_raw_file(directory, most_recent=False):
     """
     This functions find the path to the raw file
     "Image_0001_0001.raw" created by ThorImage and returns it.
     If multiple files with this name are found, it throws
-    and exception.
+    an exception unless `most_recent` is `True`, in which case
+    the file with the most recent change time is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -1033,20 +1069,26 @@ def find_raw_file(directory):
     >>> utils2p.find_raw_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw'
     """
-    return _find_file(directory, "Image_0001_0001.raw", "raw")
+    return _find_file(directory, "Image_0001_0001.raw", "raw", most_recent=most_recent)
 
 
-def find_sync_metadata_file(directory):
+def find_sync_metadata_file(directory, most_recent=False):
     """
     This function ifn the path to the synchonization
     metadata file "ThorRealTimeDataSettings.xml" created
     by ThorSync. If multiple files with this name are found,
-    it throws an exception.
+    it throws an exception unless `most_recent` is `True`,
+    in which case the file with the most recent change time
+    is returned.
 
     Parameters
     ----------
     directory : str
         Directory in which to search.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -1060,17 +1102,18 @@ def find_sync_metadata_file(directory):
     'data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml'
 
     """
-    return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata")
+    return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata", most_recent=most_recent)
 
 
-def find_fictrac_file(directory, camera=3):
+def find_fictrac_file(directory, camera=3, most_recent=False):
     """
     This function ifn the path to the output file of
     fictrac of the form `camera_{cam}*.dat`, where
     `{cam}` is the values specified in the `camera`
-    argument.
-    If multiple files with this name are found,
-    it throws an exception.
+    argument. If multiple files with this name are found,
+    it throws an exception unless `most_recent` is `True`,
+    in which case the file with the most recent change time
+    is returned.
 
     Parameters
     ----------
@@ -1078,6 +1121,10 @@ def find_fictrac_file(directory, camera=3):
         Directory in which to search.
     camera : int
         The camera used for fictrac.
+    most_recent : bool
+        If True, the file with the most recent change time
+        is returned and no exception is raised if multiple
+        files are present.
 
     Returns
     -------
@@ -1088,9 +1135,13 @@ def find_fictrac_file(directory, camera=3):
     --------
     >>> import utils2p
     >>> utils2p.find_fictrac_file("data")
-    'data/camera_3-20210802_083044.dat'
+    Traceback (most recent call last):
+     ...
+    RuntimeError: Could not identify fictrac output file unambiguously. Discovered 2 fictrac output files in data.
+    >>> utils2p.find_fictrac_file("data", most_recent=True)
+    'data/camera_3-20210803_103010.dat'
     """
-    return _find_file(directory, f"camera_{camera}*.dat", "fictrac output")
+    return _find_file(directory, f"camera_{camera}*.dat", "fictrac output", most_recent=most_recent)
 
 
 def load_optical_flow(
