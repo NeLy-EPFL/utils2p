@@ -532,14 +532,12 @@ def load_stack_batches(path, batch_size):
         Generator that yields chunks of `batch_size` frames of the
         stack.
     """
-    stack = load_img(path)
+    stack = load_img(path, memmap=True)
     if stack.ndim < 3:
         raise ValueError(f"The path does not point to a stack. The shape is {stack.shape}.")
     n_batches = int(stack.shape[0] / batch_size) + 1
     for i in range(n_batches):
-        stack = load_img(path)
-        substack = stack[i * batch_size : (i + 1) * batch_size].copy()
-        del stack
+        substack = np.array(stack[i * batch_size : (i + 1) * batch_size])
         yield substack
 
 
