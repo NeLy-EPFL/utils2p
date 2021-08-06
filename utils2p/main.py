@@ -475,7 +475,7 @@ class Metadata(_XMLFile):
         return self.get_metadata_value("Date", "date")
 
 
-def load_img(path):
+def load_img(path, memmap=False):
     """
     This functions loads an image from file and returns as a numpy array.
     
@@ -483,6 +483,12 @@ def load_img(path):
     ----------
     path : string
         Path to image file.
+    memmap : bool
+        If `True`, the image is not loaded into memory but remains on
+        disk and a `numpy.memmap` object is returned. It can be indexed
+        like a normal `numpy.array`. This option is useful when a stack
+        does not fit into memory. It can also be used when opening many
+        stacks simultaneously.
 
     Returns
     -------
@@ -497,9 +503,12 @@ def load_img(path):
     <class 'numpy.ndarray'>
     >>> img.shape
     (200, 200)
+    >>> img = utils2p.load_img("data/chessboard_GRAY_U16.tif", memmap=True)
+    >>> type(img)
+    <class 'numpy.memmap'>
     """
     path = os.path.expanduser(os.path.expandvars(path))
-    return tifffile.imread(path)
+    return tifffile.imread(path, memmap=memmap)
 
 
 def load_stack_batches(path, batch_size):
