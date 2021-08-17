@@ -36,14 +36,20 @@
 <h1>File discovery<a class="headerlink" href="#file-discovery" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="utils2p.find_metadata_file">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_metadata_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_metadata_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the metadata file
 “Experiment.xml” created by ThorImage and returns it.
 If multiple files with this name are found, it throws
-and exception.</p>
+an exception unless <cite>most_recent</cite> is <cite>True</cite>, in which case
+the file with the most recent change time is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Path to metadata file.</p>
@@ -62,14 +68,20 @@ and exception.</p>
 
 <dl class="function">
 <dt id="utils2p.find_sync_file">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_sync_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_sync_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_sync_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_sync_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_sync_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_sync_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the sync file
 “Episode001.h5” created by ThorSync and returns it.
 If multiple files with this name are found, it throws
-and exception.</p>
+an exception unless <cite>most_recent</cite> is <cite>True</cite>, in which case
+the file with the most recent change time is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Path to sync file.</p>
@@ -88,15 +100,21 @@ and exception.</p>
 
 <dl class="function">
 <dt id="utils2p.find_seven_camera_metadata_file">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_seven_camera_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_seven_camera_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_seven_camera_metadata_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_seven_camera_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_seven_camera_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_seven_camera_metadata_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the metadata file
 “capture_metadata.json” created by seven camera
 setup and returns it.
 If multiple files with this name are found, it throws
-and exception.</p>
+an exception unless <cite>most_recent</cite> is <cite>True</cite>,in which case
+the file with the most recent change time is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Path to capture metadata file.</p>
@@ -115,14 +133,20 @@ and exception.</p>
 
 <dl class="function">
 <dt id="utils2p.find_optical_flow_file">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_optical_flow_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_optical_flow_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_optical_flow_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_optical_flow_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_optical_flow_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_optical_flow_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the optical flow file
 “OptFlow.txt” created by seven camera software and returns it.
 If multiple files with this name are found, it throws
-and exception.</p>
+an exception unless <cite>most_recent</cite> is <cite>True</cite>,in which case
+the file with the most recent change time is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Path to optical flow file.</p>
@@ -141,14 +165,20 @@ and exception.</p>
 
 <dl class="function">
 <dt id="utils2p.find_raw_file">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_raw_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_raw_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_raw_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_raw_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_raw_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_raw_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions find the path to the raw file
 “Image_0001_0001.raw” created by ThorImage and returns it.
 If multiple files with this name are found, it throws
-and exception.</p>
+an exception unless <cite>most_recent</cite> is <cite>True</cite>, in which case
+the file with the most recent change time is returned.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>path</strong> – Path to raw file.</p>
@@ -161,6 +191,78 @@ and exception.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_raw_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
 <span class="go">&#39;data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.find_sync_metadata_file">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_sync_metadata_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_sync_metadata_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_sync_metadata_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ifn the path to the synchonization
+metadata file “ThorRealTimeDataSettings.xml” created
+by ThorSync. If multiple files with this name are found,
+it throws an exception unless <cite>most_recent</cite> is <cite>True</cite>,
+in which case the file with the most recent change time
+is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to synchronization metadata file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_sync_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
+<span class="go">&#39;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.find_fictrac_file">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">find_fictrac_file</code><span class="sig-paren">(</span><em class="sig-param">directory</em>, <em class="sig-param">camera=3</em>, <em class="sig-param">most_recent=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#find_fictrac_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.find_fictrac_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function ifn the path to the output file of
+fictrac of the form <cite>camera_{cam}*.dat</cite>, where
+<cite>{cam}</cite> is the values specified in the <cite>camera</cite>
+argument. If multiple files with this name are found,
+it throws an exception unless <cite>most_recent</cite> is <cite>True</cite>,
+in which case the file with the most recent change time
+is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – Directory in which to search.</p></li>
+<li><p><strong>camera</strong> (<em>int</em>) – The camera used for fictrac.</p></li>
+<li><p><strong>most_recent</strong> (<em>bool</em>) – If True, the file with the most recent change time
+is returned and no exception is raised if multiple
+files are present.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>path</strong> – Path to fictrac output file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_fictrac_file</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+ <span class="c">...</span>
+<span class="gr">RuntimeError</span>: <span class="n">Could not identify fictrac output file unambiguously. Discovered 2 fictrac output files in data.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">find_fictrac_file</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">&#39;data/camera_3-20210803_103010.dat&#39;</span>
 </pre></div>
 </div>
 </dd></dl>

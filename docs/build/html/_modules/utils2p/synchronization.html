@@ -42,6 +42,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">scipy.signal</span>
 
 <span class="kn">import</span> <span class="nn">utils2p.main</span> <span class="k">as</span> <span class="nn">main</span>
 
@@ -179,16 +180,6 @@
 <span class="sd">    (array([5, 9]),)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">correct_possible_split_edges</span><span class="p">:</span>
-        <span class="c1">#if type(size) == tuple:</span>
-        <span class="c1">#    if size[1] - size[0] &gt; 0:</span>
-        <span class="c1">#        mode = &quot;rising&quot;</span>
-        <span class="c1">#    else:</span>
-        <span class="c1">#        mode = &quot;falling&quot;</span>
-        <span class="c1">#else:</span>
-        <span class="c1">#    if size &gt;= 0:</span>
-        <span class="c1">#        mode = &quot;rising&quot;</span>
-        <span class="c1">#    else:</span>
-        <span class="c1">#        mode = &quot;falling&quot;</span>
         <span class="n">line</span> <span class="o">=</span> <span class="n">correct_split_edges</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">==</span> <span class="nb">tuple</span><span class="p">:</span>
@@ -245,10 +236,18 @@
     <span class="k">return</span> <span class="n">correct_split_edges</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_start_times"><a class="viewcode-back" href="../../misc_sync.html#utils2p.synchronization.get_start_times">[docs]</a><span class="k">def</span> <span class="nf">get_start_times</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">times</span><span class="p">):</span>
+<div class="viewcode-block" id="get_start_times"><a class="viewcode-back" href="../../misc_sync.html#utils2p.synchronization.get_start_times">[docs]</a><span class="k">def</span> <span class="nf">get_start_times</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">times</span><span class="p">,</span> <span class="n">zero_based_counter</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the start times of a digital signal,</span>
 <span class="sd">    i.e. the times of the rising edges.</span>
+<span class="sd">    If the line is a zero based counter, such as the processed </span>
+<span class="sd">    `frame_counter` or the processed `cam_line`, there is a</span>
+<span class="sd">    possibility that the first element in line is already zero.</span>
+<span class="sd">    This corresponds to the case where the acquisition of the</span>
+<span class="sd">    first frame was triggered before ThorSync started.</span>
+<span class="sd">    If `zero_based_counter` is `False` this frame will be</span>
+<span class="sd">    dropped, i.e. no time for the frame is returned, since</span>
+<span class="sd">    there is no rising edge corresponding to the frame.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -256,6 +255,8 @@
 <span class="sd">        Line signal from h5 file.</span>
 <span class="sd">    times : numpy array</span>
 <span class="sd">        Times returned by :func:`utils2p.synchronization.get_times`</span>
+<span class="sd">    zero_based_counter : boolean</span>
+<span class="sd">        Indicates whether the line is a zero based counter.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -274,6 +275,12 @@
 <span class="sd">    array([0.05, 0.2 ])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indices</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">zero_based_counter</span> <span class="ow">and</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;The counters start with value </span><span class="si">{line[0]}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">indices_with_first_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">indices_with_first_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices_with_first_frame</span><span class="p">,)</span>
     <span class="n">time_points</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">time_points</span></div>
 
@@ -501,13 +508,6 @@
     <span class="n">processed_frame_counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
     <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">edges</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     
-    <span class="c1">#print(&quot;steps per frame&quot;, steps_per_frame)</span>
-    <span class="c1">#print(&quot;n rising edges&quot;, len(rising_edges))</span>
-    <span class="c1">#print(&quot;size of edges&quot;, set(np.diff(line)))</span>
-    <span class="c1">#print(&quot;n edge 2&quot;, np.sum(np.diff(line) == 2))</span>
-    <span class="c1">#print(&quot;n edge 1&quot;, np.sum(np.diff(line) == 1))</span>
-    <span class="c1">#print(&quot;pos of edge 1&quot;, np.where(np.diff(line) == 1))</span>
-
     <span class="c1">#Case of one frame/volume only</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rising_edges</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">steps_per_frame</span><span class="p">:</span>
         <span class="n">processed_frame_counter</span><span class="p">[</span><span class="n">rising_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:</span> <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -982,6 +982,148 @@
     <span class="n">processed_lines</span><span class="p">[</span><span class="s2">&quot;Times&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">times</span>
 
     <span class="k">return</span> <span class="n">processed_lines</span>
+
+
+<div class="viewcode-block" id="epoch_length_filter"><a class="viewcode-back" href="../../misc_sync.html#utils2p.synchronization.epoch_length_filter">[docs]</a><span class="k">def</span> <span class="nf">epoch_length_filter</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">cut_off</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function filters a binary based on the length</span>
+<span class="sd">    of each event.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    line : numpy array of type bool</span>
+<span class="sd">        Binary trace that is filtered.</span>
+<span class="sd">    cut_off : int</span>
+<span class="sd">        The minimal event length. All event shorter</span>
+<span class="sd">        than `cut_off` are set to `False`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filtered : numpy array of type bool</span>
+<span class="sd">        The filtered binary trace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">rising_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">diff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">falling_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">epoch_length</span> <span class="o">=</span> <span class="n">falling_edges</span> <span class="o">-</span> <span class="n">rising_edges</span>
+    
+    <span class="n">discarded_epochs</span> <span class="o">=</span> <span class="p">(</span><span class="n">epoch_length</span> <span class="o">&lt;</span> <span class="n">cut_off</span><span class="p">)</span>
+    
+    <span class="n">discarded_rising_edges</span> <span class="o">=</span> <span class="n">rising_edges</span><span class="p">[</span><span class="n">discarded_epochs</span><span class="p">]</span>
+    <span class="n">discarded_falling_edges</span> <span class="o">=</span> <span class="n">falling_edges</span><span class="p">[</span><span class="n">discarded_epochs</span><span class="p">]</span>
+
+    <span class="n">filtered</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">discarded_rising_edges</span><span class="p">,</span> <span class="n">discarded_falling_edges</span><span class="p">):</span>
+        <span class="n">filtered</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">return</span> <span class="n">filtered</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="process_odor_line"><a class="viewcode-back" href="../../loading_preprocessing.html#utils2p.synchronization.process_odor_line">[docs]</a><span class="k">def</span> <span class="nf">process_odor_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mi">30000</span><span class="p">,</span> <span class="n">arduino_commands</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor1&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor2&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor3&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor4&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor5&quot;</span><span class="p">,</span> <span class="s2">&quot;Odor6&quot;</span><span class="p">),</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.65</span><span class="p">,</span> <span class="n">filter_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The odor line is based on a PWM signal for the Arduino controlling the valves.</span>
+<span class="sd">    This function applies a Butterworth filter and converts the resulting voltages</span>
+<span class="sd">    to level indices. The corresponding the setting of the valves are given by</span>
+<span class="sd">    the `arduino_commands` argument.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    line : numpy array</span>
+<span class="sd">        Unprocessed odor line from h5 file.</span>
+<span class="sd">    freq : int</span>
+<span class="sd">        Frequency of ThorSync. Necessary for the Butterworth filter.</span>
+<span class="sd">    arduino_commands : list of strings</span>
+<span class="sd">        Description of the valve settings for commands sent to arduino.</span>
+<span class="sd">        Note: The order matters since the serial communications between computer</span>
+<span class="sd">        and Arduino is based on the index in the list. This index is converted</span>
+<span class="sd">        to a PWM signal that is recorded by ThorSync.</span>
+<span class="sd">    step_size : float</span>
+<span class="sd">        The voltage step size between different levels of the PWM. This is used</span>
+<span class="sd">        to convert the voltage to indices.</span>
+<span class="sd">    filter_only : bool</span>
+<span class="sd">        If `True`, only the filtered line is returned instead of the odors based</span>
+<span class="sd">        on the `arduino_commands`. This is useful for determining the `step_size`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    numpy array of strings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">butter</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
+    <span class="n">filtered_line</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">filtfilt</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filter_only</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">filtered_line</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">filtered_line</span> <span class="o">/</span> <span class="n">step_size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">indices</span> <span class="o">==</span> <span class="n">index</span><span class="p">)</span>
+        <span class="n">filtered_mask</span> <span class="o">=</span> <span class="n">epoch_length_filter</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
+        <span class="n">indices</span><span class="p">[</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">filtered_mask</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arduino_commands</span><span class="p">)[</span><span class="n">indices</span><span class="p">]</span></div>
+            
+
+<div class="viewcode-block" id="event_based_frame_indices"><a class="viewcode-back" href="../../misc_sync.html#utils2p.synchronization.event_based_frame_indices">[docs]</a><span class="k">def</span> <span class="nf">event_based_frame_indices</span><span class="p">(</span><span class="n">event_indicator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates frame indices based on events.</span>
+<span class="sd">    Frames before an event have negative numbers.</span>
+<span class="sd">    The event onset has frame number 0 and the frames</span>
+<span class="sd">    count up for the duration of the event.</span>
+<span class="sd">    To be able to distinguish multiple events in the</span>
+<span class="sd">    `event_indicator` an array with event numbers is</span>
+<span class="sd">    returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    event_indicator : numpy array of type bool</span>
+<span class="sd">        True indicates some event happening.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    event_based_indices : numpy array of type int</span>
+<span class="sd">        Event based indices as described above.</span>
+<span class="sd">    event_number : numpy array of type int</span>
+<span class="sd">        Array of the same length as `event_based_indices`</span>
+<span class="sd">        counting the number of events in event indicator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">event_indicator</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">inv_mask</span> <span class="o">=</span> <span class="o">~</span><span class="n">mask</span>
+    <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">inv_mask</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+    <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">inv_mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">,],</span> <span class="n">mask</span><span class="p">))</span>
+    <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">inv_mask</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,]))</span>
+    
+    <span class="n">event_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">mask</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">inv_event_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">inv_mask</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">inv_mask</span> <span class="o">=</span> <span class="n">inv_mask</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="c1"># Count up from zero during the event</span>
+    <span class="n">event_frame_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">inv_event_frame_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">inv_mask</span><span class="p">)</span>
+    <span class="n">n_events</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">event_numbers</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_events</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">event_numbers</span> <span class="o">==</span> <span class="n">event</span><span class="p">)</span>
+        <span class="n">event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span> 
+    <span class="n">event_frame_indices</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="c1"># Count down from zero before each event</span>
+    <span class="n">n_inv_event</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">inv_event_numbers</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">inv_event</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_inv_event</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">inv_event_numbers</span> <span class="o">==</span> <span class="n">inv_event</span><span class="p">)</span>
+        <span class="n">inv_event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">inv_event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">inv_event_frame_indices</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">inv_event_frame_indices</span><span class="p">[</span><span class="o">~</span><span class="n">inv_mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">inv_event_frame_indices</span> <span class="o">=</span> <span class="o">-</span><span class="n">inv_event_frame_indices</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">event_frame_indices</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)]</span> <span class="o">=</span> <span class="n">inv_event_frame_indices</span><span class="p">[</span><span class="o">~</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)]</span>
+    
+    <span class="n">event_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">2</span><span class="p">],</span> <span class="n">event_frame_indices</span><span class="p">))),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="c1"># Make sure the last frames are not counted as the pre-event frames of a new event</span>
+    <span class="n">n_events</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">event_numbers</span><span class="p">)</span>
+    <span class="n">last_event</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">event_numbers</span> <span class="o">==</span> <span class="n">n_events</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">event_frame_indices</span><span class="p">[</span><span class="n">last_event</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">event_numbers</span><span class="p">[</span><span class="n">last_event</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">event_frame_indices</span><span class="p">,</span> <span class="n">event_numbers</span></div>
 </pre></div>
 
           </div>

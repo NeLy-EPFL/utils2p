@@ -6,3 +6,4 @@ Loading and preprocessing
 .. autofunction:: utils2p.synchronization.process_frame_counter
 .. autofunction:: utils2p.synchronization.process_optical_flow_line
 .. autofunction:: utils2p.synchronization.process_stimulus_line
+.. autofunction:: utils2p.synchronization.process_odor_line

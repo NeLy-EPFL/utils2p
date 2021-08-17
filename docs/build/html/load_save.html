@@ -63,11 +63,18 @@ i.e. the image uses the full dynamic range available.</p></li>
 
 <dl class="function">
 <dt id="utils2p.load_img">
-<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_img</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_img" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_img</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">memmap=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_img"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_img" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions loads an image from file and returns as a numpy array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – Path to image file.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>string</em>) – Path to image file.</p></li>
+<li><p><strong>memmap</strong> (<em>bool</em>) – If <cite>True</cite>, the image is not loaded into memory but remains on
+disk and a <cite>numpy.memmap</cite> object is returned. It can be indexed
+like a normal <cite>numpy.array</cite>. This option is useful when a stack
+does not fit into memory. It can also be used when opening many
+stacks simultaneously.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Image in form of numpy array.</p>
@@ -83,6 +90,9 @@ i.e. the image uses the full dynamic range available.</p></li>
 <span class="go">&lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">img</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(200, 200)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">load_img</span><span class="p">(</span><span class="s2">&quot;data/chessboard_GRAY_U16.tif&quot;</span><span class="p">,</span> <span class="n">memmap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="go">&lt;class &#39;numpy.memmap&#39;&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -342,6 +352,11 @@ in the second dimension but still only on one side of the first dimension.</p>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="function">
+<dt id="utils2p.load_fictrac">
+<code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">load_fictrac</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">ball_radius=10</em>, <em class="sig-param">fps=100</em>, <em class="sig-param">camera=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#load_fictrac"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.load_fictrac" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 

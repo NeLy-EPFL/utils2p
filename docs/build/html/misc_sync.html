@@ -132,14 +132,23 @@ Default is True.</p></li>
 
 <dl class="function">
 <dt id="utils2p.synchronization.get_start_times">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_start_times</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">times</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_start_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_start_times" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_start_times</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">times</em>, <em class="sig-param">zero_based_counter=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_start_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_start_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the start times of a digital signal,
-i.e. the times of the rising edges.</p>
+i.e. the times of the rising edges.
+If the line is a zero based counter, such as the processed
+<cite>frame_counter</cite> or the processed <cite>cam_line</cite>, there is a
+possibility that the first element in line is already zero.
+This corresponds to the case where the acquisition of the
+first frame was triggered before ThorSync started.
+If <cite>zero_based_counter</cite> is <cite>False</cite> this frame will be
+dropped, i.e. no time for the frame is returned, since
+there is no rising edge corresponding to the frame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
 <li><p><strong>times</strong> (<em>numpy array</em>) – Times returned by <a class="reference internal" href="#utils2p.synchronization.get_times" title="utils2p.synchronization.get_times"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils2p.synchronization.get_times()</span></code></a></p></li>
+<li><p><strong>zero_based_counter</strong> (<em>boolean</em>) – Indicates whether the line is a zero based counter.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -212,6 +221,53 @@ for a given sequence length and tick frequency.</p>
 <span class="go">array([0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.epoch_length_filter">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">epoch_length_filter</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">cut_off</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#epoch_length_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.epoch_length_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function filters a binary based on the length
+of each event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array of type bool</em>) – Binary trace that is filtered.</p></li>
+<li><p><strong>cut_off</strong> (<em>int</em>) – The minimal event length. All event shorter
+than <cite>cut_off</cite> are set to <cite>False</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>filtered</strong> – The filtered binary trace.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array of type bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="utils2p.synchronization.event_based_frame_indices">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">event_based_frame_indices</code><span class="sig-paren">(</span><em class="sig-param">event_indicator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#event_based_frame_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.event_based_frame_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates frame indices based on events.
+Frames before an event have negative numbers.
+The event onset has frame number 0 and the frames
+count up for the duration of the event.
+To be able to distinguish multiple events in the
+<cite>event_indicator</cite> an array with event numbers is
+returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>event_indicator</strong> (<em>numpy array of type bool</em>) – True indicates some event happening.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>event_based_indices</strong> (<em>numpy array of type int</em>) – Event based indices as described above.</p></li>
+<li><p><strong>event_number</strong> (<em>numpy array of type int</em>) – Array of the same length as <cite>event_based_indices</cite>
+counting the number of events in event indicator.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

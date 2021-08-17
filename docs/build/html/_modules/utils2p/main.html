@@ -508,7 +508,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_value</span><span class="p">(</span><span class="s2">&quot;Date&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="load_img"><a class="viewcode-back" href="../../load_save.html#utils2p.load_img">[docs]</a><span class="k">def</span> <span class="nf">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+<div class="viewcode-block" id="load_img"><a class="viewcode-back" href="../../load_save.html#utils2p.load_img">[docs]</a><span class="k">def</span> <span class="nf">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">memmap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions loads an image from file and returns as a numpy array.</span>
 <span class="sd">    </span>
@@ -516,6 +516,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : string</span>
 <span class="sd">        Path to image file.</span>
+<span class="sd">    memmap : bool</span>
+<span class="sd">        If `True`, the image is not loaded into memory but remains on</span>
+<span class="sd">        disk and a `numpy.memmap` object is returned. It can be indexed</span>
+<span class="sd">        like a normal `numpy.array`. This option is useful when a stack</span>
+<span class="sd">        does not fit into memory. It can also be used when opening many</span>
+<span class="sd">        stacks simultaneously.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -530,9 +536,12 @@
 <span class="sd">    &lt;class &#39;numpy.ndarray&#39;&gt;</span>
 <span class="sd">    &gt;&gt;&gt; img.shape</span>
 <span class="sd">    (200, 200)</span>
+<span class="sd">    &gt;&gt;&gt; img = utils2p.load_img(&quot;data/chessboard_GRAY_U16.tif&quot;, memmap=True)</span>
+<span class="sd">    &gt;&gt;&gt; type(img)</span>
+<span class="sd">    &lt;class &#39;numpy.memmap&#39;&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">tifffile</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">memmap</span><span class="o">=</span><span class="n">memmap</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="load_stack_batches"><a class="viewcode-back" href="../../load_save.html#utils2p.load_stack_batches">[docs]</a><span class="k">def</span> <span class="nf">load_stack_batches</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">):</span>
@@ -556,14 +565,12 @@
 <span class="sd">        Generator that yields chunks of `batch_size` frames of the</span>
 <span class="sd">        stack.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">stack</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">memmap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">stack</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;The path does not point to a stack. The shape is </span><span class="si">{stack.shape}</span><span class="s2">.&quot;</span><span class="p">)</span>
     <span class="n">n_batches</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">stack</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_batches</span><span class="p">):</span>
-        <span class="n">stack</span> <span class="o">=</span> <span class="n">load_img</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-        <span class="n">substack</span> <span class="o">=</span> <span class="n">stack</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">del</span> <span class="n">stack</span>
+        <span class="n">substack</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">stack</span><span class="p">[</span><span class="n">i</span> <span class="o">*</span> <span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">batch_size</span><span class="p">])</span>
         <span class="k">yield</span> <span class="n">substack</span></div>
 
 
@@ -911,7 +918,7 @@
         <span class="k">raise</span> <span class="bp">NotImplemented</span><span class="p">(</span><span class="s2">&quot;Saving of metadata is not yet implemented&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">file_type</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">file_type</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function finds a unique file with a given name in</span>
 <span class="sd">    in the directory.</span>
@@ -920,35 +927,51 @@
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 <span class="sd">    name : str</span>
 <span class="sd">        Name of the file.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the most recently modified file is returned</span>
+<span class="sd">        and no error is raised if multiple files were found.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    path : str</span>
 <span class="sd">        Path to file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">file_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">))</span>
+    <span class="n">file_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="n">f</span><span class="s2">&quot;Could not identify </span><span class="si">{file_type}</span><span class="s2"> file unambiguously. Discovered {len(file_names)} </span><span class="si">{file_type}</span><span class="s2"> files in </span><span class="si">{directory}</span><span class="s2">.&quot;</span>
+        <span class="k">if</span> <span class="n">most_recent</span><span class="p">:</span>
+            <span class="n">change_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">st_mtime</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">file_names</span><span class="p">]</span>
+            <span class="n">file_names</span> <span class="o">=</span> <span class="p">(</span><span class="n">file_names</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">change_times</span><span class="p">)],)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;Could not identify </span><span class="si">{file_type}</span><span class="s2"> file unambiguously. Discovered {len(file_names)} </span><span class="si">{file_type}</span><span class="s2"> files in </span><span class="si">{directory}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No </span><span class="si">{file_type}</span><span class="s2"> file found in </span><span class="si">{directory}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="find_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the metadata file</span>
 <span class="sd">    &quot;Experiment.xml&quot; created by ThorImage and returns it.</span>
 <span class="sd">    If multiple files with this name are found, it throws</span>
-<span class="sd">    and exception.</span>
+<span class="sd">    an exception unless `most_recent` is `True`, in which case</span>
+<span class="sd">    the file with the most recent change time is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -961,21 +984,26 @@
 <span class="sd">    &gt;&gt;&gt; utils2p.find_metadata_file(&quot;data/mouse_kidney_z_stack&quot;)</span>
 <span class="sd">    &#39;data/mouse_kidney_z_stack/Experiment.xml&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Experiment.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Experiment.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_seven_camera_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_seven_camera_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_seven_camera_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_seven_camera_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the metadata file</span>
 <span class="sd">    &quot;capture_metadata.json&quot; created by seven camera</span>
 <span class="sd">    setup and returns it.</span>
 <span class="sd">    If multiple files with this name are found, it throws</span>
-<span class="sd">    and exception.</span>
+<span class="sd">    an exception unless `most_recent` is `True`,in which case</span>
+<span class="sd">    the file with the most recent change time is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -988,20 +1016,25 @@
 <span class="sd">    &gt;&gt;&gt; utils2p.find_seven_camera_metadata_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &#39;data/mouse_kidney_raw/behData/images/capture_metadata.json&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;capture_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;seven camera capture metadata&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;capture_metadata.json&quot;</span><span class="p">,</span> <span class="s2">&quot;seven camera capture metadata&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_sync_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_sync_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_sync_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_sync_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the sync file</span>
 <span class="sd">    &quot;Episode001.h5&quot; created by ThorSync and returns it.</span>
 <span class="sd">    If multiple files with this name are found, it throws</span>
-<span class="sd">    and exception.</span>
+<span class="sd">    an exception unless `most_recent` is `True`, in which case</span>
+<span class="sd">    the file with the most recent change time is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1014,20 +1047,25 @@
 <span class="sd">    &gt;&gt;&gt; utils2p.find_sync_file(&quot;data/mouse_kidney_z_stack&quot;)</span>
 <span class="sd">    &#39;data/mouse_kidney_z_stack/Episode001.h5&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Episode001.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Episode001.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_optical_flow_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_optical_flow_file">[docs]</a><span class="k">def</span> <span class="nf">find_optical_flow_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_optical_flow_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_optical_flow_file">[docs]</a><span class="k">def</span> <span class="nf">find_optical_flow_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the optical flow file</span>
 <span class="sd">    &quot;OptFlow.txt&quot; created by seven camera software and returns it.</span>
 <span class="sd">    If multiple files with this name are found, it throws</span>
-<span class="sd">    and exception.</span>
+<span class="sd">    an exception unless `most_recent` is `True`,in which case</span>
+<span class="sd">    the file with the most recent change time is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1040,20 +1078,25 @@
 <span class="sd">    &gt;&gt;&gt; utils2p.find_optical_flow_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &#39;data/mouse_kidney_raw/behData/OptFlowData/OptFlow.txt&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;OptFlow.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;optical flow&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;OptFlow.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;optical flow&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="find_raw_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_raw_file">[docs]</a><span class="k">def</span> <span class="nf">find_raw_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_raw_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_raw_file">[docs]</a><span class="k">def</span> <span class="nf">find_raw_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions find the path to the raw file</span>
 <span class="sd">    &quot;Image_0001_0001.raw&quot; created by ThorImage and returns it.</span>
 <span class="sd">    If multiple files with this name are found, it throws</span>
-<span class="sd">    and exception.</span>
+<span class="sd">    an exception unless `most_recent` is `True`, in which case</span>
+<span class="sd">    the file with the most recent change time is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1066,20 +1109,26 @@
 <span class="sd">    &gt;&gt;&gt; utils2p.find_raw_file(&quot;data/mouse_kidney_raw&quot;)</span>
 <span class="sd">    &#39;data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Image_0001_0001.raw&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;Image_0001_0001.raw&quot;</span><span class="p">,</span> <span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">find_sync_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+<div class="viewcode-block" id="find_sync_metadata_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_sync_metadata_file">[docs]</a><span class="k">def</span> <span class="nf">find_sync_metadata_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function ifn the path to the synchonization</span>
 <span class="sd">    metadata file &quot;ThorRealTimeDataSettings.xml&quot; created</span>
 <span class="sd">    by ThorSync. If multiple files with this name are found,</span>
-<span class="sd">    it throws an exception.</span>
+<span class="sd">    it throws an exception unless `most_recent` is `True`,</span>
+<span class="sd">    in which case the file with the most recent change time</span>
+<span class="sd">    is returned.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    directory : str</span>
 <span class="sd">        Directory in which to search.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1093,7 +1142,46 @@
 <span class="sd">    &#39;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;ThorRealTimeDataSettings.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization metadata&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="s2">&quot;ThorRealTimeDataSettings.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;synchronization metadata&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="find_fictrac_file"><a class="viewcode-back" href="../../file_discovery.html#utils2p.find_fictrac_file">[docs]</a><span class="k">def</span> <span class="nf">find_fictrac_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">camera</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function ifn the path to the output file of</span>
+<span class="sd">    fictrac of the form `camera_{cam}*.dat`, where</span>
+<span class="sd">    `{cam}` is the values specified in the `camera`</span>
+<span class="sd">    argument. If multiple files with this name are found,</span>
+<span class="sd">    it throws an exception unless `most_recent` is `True`,</span>
+<span class="sd">    in which case the file with the most recent change time</span>
+<span class="sd">    is returned.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    directory : str</span>
+<span class="sd">        Directory in which to search.</span>
+<span class="sd">    camera : int</span>
+<span class="sd">        The camera used for fictrac.</span>
+<span class="sd">    most_recent : bool</span>
+<span class="sd">        If True, the file with the most recent change time</span>
+<span class="sd">        is returned and no exception is raised if multiple</span>
+<span class="sd">        files are present.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        Path to fictrac output file.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import utils2p</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_fictrac_file(&quot;data&quot;)</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">     ...</span>
+<span class="sd">    RuntimeError: Could not identify fictrac output file unambiguously. Discovered 2 fictrac output files in data.</span>
+<span class="sd">    &gt;&gt;&gt; utils2p.find_fictrac_file(&quot;data&quot;, most_recent=True)</span>
+<span class="sd">    &#39;data/camera_3-20210803_103010.dat&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_find_file</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;camera_</span><span class="si">{camera}</span><span class="s2">*.dat&quot;</span><span class="p">,</span> <span class="s2">&quot;fictrac output&quot;</span><span class="p">,</span> <span class="n">most_recent</span><span class="o">=</span><span class="n">most_recent</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="load_optical_flow"><a class="viewcode-back" href="../../load_save.html#utils2p.load_optical_flow">[docs]</a><span class="k">def</span> <span class="nf">load_optical_flow</span><span class="p">(</span>
@@ -1175,9 +1263,6 @@
 <span class="sd">    (1408,)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">raw_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-        
-    <span class="c1">#raw_data = np.apply_along_axis(lambda m: np.convolve(m, np.ones(100) / 100, mode=&quot;same&quot;), axis=0, arr=raw_data)</span>
-    
     <span class="k">if</span> <span class="n">smoothing_kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">smoothing_kernel</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;smoothing_kernel of shape </span><span class="si">{smoothing_kernel.shape}</span><span class="s2"> is longer than optical flow data of shape </span><span class="si">{raw_data.shape}</span><span class="s2">.&quot;</span><span class="p">)</span>
@@ -1210,6 +1295,43 @@
         <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sensor0&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sensor0&quot;</span><span class="p">][</span><span class="s2">&quot;gain_y&quot;</span><span class="p">]</span>
         <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sensor1&quot;</span><span class="p">][</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sensor1&quot;</span><span class="p">][</span><span class="s2">&quot;gain_y&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="mi">45</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="load_fictrac"><a class="viewcode-back" href="../../load_save.html#utils2p.load_fictrac">[docs]</a><span class="k">def</span> <span class="nf">load_fictrac</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ball_radius</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">camera</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">col_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Frame_counter&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;delta_rot_cam_right&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_rot_cam_down&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_rot_cam_forward&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;delta_rot_error&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;delta_rot_lab_side&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_rot_lab_forward&quot;</span><span class="p">,</span> <span class="s2">&quot;delta_rot_lab_turn&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;abs_rot_cam_right&quot;</span><span class="p">,</span> <span class="s2">&quot;abs_rot_cam_down&quot;</span><span class="p">,</span> <span class="s2">&quot;abs_rot_cam_forward&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;abs_rot_lab_side&quot;</span><span class="p">,</span> <span class="s2">&quot;abs_rot_lab_forward&quot;</span><span class="p">,</span> <span class="s2">&quot;abs_rot_lab_turn&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;integrated_lab_x&quot;</span><span class="p">,</span> <span class="s2">&quot;integrated_lab_y&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;integrated_lab_heading&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;animal_movement_direction_lab&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;animal_movement_speed&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;integrated_forward_movement&quot;</span><span class="p">,</span> <span class="s2">&quot;integrated_side_movement&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;seq_counter&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;delta_time&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;alt_time&quot;</span>
+                <span class="p">]</span>
+    
+    <span class="n">dat_table</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_names</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">dat_table</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> 
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Speed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;animal_movement_speed&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span> <span class="o">*</span> <span class="n">fps</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_lab_x&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_lab_y&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;forward_pos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_forward_movement&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;side_pos&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_side_movement&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_side&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_side&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span> <span class="o">*</span> <span class="n">fps</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_forward&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_forward&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span> <span class="o">*</span> <span class="n">fps</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_turn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;delta_rot_lab_turn&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">360</span> <span class="o">*</span> <span class="n">fps</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_forward_movement&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_forward_movement&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_side_movement&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;integrated_side_movement&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ball_radius</span>
+    <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Frame_counter&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">fps</span>
 
     <span class="k">return</span> <span class="n">data</span></div>
 </pre></div>

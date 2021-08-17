@@ -264,6 +264,37 @@ stimulus line can contain values larger than 1.</p>
 </div>
 </dd></dl>
 
+<dl class="function">
+<dt id="utils2p.synchronization.process_odor_line">
+<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">process_odor_line</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">freq=30000</em>, <em class="sig-param">arduino_commands=('None'</em>, <em class="sig-param">'Odor1'</em>, <em class="sig-param">'Odor2'</em>, <em class="sig-param">'Odor3'</em>, <em class="sig-param">'Odor4'</em>, <em class="sig-param">'Odor5'</em>, <em class="sig-param">'Odor6')</em>, <em class="sig-param">step_size=0.65</em>, <em class="sig-param">filter_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#process_odor_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.process_odor_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>The odor line is based on a PWM signal for the Arduino controlling the valves.
+This function applies a Butterworth filter and converts the resulting voltages
+to level indices. The corresponding the setting of the valves are given by
+the <cite>arduino_commands</cite> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>numpy array</em>) – Unprocessed odor line from h5 file.</p></li>
+<li><p><strong>freq</strong> (<em>int</em>) – Frequency of ThorSync. Necessary for the Butterworth filter.</p></li>
+<li><p><strong>arduino_commands</strong> (<em>list of strings</em>) – Description of the valve settings for commands sent to arduino.
+Note: The order matters since the serial communications between computer
+and Arduino is based on the index in the list. This index is converted
+to a PWM signal that is recorded by ThorSync.</p></li>
+<li><p><strong>step_size</strong> (<em>float</em>) – The voltage step size between different levels of the PWM. This is used
+to convert the voltage to indices.</p></li>
+<li><p><strong>filter_only</strong> (<em>bool</em>) – If <cite>True</cite>, only the filtered line is returned instead of the odors based
+on the <cite>arduino_commands</cite>. This is useful for determining the <cite>step_size</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy array of strings</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

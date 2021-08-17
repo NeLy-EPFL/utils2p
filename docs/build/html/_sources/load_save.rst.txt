@@ -8,3 +8,4 @@ Loading and saving
 .. autofunction:: utils2p.load_optical_flow
 .. autofunction:: utils2p.load_stack_batches
 .. autofunction:: utils2p.load_stack_patches
+.. autofunction:: utils2p.load_fictrac
