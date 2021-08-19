@@ -5,6 +5,7 @@ Synchronization module
 This module provides functions to process the synchronization data
 acquired with Thor Sync during imaging.
 """
+import warnings
 
 import numpy as np
 import h5py
@@ -244,7 +245,7 @@ def get_start_times(line, times, zero_based_counter=False):
     indices = edges(line, size=(0, np.inf))
     if zero_based_counter and line[0] >= 0:
         if line[0] > 0:
-            warnings.warn(f"The counters start with value {line[0]}")
+            warnings.warn(f"The counter start with value {line[0]}")
         indices_with_first_frame = np.zeros(len(indices[0]) + 1, dtype=int)
         indices_with_first_frame[1:] = indices[0]
         indices = (indices_with_first_frame,)
