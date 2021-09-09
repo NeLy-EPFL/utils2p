@@ -293,7 +293,7 @@ def _capture_metadata(n_frames, dropped_frames=None):
     return capture_info
 
 
-def process_cam_line(line, capture_json):
+def process_cam_line(line, seven_camera_metadata):
     """
     Remove superfluous signals and use frame numbers in array.
     The cam line signal form the h5 file is a binary sequence.
@@ -314,7 +314,7 @@ def process_cam_line(line, capture_json):
     ----------
     line : numpy array
         Line signal from h5 file.
-    capture_json : string
+    seven_camera_metadata : string
         Path to the json file save by our camera software.
         This file is usually located in the same folder as the frames
         and is called 'capture_metadata.json'. If None, it is assumed
@@ -332,16 +332,16 @@ def process_cam_line(line, capture_json):
     >>> import utils2p.synchronization
     >>> import numpy as np
     >>> h5_file = utils2p.find_sync_file("data/mouse_kidney_raw")
-    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
+    >>> seven_camera_metadata = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     >>> line_names = ["Basler"]
     >>> (cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> set(np.diff(cam_line))
     {0, 8, 4294967288}
-    >>> processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
+    >>> processed_cam_line = utils2p.synchronization.process_cam_line(cam_line, seven_camera_metadata)
     >>> set(np.diff(processed_cam_line))
     {0, 1, -9223372036854775808, 9223372036854775749}
     >>> cam_line = np.array([0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0])
-    >>> utils2p.synchronization.process_cam_line(cam_line, capture_json=None)
+    >>> utils2p.synchronization.process_cam_line(cam_line, seven_camera_metadata=None)
     array([-9223372036854775808,                    0,                    0,
                               0,                    0,                    0,
                               1,                    1,                    1,
@@ -355,8 +355,8 @@ def process_cam_line(line, capture_json):
     rising_edges = edges(line, (0, np.inf))[0]
 
     # Load capture metadata or generate default
-    if capture_json is not None:
-        with open(capture_json, "r") as f:
+    if seven_camera_metadata is not None:
+        with open(seven_camera_metadata, "r") as f:
             capture_info = json.load(f)
     else:
         capture_info = _capture_metadata([len(rising_edges),])
@@ -666,8 +666,8 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     >>> line_names = ["Frame Counter", "Basler"]
     >>> (frame_counter, cam_line,) = utils2p.synchronization.get_lines_from_h5_file(h5_file, line_names)
     >>> frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=4)
-    >>> capture_json = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
-    >>> cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
+    >>> seven_camera_metadata = utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
+    >>> cam_line = utils2p.synchronization.process_cam_line(cam_line, seven_camera_metadata)
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([0,]), cam_line, frame_counter)
     array([-9223372036854775808])
     >>> utils2p.synchronization.beh_idx_to_2p_idx(np.array([10,]), cam_line, frame_counter)

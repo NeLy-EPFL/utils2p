@@ -54,13 +54,13 @@ def h5_file(tmpdir):
 
 
 @pytest.fixture
-def capture_json(tmpdir):
+def seven_camera_metadata(tmpdir):
     """
     This pytest factory produces a json metadata file
     for the seven camera setup.
     """
     path = os.path.join(tmpdir, "capture_metadata.json")
-    def _capture_json(n_frames, dropped_frames=None):
+    def _seven_camera_metadata(n_frames, dropped_frames=None):
         """
         Generates a json file with seven camera capture metadata.
 
@@ -77,7 +77,7 @@ def capture_json(tmpdir):
         with open(path, "w") as f:
             json.dump(capture_info, f)
         return path
-    return _capture_json
+    return _seven_camera_metadata
 
 
 @pytest.mark.parametrize("length", [20, 1000000])
@@ -182,26 +182,26 @@ def test__capture_metadata():
     assert capture_info == {"Frame Counts": {"0": {"0": 0, "1": 2, "2": 3, "3": 5, "4": 6, "5": 7},}}
 
 
-def test_process_cam_line(capture_json):
+def test_process_cam_line(seven_camera_metadata):
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1])
     expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2])
     result = utils2p.synchronization.process_cam_line(line, None)
     assert np.allclose(result, expected)
 
-    metadata = capture_json([2,])
+    metadata = seven_camera_metadata([2,])
     expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, -9223372036854775808])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
 
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
     expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, -9223372036854775808])
-    metadata = capture_json([4,])
+    metadata = seven_camera_metadata([4,])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
     line = np.array([0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 1])
     expected = np.array([-9223372036854775808, -9223372036854775808, -9223372036854775808, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, -9223372036854775808])
-    metadata = capture_json([3,], dropped_frames=[[2,],])
+    metadata = seven_camera_metadata([3,], dropped_frames=[[2,],])
     result = utils2p.synchronization.process_cam_line(line, metadata)
     assert np.allclose(result, expected)
     
@@ -216,13 +216,13 @@ def test_process_cam_line(capture_json):
         utils2p.synchronization.process_cam_line(line, None)
 
     # Inconsistent number of frames across cameras
-    metadata = capture_json([4, 5])
+    metadata = seven_camera_metadata([4, 5])
     line = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
     with pytest.raises(utils2p.synchronization.SynchronizationError):
         utils2p.synchronization.process_cam_line(line, metadata)
 
     # More frames in metadata than ticks in line
-    metadata = capture_json([5,])
+    metadata = seven_camera_metadata([5,])
     line = np.array([0, 1, 0, 1, 0])
     with pytest.raises(ValueError):
         utils2p.synchronization.process_cam_line(line, metadata)
