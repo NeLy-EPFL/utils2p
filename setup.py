@@ -3,8 +3,8 @@ from distutils.core import Extension
 
 try:
     import numpy as np
-except ImportError:
-    print(
+except ImportError or ModuleNotFoundError:
+    raise ImportError(
         "Numpy has to be installed in order to install utils2p.\n"
         + "Please refer to the Numpy website for instructions on how to install it.\n"
     )
@@ -23,14 +23,19 @@ external = Extension(
 
 setup(
     name="utils2p",
-    version="0.1",
+    version="0.1.0",
     packages=["utils2p", "utils2p.external", "utils2p.external.tifffile"],
     author="Florian Aymanns",
     author_email="florian.ayamnns@epfl.ch",
     description="Basic utility functions for 2 photon image data generated using ThorImage and ThorSync.",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     url="https://github.com/NeLy-EPFL/utils2p",
-    install_requires=["pytest", "h5py", "scipy"],
+    setup_requires=["numpy"],
+    install_requires=["numpy",
+                      "pytest",
+                      "scipy",
+                      "h5py",
+                     ],
     ext_modules=[external],
 )
