@@ -61,19 +61,24 @@ def get_lines_from_sync_file(file_path, line_names):
     
     with h5py.File(file_path, "r") as f:
         for name in line_names:
-            try:
+            lines_with_this_name = []
+            for line_type in ("DI", "CI", "AI"):
                 try:
-                    try:
-                        lines.append(f["DI"][name][:].squeeze())
-                    except KeyError:
-                        lines.append(f["CI"][name][:].squeeze())
+                    lines_with_this_name.append(f[line_type][name][:].squeeze())
                 except KeyError:
-                    lines.append(f["AI"][name][:].squeeze())
-            except KeyError:
+                    pass
+            if len(lines_with_this_name) == 1:
+                lines.append(lines_with_this_name[0])
+            elif len(lines_with_this_name) == 0:
                 DI_keys = list(f["DI"].keys())
                 CI_keys = list(f["CI"].keys())
                 AI_keys = list(f["AI"].keys())
                 raise KeyError(f"No line named '{name}' exists. The digital lines are {DI_keys}, the continuous lines are {CI_keys}, and  the analogue inputs are {AI_keys}.")
+            else:
+                DI_keys = list(f["DI"].keys())
+                CI_keys = list(f["CI"].keys())
+                AI_keys = list(f["AI"].keys())
+                raise KeyError(f"Multiple lines named '{name}' exist. The digital lines are {DI_keys}, the continuous lines are {CI_keys}, and  the analogue inputs are {AI_keys}.")
     return tuple(lines)
 
 
