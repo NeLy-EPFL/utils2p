@@ -19,7 +19,15 @@ The full documentation is hosted on `github pages <https://nely-epfl.github.io/u
 
 Installation
 ------------
-The package can be installed using `pip <https://pypi.org/project/pip/>`_.
+The package can be installed using `pip <https://pypi.org/project/pip/>`_ with:
+
+.. code-block:: shell
+
+    pip install utils2p
+
+If you need the latest version or you want to make changes to the code, you should install
+utils2p from source by following the steps below.
+
 Note that you will need an installation of `numpy <https://numpy.org/>`_ to install this package.
 You can install numpy with the following command:
 
@@ -46,3 +54,4 @@ Dependencies
 - `pip <https://pypi.org/project/pip/>`_
 - `numpy <https://numpy.org/>`_
 - `h5py <https://www.h5py.org/>`_
+- `scipy <https://scipy.org/>`_
