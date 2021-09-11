@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Microscope metadata &#8212; utils2p  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" href="_static/css/functions.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/methods.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/classes.css" type="text/css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="File discovery" href="file_discovery.html" />
@@ -32,11 +36,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="microscope-metadata">
+  <section id="microscope-metadata">
 <h1>Microscope metadata<a class="headerlink" href="#microscope-metadata" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="utils2p.Metadata">
-<em class="property">class </em><code class="sig-prename descclassname">utils2p.</code><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="sig-param">path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils2p.Metadata">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">utils2p.</span></span><span class="sig-name descname"><span class="pre">Metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for managing ThorImage metadata.
 Loads metadata file ‘Experiment.xml’ and returns the root of an ElementTree.</p>
 <dl class="field-list simple">
@@ -57,9 +61,9 @@ Loads metadata file ‘Experiment.xml’ and returns the root of an ElementTree.
 <span class="go">&lt;class &#39;utils2p.main.Metadata&#39;&gt;</span>
 </pre></div>
 </div>
-<dl class="method">
-<dt id="utils2p.Metadata.get_area_mode">
-<code class="sig-name descname">get_area_mode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_area_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_area_mode" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_area_mode">
+<span class="sig-name descname"><span class="pre">get_area_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_area_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_area_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the area mode of a given experiment metadata, e.g.
 square, rectangle, line, kymograph.</p>
 <dl class="field-list simple">
@@ -79,10 +83,10 @@ square, rectangle, line, kymograph.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_channels">
-<code class="sig-name descname">get_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_channels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retruns a tuple with the names of all channels.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_channels">
+<span class="sig-name descname"><span class="pre">get_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple with the names of all channels.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>channels</strong> – Names of channels.</p>
@@ -100,10 +104,11 @@ square, rectangle, line, kymograph.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_date_time">
-<code class="sig-name descname">get_date_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_date_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_date_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the date and time of an experiment for a given experiment metadata.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_date_time">
+<span class="sig-name descname"><span class="pre">get_date_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_date_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_date_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the date and time of an experiment
+for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>date_time</strong> – Date and time of an experiment.</p>
@@ -121,9 +126,9 @@ square, rectangle, line, kymograph.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_dwell_time">
-<code class="sig-name descname">get_dwell_time</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_dwell_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_dwell_time" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_dwell_time">
+<span class="sig-name descname"><span class="pre">get_dwell_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_dwell_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_dwell_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the dwell time for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -142,9 +147,9 @@ square, rectangle, line, kymograph.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_frame_rate">
-<code class="sig-name descname">get_frame_rate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_frame_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_frame_rate" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_frame_rate">
+<span class="sig-name descname"><span class="pre">get_frame_rate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_frame_rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_frame_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the frame rate for a given experiment metadata.
 When the frame rate is calculated flyback frames and
 steps in z are not considered frames.</p>
@@ -165,9 +170,9 @@ steps in z are not considered frames.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_gainA">
-<code class="sig-name descname">get_gainA</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_gainA" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_gain_a">
+<span class="sig-name descname"><span class="pre">get_gain_a</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gain_a"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_gain_a" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the gain of channel A for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -180,15 +185,15 @@ steps in z are not considered frames.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gainA</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gain_a</span><span class="p">()</span>
 <span class="go">20.0</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_gainB">
-<code class="sig-name descname">get_gainB</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gainB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_gainB" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_gain_b">
+<span class="sig-name descname"><span class="pre">get_gain_b</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_gain_b"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_gain_b" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the gain of channel B for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -201,24 +206,25 @@ steps in z are not considered frames.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="s1">&#39;data/mouse_kidney_time_series_z_stack/Experiment.xml&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gainB</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span><span class="o">.</span><span class="n">get_gain_b</span><span class="p">()</span>
 <span class="go">30.0</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_metadata_value">
-<code class="sig-name descname">get_metadata_value</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_metadata_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_metadata_value" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_metadata_value">
+<span class="sig-name descname"><span class="pre">get_metadata_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_metadata_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_metadata_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns a value from the metadata file ‘Experiment.xml’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – Arbitrary number of strings of tag from the xml file in the correct order.
-See examples.</p>
+<dd class="field-odd"><p><strong>args</strong> (<em>strings</em>) – Arbitrary number of strings of tags from the xml file in the
+correct order. See examples.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>attribute or node</strong> – If the number of strings given in args leads to a leaf of the tree, the attribute,
-usually a dictionary is returned. Otherwise the node is returned.</p>
+<dd class="field-even"><p><strong>attribute or node</strong> – If the number of strings given in args leads to a leaf of the tree,
+the attribute, usually a dictionary, is returned.
+Otherwise the node is returned.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>string or ElementTree node</p>
@@ -237,9 +243,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_n_averaging">
-<code class="sig-name descname">get_n_averaging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_averaging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_averaging" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_n_averaging">
+<span class="sig-name descname"><span class="pre">get_n_averaging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_averaging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_n_averaging" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of frames that are averaged.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -258,9 +264,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_n_channels">
-<code class="sig-name descname">get_n_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_channels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_channels" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_n_channels">
+<span class="sig-name descname"><span class="pre">get_n_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_n_channels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of channels for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -279,9 +285,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_n_flyback_frames">
-<code class="sig-name descname">get_n_flyback_frames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_flyback_frames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_flyback_frames" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_n_flyback_frames">
+<span class="sig-name descname"><span class="pre">get_n_flyback_frames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_flyback_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_n_flyback_frames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of flyback frames.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -293,9 +299,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_n_time_points">
-<code class="sig-name descname">get_n_time_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_time_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_time_points" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_n_time_points">
+<span class="sig-name descname"><span class="pre">get_n_time_points</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_time_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_n_time_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of time points for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -314,9 +320,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_n_z">
-<code class="sig-name descname">get_n_z</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_z"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_n_z" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_n_z">
+<span class="sig-name descname"><span class="pre">get_n_z</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_n_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_n_z" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number for z slices for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -335,9 +341,9 @@ usually a dictionary is returned. Otherwise the node is returned.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_num_x_pixels">
-<code class="sig-name descname">get_num_x_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_x_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_num_x_pixels" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_num_x_pixels">
+<span class="sig-name descname"><span class="pre">get_num_x_pixels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_x_pixels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_num_x_pixels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the image width for a given experiment metadata,
 i.e. the number of pixels in the x direction.</p>
 <dl class="field-list simple">
@@ -357,9 +363,9 @@ i.e. the number of pixels in the x direction.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_num_y_pixels">
-<code class="sig-name descname">get_num_y_pixels</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_y_pixels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_num_y_pixels" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_num_y_pixels">
+<span class="sig-name descname"><span class="pre">get_num_y_pixels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_num_y_pixels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_num_y_pixels" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the image height for a given experiment metadata,
 i.e. the number of pixels in the y direction.</p>
 <dl class="field-list simple">
@@ -379,9 +385,9 @@ i.e. the number of pixels in the y direction.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_pixel_size">
-<code class="sig-name descname">get_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_pixel_size">
+<span class="sig-name descname"><span class="pre">get_pixel_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_pixel_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_pixel_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the pixel size for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -400,9 +406,9 @@ i.e. the number of pixels in the y direction.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_power_reg1_start">
-<code class="sig-name descname">get_power_reg1_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_power_reg1_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_power_reg1_start" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_power_reg1_start">
+<span class="sig-name descname"><span class="pre">get_power_reg1_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_power_reg1_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_power_reg1_start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the starting position of power regulator 1 for a given
 experiment metadata. Unless a gradient is defined, this
 value is the power value for the entire experiment.</p>
@@ -423,10 +429,10 @@ value is the power value for the entire experiment.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_width">
-<code class="sig-name descname">get_width</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_width"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_width" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returbns the image with in um for a given experiment metadata.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_width">
+<span class="sig-name descname"><span class="pre">get_width</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_width" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the image width in um for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><strong>width</strong> – Width of FOV in um..</p>
@@ -444,9 +450,9 @@ value is the power value for the entire experiment.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_z_pixel_size">
-<code class="sig-name descname">get_z_pixel_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_pixel_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_z_pixel_size" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_z_pixel_size">
+<span class="sig-name descname"><span class="pre">get_z_pixel_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_pixel_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_z_pixel_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the pixel size in z direction for a given experiment metadata.
 This function is meant for “kymograph” and “line” recordings.
 For these recordings the pixel size in z direction is not
@@ -470,9 +476,9 @@ For all other types of recordings it is equivalent to <a class="reference intern
 </div>
 </dd></dl>
 
-<dl class="method">
-<dt id="utils2p.Metadata.get_z_step_size">
-<code class="sig-name descname">get_z_step_size</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_step_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.Metadata.get_z_step_size" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils2p.Metadata.get_z_step_size">
+<span class="sig-name descname"><span class="pre">get_z_step_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/main.html#Metadata.get_z_step_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.Metadata.get_z_step_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the z step size for a given experiment metadata.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -493,7 +499,7 @@ For all other types of recordings it is equivalent to <a class="reference intern
 
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -512,7 +518,7 @@ For all other types of recordings it is equivalent to <a class="reference intern
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="main.html">Core functions</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="main.html#core-module">Core module</a></li>
@@ -541,7 +547,7 @@ For all other types of recordings it is equivalent to <a class="reference intern
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -563,7 +569,7 @@ For all other types of recordings it is equivalent to <a class="reference intern
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -6,24 +6,26 @@ This module provides functions to process the synchronization data
 acquired with Thor Sync during imaging.
 """
 import warnings
+import json
 
 import numpy as np
 import h5py
-import json
 import scipy.signal
 
 import utils2p.main as main
 
+
 class SynchronizationError(Exception):
     """The input data is not consistent with synchronization assumption."""
 
-    pass
-
 
 def get_lines_from_h5_file(file_path, line_names):
-    warnings.warn("get_lines_from_h5_file is deprecated use get_lines_from_sync_file instead", DeprecationWarning)
+    warnings.warn(
+        "get_lines_from_h5_file is deprecated use get_lines_from_sync_file instead",
+        DeprecationWarning)
     return get_lines_from_sync_file(file_path, line_names)
-    
+
+
 def get_lines_from_sync_file(file_path, line_names):
     """
     This function returns the values of the requested lines save in
@@ -58,13 +60,14 @@ def get_lines_from_sync_file(file_path, line_names):
     (54000,)
     """
     lines = []
-    
+
     with h5py.File(file_path, "r") as f:
         for name in line_names:
             lines_with_this_name = []
             for line_type in ("DI", "CI", "AI"):
                 try:
-                    lines_with_this_name.append(f[line_type][name][:].squeeze())
+                    lines_with_this_name.append(
+                        f[line_type][name][:].squeeze())
                 except KeyError:
                     pass
             if len(lines_with_this_name) == 1:
@@ -73,12 +76,19 @@ def get_lines_from_sync_file(file_path, line_names):
                 DI_keys = list(f["DI"].keys())
                 CI_keys = list(f["CI"].keys())
                 AI_keys = list(f["AI"].keys())
-                raise KeyError(f"No line named '{name}' exists. The digital lines are {DI_keys}, the continuous lines are {CI_keys}, and  the analogue inputs are {AI_keys}.")
+                raise KeyError(
+                    f"No line named '{name}' exists. The digital lines are " +
+                    f"{DI_keys}, the continuous lines are {CI_keys}, " +
+                    f"and  the analogue inputs are {AI_keys}.")
             else:
                 DI_keys = list(f["DI"].keys())
                 CI_keys = list(f["CI"].keys())
                 AI_keys = list(f["AI"].keys())
-                raise KeyError(f"Multiple lines named '{name}' exist. The digital lines are {DI_keys}, the continuous lines are {CI_keys}, and  the analogue inputs are {AI_keys}.")
+                raise KeyError(
+                    f"Multiple lines named '{name}' exist. " +
+                    f"The digital lines are {DI_keys}, the continuous lines " +
+                    + f"are {CI_keys}, and  the analogue inputs are {AI_keys}."
+                )
     return tuple(lines)
 
 
@@ -124,11 +134,11 @@ def edges(line, size=0, correct_possible_split_edges=True):
     size : float or tuple
         Size of the rising edge. If float it is used as minimum.
         Tuples specify a range. To get falling edges use negative values.
-        Only one boundary can be applied using np.inf as on of the values.
-        All boundaries are exclusive the specified value.
+        Only one boundary can be applied using np.inf as one of the values.
+        All boundaries are excluding the specified value.
     correct_possible_split_edges : boolean
         The rise or fall of an edge can in some cases be spread over
-        several ticks. If True theses "blurry" edges are sharpened
+        several ticks. If `True` these "blurry" edges are sharpened
         with :func:`utils2p.synchronization.correct_split_edges`.
         Default is True.
 
@@ -159,14 +169,15 @@ def edges(line, size=0, correct_possible_split_edges=True):
     if correct_possible_split_edges:
         line = correct_split_edges(line)
     diff = np.diff(line.astype(np.float64))
-    if type(size) == tuple:
+    if isinstance(size, tuple):
         zero_elements = np.isclose(diff, np.zeros_like(diff))
         edges_in_range = np.logical_and(diff > size[0], diff < size[1])
-        valid_edges = np.logical_and(edges_in_range,  np.logical_not(zero_elements))
+        valid_edges = np.logical_and(edges_in_range,
+                                     np.logical_not(zero_elements))
         indices = np.where(valid_edges)
     else:
         indices = np.where(diff > size)
-    indices = tuple([i + 1 for i in indices])
+    indices = tuple(i + 1 for i in indices)
     return indices
 
 
@@ -194,17 +205,17 @@ def correct_split_edges(line):
     """
     rising_edges = np.where(np.diff(line) > 0)[0] + 1
     falling_edges = np.where(np.diff(line) < 0)[0]
-    
+
     split_rising_edges = np.where(np.diff(rising_edges) == 1)[0]
     split_falling_edges = np.where(np.diff(falling_edges) == 1)[0]
-    
+
     if len(split_rising_edges) == 0 and len(split_falling_edges) == 0:
         return line
-    
+
     first_halfs_rising = rising_edges[split_rising_edges]
     second_halfs_rising = rising_edges[split_rising_edges + 1]
     line[first_halfs_rising] = line[second_halfs_rising]
-    
+
     first_halfs_falling = falling_edges[split_falling_edges]
     second_halfs_falling = falling_edges[split_falling_edges + 1]
     line[second_halfs_falling] = line[first_halfs_falling]
@@ -257,7 +268,7 @@ def get_start_times(line, times, zero_based_counter=False):
             warnings.warn(f"The counter start with value {line[0]}")
         indices_with_first_frame = np.zeros(len(indices[0]) + 1, dtype=int)
         indices_with_first_frame[1:] = indices[0]
-        indices = (indices_with_first_frame,)
+        indices = (indices_with_first_frame, )
     time_points = times[indices]
     return time_points
 
@@ -300,13 +311,13 @@ def _capture_metadata(n_frames, dropped_frames=None):
 
 def process_cam_line(line, seven_camera_metadata):
     """
-    Remove superfluous signals and use frame numbers in array.
+    Removes superfluous signals and uses frame numbers in array.
     The cam line signal form the h5 file is a binary sequence.
     Rising edges mark the acquisition of a new frame.
     The setup keeps producing rising edges after the acquisition of the
     last frame. These rising edges are ignored.
-    This function converts it to frame numbers using the information
-    stored in the metadata file of the seven camera setup.
+    This function converts the binary line to frame numbers using the
+    information stored in the metadata file of the seven camera setup.
     In the metadata file the keys are the indices of the file names
     and the values are the grabbed frame numbers. Suppose the 3
     frame was dropped. Then the entries in the dictionary will
@@ -320,7 +331,7 @@ def process_cam_line(line, seven_camera_metadata):
     line : numpy array
         Line signal from h5 file.
     seven_camera_metadata : string
-        Path to the json file save by our camera software.
+        Path to the json file saved by our camera software.
         This file is usually located in the same folder as the frames
         and is called 'capture_metadata.json'. If None, it is assumed
         that no frames were dropped.
@@ -329,7 +340,8 @@ def process_cam_line(line, seven_camera_metadata):
     -------
     processed_line : numpy array
         Array with frame number for each time point.
-        If no frame is available for a given time the value is -9223372036854775808.
+        If no frame is available for a given time,
+        the value is -9223372036854775808.
 
     Examples
     --------
@@ -364,7 +376,9 @@ def process_cam_line(line, seven_camera_metadata):
         with open(seven_camera_metadata, "r") as f:
             capture_info = json.load(f)
     else:
-        capture_info = _capture_metadata([len(rising_edges),])
+        capture_info = _capture_metadata([
+            len(rising_edges),
+        ])
 
     # Find the number of frames for each camera
     n_frames = []
@@ -374,14 +388,17 @@ def process_cam_line(line, seven_camera_metadata):
 
     # Ensure all cameras acquired the same number of frames
     if len(np.unique(n_frames)) > 1:
-        raise SynchronizationError("The frames across cameras are not synchronized.")
+        raise SynchronizationError(
+            "The frames across cameras are not synchronized.")
 
     # Last rising edge that corresponds to a frame
     last_tick = max(n_frames)
 
     # check that there is a rising edge for every frame
     if len(rising_edges) < last_tick:
-        raise ValueError("The provided cam line and metadata are inconsistent. cam line has less frame acquisitions than metadata.")
+        raise ValueError(
+            "The provided cam line and metadata are inconsistent. " +
+            "cam line has less frame acquisitions than metadata.")
 
     # Ensure correct handling if no rising edges are present after last frame
     if len(rising_edges) == int(last_tick):
@@ -399,9 +416,9 @@ def process_cam_line(line, seven_camera_metadata):
     current_frame = 0
     first_camera_used = sorted(list(capture_info["Frame Counts"].keys()))[0]
     for i, (start, stop) in enumerate(
-        zip(rising_edges[: last_tick], rising_edges[1 : last_tick + 1])
-    ):
-        if capture_info["Frame Counts"][first_camera_used][str(current_frame + 1)] <= i:
+            zip(rising_edges[:last_tick], rising_edges[1:last_tick + 1])):
+        if capture_info["Frame Counts"][first_camera_used][str(current_frame +
+                                                               1)] <= i:
             current_frame += 1
         processed_line[start:stop] = current_frame
     return processed_line.astype(np.int)
@@ -422,7 +439,7 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
         given steps_per_frame has to be set.
     steps_per_frame : int
         Number of steps the frame counter takes per frame.
-        This includes fly back frame and averaging, i.e. if you
+        This includes fly back frames and averaging, i.e. if you
         acquire one frame and flyback frames is set to 3 this number
         should be 4.
 
@@ -430,7 +447,8 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     -------
     processed_frame_counter : numpy array
         Array with frame number for each time point.
-        If no frame was recorded at a time point the value is -9223372036854775808.
+        If no frame was recorded at a time point, 
+        the value is -9223372036854775808.
 
     Examples
     --------
@@ -452,10 +470,11 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     >>> processed_frame_counter = utils2p.synchronization.process_frame_counter(frame_counter, steps_per_frame=steps_per_frame)
     >>> set(processed_frame_counter)
     {0, -9223372036854775808}
-    
+
     By default the function treat volumes as frames.
     If you want to treat every slice of the volume as a separate frame,
     you can do so by `steps_per_frame`. The example has three steps in z.
+    
     >>> steps_per_frame = metadata.get_n_averaging()
     >>> steps_per_frame
     10
@@ -464,41 +483,46 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     {0, 1, 2, -9223372036854775808}
     """
     if metadata is not None and steps_per_frame is not None:
-        warnings.warn("metadata argument will be ignored because steps_per_frame argument was set.")
-    if metadata is not None and type(metadata) != main.Metadata:
-        raise TypeError("metadata argument must be of type utils2p.Metadata or None.")
-    if steps_per_frame is not None and type(steps_per_frame) != int:
-        raise TypeError("steps_per_frame has to be of type int")
+        warnings.warn("metadata argument will be ignored " +
+                      "because steps_per_frame argument was set.")
+    if metadata is not None and not isinstance(metadata, main.Metadata):
+        raise TypeError(
+            "metadata argument must be of type utils2p.Metadata or None.")
+    if steps_per_frame is not None and not isinstance(steps_per_frame, int):
+        raise TypeError(f"steps_per_frame has to be of type int not {type(steps_per_frame)}")
 
     if metadata is not None and steps_per_frame is None:
         if metadata.get_value("Streaming", "zFastEnable") == "0":
             steps_per_frame = 1
         else:
-            steps_per_frame = metadata.get_n_z() 
+            steps_per_frame = metadata.get_n_z()
             if metadata.get_value("Streaming", "enable") == "1":
                 steps_per_frame += metadata.get_n_flyback_frames()
-        if metadata.get_value("LSM", "averageMode") == "1" and metadata.get_area_mode() not in ["line", "kymograph"]:
+        if metadata.get_value(
+                "LSM",
+                "averageMode") == "1" and metadata.get_area_mode() not in [
+                    "line", "kymograph"
+                ]:
             steps_per_frame = steps_per_frame * metadata.get_n_averaging()
     elif steps_per_frame is None:
-        raise ValueError("If no metadata object is given, the steps_per_frame argument has to be set.")
+        raise ValueError("If no metadata object is given, " +
+                         "the steps_per_frame argument has to be set.")
 
     processed_frame_counter = np.ones_like(line) * np.nan
     rising_edges = edges(line, (0, np.inf))[0]
-    
-    #Case of one frame/volume only
+
+    # Case of one frame/volume only
     if len(rising_edges) <= steps_per_frame:
-        processed_frame_counter[rising_edges[0] : ] = 0
+        processed_frame_counter[rising_edges[0]:] = 0
         return processed_frame_counter.astype(np.int)
-    
+
     for i, index in enumerate(
-        range(0, len(rising_edges) - steps_per_frame, steps_per_frame)
-    ):
+            range(0,
+                  len(rising_edges) - steps_per_frame, steps_per_frame)):
         processed_frame_counter[
-            rising_edges[index] : rising_edges[index + steps_per_frame]
-        ] = i
-    processed_frame_counter[rising_edges[-steps_per_frame] :] = (
-        processed_frame_counter[rising_edges[-steps_per_frame] - 1] + 1
-    )
+            rising_edges[index]:rising_edges[index + steps_per_frame]] = i
+    processed_frame_counter[rising_edges[-1 * steps_per_frame]:] = (
+        processed_frame_counter[rising_edges[-1 * steps_per_frame] - 1] + 1)
     return processed_frame_counter.astype(np.int)
 
 
@@ -546,7 +570,7 @@ def process_optical_flow_line(line):
     time point. If the value is -9223372036854775808, no optical flow
     value was recorded for this time point.
 
-    Note: Due to the time it take to transfer the data
+    Note: Due to the time it takes to transfer the data
     from the Arduino to the computer it is possible that
     the last optical flow data point is missing, i.e.
     the processed optical flow line indicates one more
@@ -583,12 +607,9 @@ def process_optical_flow_line(line):
     processed_optical_flow_line = np.ones_like(line) * np.nan
     rising_edges = edges(line, (0, np.inf))[0]
     for i in range(0, len(rising_edges) - 1):
-        processed_optical_flow_line[
-            rising_edges[i] : rising_edges[i + 1]
-        ] = i
-    processed_optical_flow_line[rising_edges[-1] :] = (
-        processed_optical_flow_line[rising_edges[-1] - 1] + 1
-    )
+        processed_optical_flow_line[rising_edges[i]:rising_edges[i + 1]] = i
+    processed_optical_flow_line[rising_edges[-1]:] = (
+        processed_optical_flow_line[rising_edges[-1] - 1] + 1)
     return processed_optical_flow_line.astype(np.int)
 
 
@@ -639,7 +660,7 @@ def crop_lines(mask, lines):
     last_idx = indices[-1]
     cropped_lines = []
     for line in lines:
-        cropped_lines.append(line[first_idx : last_idx + 1])
+        cropped_lines.append(line[first_idx:last_idx + 1])
     return tuple(cropped_lines)
 
 
@@ -697,7 +718,6 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
 
     for i, frame_num in enumerate(beh_indices):
         thor_sync_index = thor_sync_indices[frame_num]
-        beh_frame_num = cam_line[thor_sync_index]
         indices_2p[i] = frame_counter[thor_sync_index]
 
     return indices_2p.astype(np.int)
@@ -705,7 +725,7 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
 
 def reduce_during_2p_frame(frame_counter, values, function):
     """
-    Reduces all values occuring during the acquisition of a
+    Reduces all values occurring during the acquisition of a
     2-photon frame to a single value using the `function`
     given by the user.
 
@@ -749,12 +769,15 @@ def reduce_during_2p_frame(frame_counter, values, function):
     >>> set(stimulus_during_2p_frames)
     {0.0, 1.0}
     """
-    warnings.warn("reduce_during_2p_frame is deprecated use reduce_during_frame instead", DeprecationWarning)
+    warnings.warn(
+        "reduce_during_2p_frame is deprecated use reduce_during_frame instead",
+        DeprecationWarning)
     return reduce_during_frame(frame_counter, values, function)
+
 
 def reduce_during_frame(line, values, function):
     """
-    Reduces all values occuring during the acquisition of a
+    Reduces all values occurring during the acquisition of a
     frame to a single value using the `function` given by the user.
     The line function should be of the resolution of
     the ThorSync ticks and have the frame index as values.
@@ -803,16 +826,16 @@ def reduce_during_frame(line, values, function):
     """
     if len(line) != len(values):
         raise ValueError("line and values need to have the same length.")
-    
+
     thor_sync_indices = tuple(edges(line, (0, np.inf))[0])
-    
+
     starts = thor_sync_indices
-    stops = thor_sync_indices[1:] + (len(line),)
-    
+    stops = thor_sync_indices[1:] + (len(line), )
+
     if not line[0] == -9223372036854775808:
-        starts = (0,) + starts
-        stops = (thor_sync_indices[0],) + stops
-    
+        starts = (0, ) + starts
+        stops = (thor_sync_indices[0], ) + stops
+
     dtype = values.dtype
     if np.issubdtype(dtype, np.number):
         dtype = np.float
@@ -849,7 +872,6 @@ class SyncMetadata(main._XMLFile):
     >>> type(metadata)
     <class 'utils2p.synchronization.SyncMetadata'>
     """
-
     def get_active_devices(self):
         active_devices = []
         for device in self.get_value("DaqDevices", "AcquireBoard"):
@@ -857,7 +879,6 @@ class SyncMetadata(main._XMLFile):
                 active_devices.append(device)
         return active_devices
 
-    
     def get_freq(self):
         """
         Returns the frequency of the ThorSync
@@ -881,15 +902,20 @@ class SyncMetadata(main._XMLFile):
             for element in device.findall("SampleRate"):
                 if element.attrib["enable"] == "1":
                     if set_for_device:
-                        raise ValueError("Invalid metadata file. Multiple sample rates are enabled for device {device.type}")
+                        raise ValueError(
+                            "Invalid metadata file. Multiple sample rates " +
+                            f"are enabled for device {device.type}")
                     if sample_rate != -1:
                         raise ValueError("Multiple devices are enabled.")
                     sample_rate = int(element.attrib["rate"])
                     set_for_device = True
-        return sample_rate 
+        return sample_rate
 
 
-def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camera_metadata_file=None):
+def get_processed_lines(sync_file,
+                        sync_metadata_file,
+                        metadata_2p_file,
+                        seven_camera_metadata_file=None):
     """
     This function extracts all the standard lines and processes them.
     It works for both microscopes.
@@ -909,7 +935,7 @@ def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camer
     -------
     processed_lines : dictionary
         Dictionary with all processed lines.
-    
+
     Examples
     --------
     >>> import utils2p
@@ -919,38 +945,55 @@ def processed_lines(sync_file, sync_metadata_file, metadata_2p_file, seven_camer
     >>> metadata_file = utils2p.find_metadata_file(experiment_dir)
     >>> sync_metadata_file = utils2p.find_sync_metadata_file(experiment_dir)
     >>> seven_camera_metadata_file = utils2p.find_seven_camera_metadata_file(experiment_dir)
-    >>> processed_lines = utils2p.synchronization.processed_lines(sync_file, sync_metadata_file, metadata_file, seven_camera_metadata_file)
+    >>> processed_lines = utils2p.synchronization.get_processed_lines(sync_file, sync_metadata_file, metadata_file, seven_camera_metadata_file)
     """
     processed_lines = {}
-    processed_lines["Capture On"], processed_lines["Frame Counter"] = get_lines_from_h5_file(sync_file, ["Capture On", "Frame Counter"])
+    processed_lines["Capture On"], processed_lines[
+        "Frame Counter"] = get_lines_from_sync_file(
+            sync_file, ["Capture On", "Frame Counter"])
 
     try:
         # For microscope 1
-        processed_lines["CO2"], processed_lines["Cameras"], processed_lines["Optical flow"] = get_lines_from_h5_file(sync_file, ["CO2_Stim", "Basler", "OpFlow",])
+        processed_lines["CO2"], processed_lines["Cameras"], processed_lines[
+            "Optical flow"] = get_lines_from_sync_file(sync_file, [
+                "CO2_Stim",
+                "Basler",
+                "OpFlow",
+            ])
     except KeyError:
         # For microscope 2
-        processed_lines["CO2"], processed_lines["Cameras"] = get_lines_from_h5_file(sync_file, ["CO2", "Cameras",])
+        processed_lines["CO2"], processed_lines[
+            "Cameras"] = get_lines_from_h5_file(sync_file, [
+                "CO2",
+                "Cameras",
+            ])
 
-
-    processed_lines["Cameras"] = process_cam_line(processed_lines["Cameras"], seven_camera_metadata_file)
+    processed_lines["Cameras"] = process_cam_line(processed_lines["Cameras"],
+                                                  seven_camera_metadata_file)
 
     metadata_2p = main.Metadata(metadata_2p_file)
-    processed_lines["Frame Counter"] = process_frame_counter(processed_lines["Frame Counter"], metadata_2p)
+    processed_lines["Frame Counter"] = process_frame_counter(
+        processed_lines["Frame Counter"], metadata_2p)
 
     processed_lines["CO2"] = process_stimulus_line(processed_lines["CO2"])
-        
+
     if "Optical flow" in processed_lines.keys():
-        processed_lines["Optical flow"] = process_optical_flow_line(processed_lines["Optical flow"])
+        processed_lines["Optical flow"] = process_optical_flow_line(
+            processed_lines["Optical flow"])
 
-    mask = np.logical_and(processed_lines["Capture On"], processed_lines["Frame Counter"] >= 0)
+    mask = np.logical_and(processed_lines["Capture On"],
+                          processed_lines["Frame Counter"] >= 0)
 
-    # Make sure the clipping start just before the acquisition of the first frame
+    # Make sure the clipping start just before the
+    # acquisition of the first frame
     indices = np.where(mask)[0]
     mask[max(0, indices[0] - 1)] = True
 
-    for line_name, line in processed_lines.items():
-        processed_lines[line_name] = crop_lines(mask, [processed_lines[line_name],])[0]
-    
+    for line_name, _ in processed_lines.items():
+        processed_lines[line_name] = crop_lines(mask, [
+            processed_lines[line_name],
+        ])[0]
+
     # Get times of ThorSync ticks
     metadata = SyncMetadata(sync_metadata_file)
     freq = metadata.get_freq()
@@ -982,25 +1025,47 @@ def epoch_length_filter(line, cut_off):
     rising_edges = np.where(diff > 0)[0]
     falling_edges = np.where(diff < 0)[0]
     epoch_length = falling_edges - rising_edges
-    
+
     discarded_epochs = (epoch_length < cut_off)
-    
+
     discarded_rising_edges = rising_edges[discarded_epochs]
     discarded_falling_edges = falling_edges[discarded_epochs]
 
     filtered = line.copy()
     for start, stop in zip(discarded_rising_edges, discarded_falling_edges):
         filtered[start:stop] = 0
-    
+
     return filtered.astype(bool)
 
 
-def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor2", "Odor3", "Odor4", "Odor5", "Odor6"), step_size=0.65, filter_only=False):
+def process_odor_line(line,
+                      freq=30000,
+                      arduino_commands=(
+                          "None",
+                          "Odor1",
+                          "Odor2",
+                          "Odor3",
+                          "Odor4",
+                          "Odor5",
+                          "Odor6",
+                          "Odor1R",
+                          "Odor2R",
+                          "Odor1L",
+                          "Odor2L",
+                          "Odor1B",
+                          "Odor2B",
+                          "WaterB",
+                          "bubbleMFC_R0",
+                          "MFC1_R2",
+                          "MFC2_L1",
+                      ),
+                      step_size=0.2703,
+                      filter_only=False):
     """
-    The odor line is based on a PWM signal for the Arduino controlling the valves.
-    This function applies a Butterworth filter and converts the resulting voltages
-    to level indices. The corresponding the setting of the valves are given by
-    the `arduino_commands` argument.
+    The odor line is based on a PWM signal for the Arduino controlling the
+    valves. This function applies a Butterworth filter and converts the
+    resulting voltages to level indices. The corresponding the setting of the
+    valves are given by the `arduino_commands` argument.
 
     Parameters
     ----------
@@ -1010,15 +1075,16 @@ def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor
         Frequency of ThorSync. Necessary for the Butterworth filter.
     arduino_commands : list of strings
         Description of the valve settings for commands sent to arduino.
-        Note: The order matters since the serial communications between computer
-        and Arduino is based on the index in the list. This index is converted
-        to a PWM signal that is recorded by ThorSync.
+        Note: The order matters since the serial communications between
+        computer and Arduino is based on the index in the list.
+        This index is converted to a PWM signal that is recorded by ThorSync.
     step_size : float
         The voltage step size between different levels of the PWM. This is used
         to convert the voltage to indices.
     filter_only : bool
-        If `True`, only the filtered line is returned instead of the odors based
-        on the `arduino_commands`. This is useful for determining the `step_size`.
+        If `True`, only the filtered line is returned instead of the odors
+        based on the `arduino_commands`. This is useful for determining
+        the `step_size`.
 
     Returns
     -------
@@ -1034,7 +1100,7 @@ def process_odor_line(line, freq=30000, arduino_commands=("None", "Odor1", "Odor
         filtered_mask = epoch_length_filter(mask, freq)
         indices[mask & ~filtered_mask] = 0
     return np.array(arduino_commands)[indices]
-            
+
 
 def event_based_frame_indices(event_indicator):
     """
@@ -1064,36 +1130,46 @@ def event_based_frame_indices(event_indicator):
     inv_mask = inv_mask[::-1]
     mask = mask.astype(np.int8)
     inv_mask = inv_mask.astype(np.int8)
-    mask = np.concatenate(([0,], mask))
-    inv_mask = np.concatenate((inv_mask, [0,]))
-    
+    mask = np.concatenate(([
+        0,
+    ], mask))
+    inv_mask = np.concatenate((inv_mask, [
+        0,
+    ]))
+
     event_numbers = np.cumsum(np.clip(np.diff(mask), 0, None))
     inv_event_numbers = np.cumsum(np.clip(np.diff(inv_mask), 0, None))
 
     mask = mask[1:]
     inv_mask = inv_mask[:-1]
-    
+
     # Count up from zero during the event
     event_frame_indices = np.cumsum(mask)
     inv_event_frame_indices = np.cumsum(inv_mask)
     n_events = max(event_numbers)
     for event in np.arange(1, n_events + 1):
         i = np.where(event_numbers == event)
-        event_frame_indices[i] = event_frame_indices[i] - event_frame_indices[i[0][0]] 
+        event_frame_indices[i] = event_frame_indices[i] - \
+            event_frame_indices[i[0][0]]
     event_frame_indices[~mask.astype(np.bool)] = 0
-    
+
     # Count down from zero before each event
     n_inv_event = max(inv_event_numbers)
     for inv_event in np.arange(1, n_inv_event + 1):
         i = np.where(inv_event_numbers == inv_event)
-        inv_event_frame_indices[i] = inv_event_frame_indices[i] - inv_event_frame_indices[i[0][0]]
+        inv_event_frame_indices[i] = inv_event_frame_indices[i] - \
+            inv_event_frame_indices[i[0][0]]
     inv_event_frame_indices[~inv_mask.astype(np.bool)] = 0
     inv_event_frame_indices = -inv_event_frame_indices[::-1]
-    
-    event_frame_indices[~mask.astype(bool)] = inv_event_frame_indices[~mask.astype(bool)]
-    
-    event_numbers = np.cumsum(-1 * np.clip(np.diff(np.concatenate(([2], event_frame_indices))), -1, 0))
-    # Make sure the last frames are not counted as the pre-event frames of a new event
+
+    event_frame_indices[~mask.astype(bool)] = inv_event_frame_indices[
+        ~mask.astype(bool)]
+
+    event_numbers = np.cumsum(
+        -1 * np.clip(np.diff(np.concatenate(
+            ([2], event_frame_indices))), -1, 0))
+    # Make sure the last frames are not counted as the pre-event
+    # frames of a new event
     n_events = max(event_numbers)
     last_event = np.where(event_numbers == n_events)
     if np.all(event_frame_indices[last_event] < 0):

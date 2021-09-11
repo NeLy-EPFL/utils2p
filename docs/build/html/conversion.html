@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Conversion of synchronization &#8212; utils2p  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" href="_static/css/functions.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/methods.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/classes.css" type="text/css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Miscellaneous" href="misc_sync.html" />
@@ -32,11 +36,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="conversion-of-synchronization">
+  <section id="conversion-of-synchronization">
 <h1>Conversion of synchronization<a class="headerlink" href="#conversion-of-synchronization" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="utils2p.synchronization.beh_idx_to_2p_idx">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">beh_idx_to_2p_idx</code><span class="sig-paren">(</span><em class="sig-param">beh_indices</em>, <em class="sig-param">cam_line</em>, <em class="sig-param">frame_counter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#beh_idx_to_2p_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.beh_idx_to_2p_idx" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.beh_idx_to_2p_idx">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">beh_idx_to_2p_idx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beh_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_counter</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#beh_idx_to_2p_idx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.beh_idx_to_2p_idx" title="Permalink to this definition">¶</a></dt>
 <dd><p>This functions converts behaviour frame numbers into the corresponding
 2p frame numbers.</p>
 <dl class="field-list simple">
@@ -62,8 +66,8 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">line_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Frame Counter&quot;</span><span class="p">,</span> <span class="s2">&quot;Basler&quot;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">cam_line</span><span class="p">,)</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">get_lines_from_h5_file</span><span class="p">(</span><span class="n">h5_file</span><span class="p">,</span> <span class="n">line_names</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">frame_counter</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_frame_counter</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">steps_per_frame</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">capture_json</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">capture_json</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seven_camera_metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">seven_camera_metadata</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">beh_idx_to_2p_idx</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,]),</span> <span class="n">cam_line</span><span class="p">,</span> <span class="n">frame_counter</span><span class="p">)</span>
 <span class="go">array([-9223372036854775808])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">beh_idx_to_2p_idx</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,]),</span> <span class="n">cam_line</span><span class="p">,</span> <span class="n">frame_counter</span><span class="p">)</span>
@@ -83,10 +87,10 @@
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.reduce_during_frame">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">reduce_during_frame</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">values</em>, <em class="sig-param">function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#reduce_during_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.reduce_during_frame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reduces all values occuring during the acquisition of a
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.reduce_during_frame">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">reduce_during_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#reduce_during_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.reduce_during_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduces all values occurring during the acquisition of a
 frame to a single value using the <cite>function</cite> given by the user.
 The line function should be of the resolution of
 the ThorSync ticks and have the frame index as values.
@@ -135,7 +139,7 @@ e.g. np.mean.</p></li>
 </div>
 </dd></dl>
 
-</div>
+</section>
 
 
           </div>
@@ -154,7 +158,7 @@ e.g. np.mean.</p></li>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="main.html">Core functions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="synchronization.html">Synchronization functions</a><ul class="current">
@@ -182,7 +186,7 @@ e.g. np.mean.</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -204,7 +208,7 @@ e.g. np.mean.</p></li>
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

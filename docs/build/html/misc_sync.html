@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Miscellaneous &#8212; utils2p  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" href="_static/css/functions.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/methods.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/classes.css" type="text/css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Examples" href="examples.html" />
@@ -32,11 +36,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="miscellaneous">
+  <section id="miscellaneous">
 <h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="utils2p.synchronization.crop_lines">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">crop_lines</code><span class="sig-paren">(</span><em class="sig-param">mask</em>, <em class="sig-param">lines</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#crop_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.crop_lines" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.crop_lines">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">crop_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#crop_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.crop_lines" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function crops all lines based on a binary signal/mask.
 The ‘Capture On’ line of the h5 file can be used as a mask.</p>
 <dl class="field-list simple">
@@ -80,9 +84,9 @@ The ‘Capture On’ line of the h5 file can be used as a mask.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.edges">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">edges</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">size=0</em>, <em class="sig-param">correct_possible_split_edges=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.edges" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.edges">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correct_possible_split_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the indices of edges in a line. An
 edge is change in value of the line. A size
 argument can be specified to filter for changes
@@ -94,10 +98,10 @@ edges (increases in value) are returned.</p>
 <li><p><strong>line</strong> (<em>numpy array</em>) – Line signal from h5 file.</p></li>
 <li><p><strong>size</strong> (<em>float</em><em> or </em><em>tuple</em>) – Size of the rising edge. If float it is used as minimum.
 Tuples specify a range. To get falling edges use negative values.
-Only one boundary can be applied using np.inf as on of the values.
-All boundaries are exclusive the specified value.</p></li>
+Only one boundary can be applied using np.inf as one of the values.
+All boundaries are excluding the specified value.</p></li>
 <li><p><strong>correct_possible_split_edges</strong> (<em>boolean</em>) – The rise or fall of an edge can in some cases be spread over
-several ticks. If True theses “blurry” edges are sharpened
+several ticks. If <cite>True</cite> these “blurry” edges are sharpened
 with <a class="reference internal" href="#utils2p.synchronization.correct_split_edges" title="utils2p.synchronization.correct_split_edges"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils2p.synchronization.correct_split_edges()</span></code></a>.
 Default is True.</p></li>
 </ul>
@@ -130,9 +134,9 @@ Default is True.</p></li>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.get_start_times">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_start_times</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">times</em>, <em class="sig-param">zero_based_counter=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_start_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_start_times" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.get_start_times">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">get_start_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_based_counter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_start_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.get_start_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the start times of a digital signal,
 i.e. the times of the rising edges.
 If the line is a zero based counter, such as the processed
@@ -171,9 +175,9 @@ there is no rising edge corresponding to the frame.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.get_times">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">get_times</code><span class="sig-paren">(</span><em class="sig-param">length</em>, <em class="sig-param">freq</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_times"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.get_times" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.get_times">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">get_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#get_times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.get_times" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function returns the time point of each tick
 for a given sequence length and tick frequency.</p>
 <dl class="field-list simple">
@@ -198,9 +202,9 @@ for a given sequence length and tick frequency.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.correct_split_edges">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">correct_split_edges</code><span class="sig-paren">(</span><em class="sig-param">line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#correct_split_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.correct_split_edges" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.correct_split_edges">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">correct_split_edges</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#correct_split_edges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.correct_split_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function corrects edges that are spread over multiple ticks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -223,9 +227,9 @@ for a given sequence length and tick frequency.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.epoch_length_filter">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">epoch_length_filter</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">cut_off</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#epoch_length_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.epoch_length_filter" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.epoch_length_filter">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">epoch_length_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cut_off</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#epoch_length_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.epoch_length_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function filters a binary based on the length
 of each event.</p>
 <dl class="field-list simple">
@@ -245,9 +249,9 @@ than <cite>cut_off</cite> are set to <cite>False</cite>.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="utils2p.synchronization.event_based_frame_indices">
-<code class="sig-prename descclassname">utils2p.synchronization.</code><code class="sig-name descname">event_based_frame_indices</code><span class="sig-paren">(</span><em class="sig-param">event_indicator</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#event_based_frame_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#utils2p.synchronization.event_based_frame_indices" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils2p.synchronization.event_based_frame_indices">
+<span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">event_based_frame_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_indicator</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#event_based_frame_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.event_based_frame_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates frame indices based on events.
 Frames before an event have negative numbers.
 The event onset has frame number 0 and the frames
@@ -270,7 +274,33 @@ counting the number of events in event indicator.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="utils2p.synchronization.SyncMetadata">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">utils2p.synchronization.</span></span><span class="sig-name descname"><span class="pre">SyncMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils2p/synchronization.html#SyncMetadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils2p.synchronization.SyncMetadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for managing ThorSync metadata.
+Loads metadata file ‘ThorRealTimeDataSettings.xml’
+and returns the root of an ElementTree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>string</em>) – Path to xml file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Based on given xml file.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Instance of class Metadata</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">utils2p.synchronization</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">SyncMetadata</span><span class="p">(</span><span class="s2">&quot;data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+<span class="go">&lt;class &#39;utils2p.synchronization.SyncMetadata&#39;&gt;</span>
+</pre></div>
 </div>
+</dd></dl>
+
+</section>
 
 
           </div>
@@ -289,7 +319,7 @@ counting the number of events in event indicator.</p></li>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="main.html">Core functions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="synchronization.html">Synchronization functions</a><ul class="current">
@@ -317,7 +347,7 @@ counting the number of events in event indicator.</p></li>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -339,7 +369,7 @@ counting the number of events in event indicator.</p></li>
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

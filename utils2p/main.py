@@ -24,20 +24,21 @@ class InvalidValueInMetaData(Exception):
 
     pass
 
+
 def _node_crawler(node, *args):
     if len(args) == 0:
         return node
     elif len(args) == 1 and args[0] in node.attrib.keys():
-            return node.attrib[args[0]]
+        return node.attrib[args[0]]
     if len(node) == 0:
         raise ValueError(f"Hit dead end {node} has no children.")
     return [_node_crawler(child, *args[1:]) for child in node.findall(args[0])]
+
 
 class _XMLFile:
     """
     Base class for xml based Metadata.
     """
-
     def __init__(self, path):
         self.path = path
         self.tree = ET.parse(path)
@@ -73,23 +74,23 @@ class Metadata(_XMLFile):
     >>> type(metadata)
     <class 'utils2p.main.Metadata'>
     """
-
     def get_metadata_value(self, *args):
         """
         This function returns a value from the metadata file 'Experiment.xml'.
-    
+
         Parameters
         ----------
         args : strings
-            Arbitrary number of strings of tag from the xml file in the correct order.
-            See examples.
-    
+            Arbitrary number of strings of tags from the xml file in the
+            correct order. See examples.
+
         Returns
         -------
         attribute or node : string or ElementTree node
-            If the number of strings given in args leads to a leaf of the tree, the attribute,
-            usually a dictionary is returned. Otherwise the node is returned.
-    
+            If the number of strings given in args leads to a leaf of the tree,
+            the attribute, usually a dictionary, is returned.
+            Otherwise the node is returned.
+
         Examples
         --------
         >>> import utils2p
@@ -106,7 +107,7 @@ class Metadata(_XMLFile):
     def get_n_time_points(self):
         """
         Returns the number of time points for a given experiment metadata.
-     
+
         Returns
         -------
         n_time_points : int
@@ -125,7 +126,7 @@ class Metadata(_XMLFile):
         """
         Returns the image width for a given experiment metadata,
         i.e. the number of pixels in the x direction.
-    
+
         Returns
         -------
         width : int
@@ -144,7 +145,7 @@ class Metadata(_XMLFile):
         """
         Returns the image height for a given experiment metadata,
         i.e. the number of pixels in the y direction.
-    
+
         Returns
         -------
         height : int
@@ -163,7 +164,7 @@ class Metadata(_XMLFile):
         """
         Returns the area mode of a given experiment metadata, e.g.
         square, rectangle, line, kymograph.
-    
+
         Returns
         -------
         area_mode : string
@@ -179,21 +180,19 @@ class Metadata(_XMLFile):
         int_area_mode = int(self.get_metadata_value("LSM", "areaMode"))
         if int_area_mode == 0:
             return "square"
-        elif int_area_mode == 1:
+        if int_area_mode == 1:
             return "rectangle"
-        elif int_area_mode == 2:
+        if int_area_mode == 2:
             return "kymograph"
-        elif int_area_mode == 3:
+        if int_area_mode == 3:
             return "line"
-        else:
-            raise InvalidValueInMetaData(
-                f"{int_area_mode} is not a valid value for areaMode."
-            )
+        raise InvalidValueInMetaData(
+            f"{int_area_mode} is not a valid value for areaMode.")
 
     def get_n_z(self):
         """
         Returns the number for z slices for a given experiment metadata.
-    
+
         Returns
         -------
         n_z : int
@@ -229,7 +228,7 @@ class Metadata(_XMLFile):
     def get_n_channels(self):
         """
         Returns the number of channels for a given experiment metadata.
-    
+
         Returns
         -------
         n_channels : int
@@ -246,8 +245,8 @@ class Metadata(_XMLFile):
 
     def get_channels(self):
         """
-        Retruns a tuple with the names of all channels.
-    
+        Returns a tuple with the names of all channels.
+
         Returns
         -------
         channels : tuple of strings
@@ -266,7 +265,7 @@ class Metadata(_XMLFile):
     def get_pixel_size(self):
         """
         Returns the pixel size for a given experiment metadata.
-    
+
         Returns
         -------
         pixel_size : float
@@ -284,7 +283,7 @@ class Metadata(_XMLFile):
     def get_z_step_size(self):
         """
         Returns the z step size for a given experiment metadata.
-    
+
         Returns
         -------
         z_step_size : float
@@ -307,7 +306,7 @@ class Metadata(_XMLFile):
         equal to the step size, unless the number of pixels equals the number
         of steps.
         For all other types of recordings it is equivalent to :func:`get_z_step_size`.
-    
+
         Returns
         -------
         z_pixel_size : float
@@ -321,18 +320,15 @@ class Metadata(_XMLFile):
         15.0
         """
         area_mode = self.get_area_mode()
-        if area_mode == "line" or area_mode == "kymograph":
-            return (
-                float(self.get_metadata_value("ZStage", "stepSizeUM"))
-                * self.get_n_z()
-                / self.get_num_y_pixels()
-            )
+        if area_mode in ('line', 'kymograph'):
+            return (float(self.get_metadata_value("ZStage", "stepSizeUM")) *
+                    self.get_n_z() / self.get_num_y_pixels())
         return float(self.get_metadata_value("ZStage", "stepSizeUM"))
 
     def get_dwell_time(self):
         """
         Returns the dwell time for a given experiment metadata.
-    
+
         Returns
         -------
         dwell_time : float
@@ -364,7 +360,7 @@ class Metadata(_XMLFile):
         Returns the frame rate for a given experiment metadata.
         When the frame rate is calculated flyback frames and
         steps in z are not considered frames.
-    
+
         Returns
         -------
         frame_rate : float
@@ -377,15 +373,17 @@ class Metadata(_XMLFile):
         >>> metadata.get_frame_rate()
         10.0145
         """
-        frame_rate_without_flybacks = float(self.get_metadata_value("LSM", "frameRate"))
+        frame_rate_without_flybacks = float(
+            self.get_metadata_value("LSM", "frameRate"))
         flyback_frames = self.get_n_flyback_frames()
         number_of_slices = self.get_n_z()
-        return frame_rate_without_flybacks / (flyback_frames + number_of_slices)
+        return frame_rate_without_flybacks / (flyback_frames +
+                                              number_of_slices)
 
     def get_width(self):
         """
-        Returbns the image with in um for a given experiment metadata.
-    
+        Returns the image width in um for a given experiment metadata.
+
         Returns
         -------
         width : float
@@ -405,7 +403,7 @@ class Metadata(_XMLFile):
         Returns the starting position of power regulator 1 for a given
         experiment metadata. Unless a gradient is defined, this
         value is the power value for the entire experiment.
-    
+
         Returns
         -------
         reg1_start : float
@@ -420,10 +418,10 @@ class Metadata(_XMLFile):
         """
         return float(self.get_metadata_value("PowerRegulator", "start"))
 
-    def get_gainA(self):
+    def get_gain_a(self):
         """
         Returns the gain of channel A for a given experiment metadata.
-    
+
         Returns
         -------
         gainA : int
@@ -433,15 +431,15 @@ class Metadata(_XMLFile):
         --------
         >>> import utils2p
         >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
-        >>> metadata.get_gainA()
+        >>> metadata.get_gain_a()
         20.0
         """
         return float(self.get_metadata_value("PMT", "gainA"))
 
-    def get_gainB(self):
+    def get_gain_b(self):
         """
         Returns the gain of channel B for a given experiment metadata.
-    
+
         Returns
         -------
         gainB : int
@@ -451,15 +449,16 @@ class Metadata(_XMLFile):
         --------
         >>> import utils2p
         >>> metadata = Metadata('data/mouse_kidney_time_series_z_stack/Experiment.xml')
-        >>> metadata.get_gainB()
+        >>> metadata.get_gain_b()
         30.0
         """
         return float(self.get_metadata_value("PMT", "gainB"))
 
     def get_date_time(self):
         """
-        Returns the date and time of an experiment for a given experiment metadata.
-    
+        Returns the date and time of an experiment
+        for a given experiment metadata.
+
         Returns
         -------
         date_time : string
@@ -478,7 +477,7 @@ class Metadata(_XMLFile):
 def load_img(path, memmap=False):
     """
     This functions loads an image from file and returns as a numpy array.
-    
+
     Parameters
     ----------
     path : string
@@ -492,8 +491,8 @@ def load_img(path, memmap=False):
 
     Returns
     -------
-    numpy.array
-        Image in form of numpy array.
+    numpy.array or numpy.memmap
+        Image in form of numpy array or numpy memmap.
 
     Examples
     --------
@@ -515,7 +514,7 @@ def load_stack_batches(path, batch_size):
     """
     This function loads a stack in several batches to make sure
     the system does not run out of memory. It returns a generator
-    the yields consecutive chunks of `batch_size` frames of the stack.
+    that yields consecutive chunks of `batch_size` frames of the stack.
     The remaining memory is freed up by the function until the generator
     is called again.
 
@@ -534,10 +533,11 @@ def load_stack_batches(path, batch_size):
     """
     stack = load_img(path, memmap=True)
     if stack.ndim < 3:
-        raise ValueError(f"The path does not point to a stack. The shape is {stack.shape}.")
+        raise ValueError(
+            f"The path does not point to a stack. The shape is {stack.shape}.")
     n_batches = int(stack.shape[0] / batch_size) + 1
     for i in range(n_batches):
-        substack = np.array(stack[i * batch_size : (i + 1) * batch_size])
+        substack = np.array(stack[i * batch_size:(i + 1) * batch_size])
         yield substack
 
 
@@ -545,7 +545,7 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
     """
     Returns a generator that yields patches of the stack of images.
     This is useful when multiple stacks should be processed but they
-    don't fit in memory, e.g. when computing an overall fluorescence
+    don't fit into memory, e.g. when computing an overall fluorescence
     baseline for all trials of a fly.
 
     Parameters
@@ -555,9 +555,9 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
     patch_size : tuple of two integers
        Size of the patch returned.
     padding : integer or tuple of two integers
-       The amount of overlap between patched. Note that this increases
-       the effective patch size. Default is 0. For tuples different padding
-       if used for the dimensions.
+       The amount of overlap between patches. Note that this increases
+       the effective patch size. Default is 0. If tuple, different padding
+       is used for the dimensions.
     return_indices : boolean
        If True, the indices necessary for slicing to generate the patch and
        the indices necessary for slicing to remove the padding from the
@@ -608,7 +608,7 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
     >>> np.all(stack1[:, indices[0][0] : indices[0][1], indices[1][0] : indices[1][1]] == first_patch_without_padding)
     True
 
-    Note that the patch has not padding at the edges.
+    Note that the patch has no padding at the edges.
     When looking at the second patch we see that it is padded on both side
     in the second dimension but still only on one side of the first dimension.
 
@@ -623,7 +623,7 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
     >>> print(second_patch_without_padding.shape)
     (5, 15, 20)
     """
-    stack = load_img(path)
+    stack = load_img(path, memmap=True)
     dims = stack.shape[1:]
     n_patches_0 = math.ceil(dims[0] / patch_size[0])
     n_patches_1 = math.ceil(dims[1] / patch_size[1])
@@ -632,14 +632,15 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
     for i in range(n_patches_0):
         for j in range(n_patches_1):
             indices = [
-                       [patch_size[0] * i, patch_size[0] * (i + 1)],
-                       [patch_size[1] * j, patch_size[1] * (j + 1)],
-                      ]
+                [patch_size[0] * i, patch_size[0] * (i + 1)],
+                [patch_size[1] * j, patch_size[1] * (j + 1)],
+            ]
             start_dim_0 = max(indices[0][0] - padding[0], 0)
             start_dim_1 = max(indices[1][0] - padding[1], 0)
             stop_dim_0 = min(indices[0][1] + padding[0], dims[0])
             stop_dim_1 = min(indices[1][1] + padding[1], dims[1])
-            patch = stack[:, start_dim_0:stop_dim_0, start_dim_1:stop_dim_1].copy()
+            patch = stack[:, start_dim_0:stop_dim_0,
+                          start_dim_1:stop_dim_1].copy()
             del stack
             if not return_indices:
                 yield patch
@@ -647,8 +648,8 @@ def load_stack_patches(path, patch_size, padding=0, return_indices=False):
                 offset_dim_0 = indices[0][0] - start_dim_0
                 offset_dim_1 = indices[1][0] - start_dim_1
                 patch_indices = [
-                        [offset_dim_0, patch_size[0] + offset_dim_0],
-                        [offset_dim_1, patch_size[1] + offset_dim_1],
+                    [offset_dim_0, patch_size[0] + offset_dim_0],
+                    [offset_dim_1, patch_size[1] + offset_dim_1],
                 ]
                 yield patch, indices, patch_indices
             stack = load_img(path)
@@ -668,8 +669,9 @@ def load_raw(path, metadata):
     Returns
     -------
     stacks : tuple of numpy arrays
-        Number of numpy arrays depends on the number of channels recoded during the experiment.
-        Has the following dimensions: TZYX or TYX for planar images.
+        Number of numpy arrays depends on the number of channels recoded during
+        the experiment. Has the following dimensions:
+        TZYX or TYX for planar images.
 
     Examples
     --------
@@ -696,32 +698,33 @@ def load_raw(path, metadata):
     )  # divide by two because the values are of type short (16bit = 2byte)
 
     assert (
-        not n_z % 1
-    ), "Size given in metadata does not match the size of the raw file."
+        not n_z %
+        1), "Size given in metadata does not match the size of the raw file."
     n_z = int(n_z)
 
-    # number of z slices from meta data can be different because of flyback frames
+    # number of z slices from meta data can be different
+    # because of flyback frames
     meta_n_z = metadata.get_n_z()
 
     if n_z == 1:
-        stacks = np.zeros((n_channels, n_time_points, height, width), dtype="uint16")
+        stacks = np.zeros((n_channels, n_time_points, height, width),
+                          dtype="uint16")
         image_size = width * height
-        t_size = (
-            width * height * n_channels
-        )  # number of values stored for a given time point (this includes images for all channels)
+        # number of values stored for a given time point
+        # (this includes images for all channels)
+        t_size = (width * height * n_channels)
         with open(path, "rb") as f:
             for t in range(n_time_points):
                 # print('{}/{}'.format(t,n_time_points))
                 a = array.array("H")
                 a.fromfile(f, t_size)
                 for c in range(n_channels):
-                    stacks[c, t, :, :] = np.array(
-                        a[c * image_size : (c + 1) * image_size]
-                    ).reshape((height, width))
+                    stacks[c, t, :, :] = np.array(a[c * image_size:(c + 1) *
+                                                    image_size]).reshape(
+                                                        (height, width))
     elif n_z > 1:
-        stacks = np.zeros(
-            (n_channels, n_time_points, meta_n_z, height, width), dtype="uint16"
-        )
+        stacks = np.zeros((n_channels, n_time_points, meta_n_z, height, width),
+                          dtype="uint16")
         image_size = width * height
         t_size = (
             width * height * n_z * n_channels
@@ -732,22 +735,21 @@ def load_raw(path, metadata):
                 a = array.array("H")
                 a.fromfile(f, t_size)
                 a = np.array(a).reshape(
-                    (-1, image_size)
-                )  # each row is an image alternating between channels
+                    (-1, image_size
+                     ))  # each row is an image alternating between channels
                 for c in range(n_channels):
                     stacks[c, t, :, :, :] = a[c::n_channels, :].reshape(
-                        (n_z, height, width)
-                    )[:meta_n_z, :, :]
+                        (n_z, height, width))[:meta_n_z, :, :]
 
     area_mode = metadata.get_area_mode()
-    if (area_mode == "line" or area_mode == "kymograph") and meta_n_z > 1:
+    if area_mode in ('line', 'kymograph') and meta_n_z > 1:
         concatenated = []
         for stack in stacks:
             concatenated.append(concatenate_z(stack))
         stacks = concatenated
 
     if len(stacks) == 1:
-        return (np.squeeze(stacks[0]),)
+        return (np.squeeze(stacks[0]), )
     return tuple(np.squeeze(stacks))
 
 
@@ -766,7 +768,7 @@ def load_z_stack(path, metadata):
     -------
     stacks : tuple of numpy arrays
         Z-stacks for Channel A (green) and Channel B (red).
-        
+
     Examples
     --------
     >>> import utils2p
@@ -816,9 +818,12 @@ def concatenate_z(stack):
     return np.squeeze(res)
 
 
-def save_img(
-    path, img, imagej=True, color=False, full_dynamic_range=True, metadata=None
-):
+def save_img(path,
+             img,
+             imagej=True,
+             color=False,
+             full_dynamic_range=True,
+             metadata=None):
     """
     Saves an image that is given as a numpy array to file.
 
@@ -838,12 +843,6 @@ def save_img(
         When an image is converted to uint8 for saving a color image the
         max value of the output image is the max of uint8,
         i.e. the image uses the full dynamic range available.
-
-    Examples
-    --------
-    >>> import utils2p
-    >>> import numpy as np
-    >>> 
     """
     if img.dtype == np.bool:
         img = img.astype(np.uint8) * 255
@@ -858,8 +857,7 @@ def save_img(
                     old_max = np.finfo(img.dtype).max * np.ones(3)
                 else:
                     raise ValueError(
-                        f"img must be integer or float type not {img.dtype}"
-                    )
+                        f"img must be integer or float type not {img.dtype}")
             new_max = np.iinfo(np.uint8).max
             img = img / old_max * new_max
             img = img.astype(np.uint8)
@@ -882,7 +880,7 @@ def save_img(
     else:
         # TODO add meta data like metadata={'xresolution':'4.25','yresolution':'0.0976','PixelAspectRatio':'43.57'}
         # tifffile.imsave(path, img, imagej=imagej, metadata={})
-        raise NotImplemented("Saving of metadata is not yet implemented")
+        raise NotImplementedError("Saving of metadata is not yet implemented")
 
 
 def _find_file(directory, name, file_type, most_recent=True):
@@ -894,15 +892,12 @@ def _find_file(directory, name, file_type, most_recent=True):
     ----------
     directory : str
         Directory in which to search.
+    name : str
+        Name of the file.
     most_recent : bool
         If True, the file with the most recent change time
         is returned and no exception is raised if multiple
         files are present.
-    name : str
-        Name of the file.
-    most_recent : bool
-        If True, the most recently modified file is returned
-        and no error is raised if multiple files were found.
 
     Returns
     -------
@@ -913,11 +908,12 @@ def _find_file(directory, name, file_type, most_recent=True):
     if len(file_names) > 1:
         if most_recent:
             change_times = [os.stat(path).st_mtime for path in file_names]
-            file_names = (file_names[np.argmax(change_times)],)
+            file_names = (file_names[np.argmax(change_times)], )
         else:
             raise RuntimeError(
-                f"Could not identify {file_type} file unambiguously. Discovered {len(file_names)} {file_type} files in {directory}."
-        )
+                f"Could not identify {file_type} file unambiguously. " +
+                f"Discovered {len(file_names)} {file_type} files in {directory}."
+            )
     elif len(file_names) == 0:
         raise FileNotFoundError(f"No {file_type} file found in {directory}")
     return str(file_names[0])
@@ -925,7 +921,7 @@ def _find_file(directory, name, file_type, most_recent=True):
 
 def find_metadata_file(directory, most_recent=False):
     """
-    This functions find the path to the metadata file
+    This function finds the path to the metadata file
     "Experiment.xml" created by ThorImage and returns it.
     If multiple files with this name are found, it throws
     an exception unless `most_recent` is `True`, in which case
@@ -951,16 +947,19 @@ def find_metadata_file(directory, most_recent=False):
     >>> utils2p.find_metadata_file("data/mouse_kidney_z_stack")
     'data/mouse_kidney_z_stack/Experiment.xml'
     """
-    return _find_file(directory, "Experiment.xml", "metadata", most_recent=most_recent)
+    return _find_file(directory,
+                      "Experiment.xml",
+                      "metadata",
+                      most_recent=most_recent)
 
 
 def find_seven_camera_metadata_file(directory, most_recent=False):
     """
-    This functions find the path to the metadata file
+    This function finds the path to the metadata file
     "capture_metadata.json" created by seven camera
     setup and returns it.
     If multiple files with this name are found, it throws
-    an exception unless `most_recent` is `True`,in which case
+    an exception unless `most_recent` is `True`, in which case
     the file with the most recent change time is returned.
 
     Parameters
@@ -983,12 +982,15 @@ def find_seven_camera_metadata_file(directory, most_recent=False):
     >>> utils2p.find_seven_camera_metadata_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/behData/images/capture_metadata.json'
     """
-    return _find_file(directory, "capture_metadata.json", "seven camera capture metadata", most_recent=most_recent)
+    return _find_file(directory,
+                      "capture_metadata.json",
+                      "seven camera capture metadata",
+                      most_recent=most_recent)
 
 
 def find_sync_file(directory, most_recent=False):
     """
-    This functions find the path to the sync file
+    This function finds the path to the sync file
     "Episode001.h5" created by ThorSync and returns it.
     If multiple files with this name are found, it throws
     an exception unless `most_recent` is `True`, in which case
@@ -1014,12 +1016,15 @@ def find_sync_file(directory, most_recent=False):
     >>> utils2p.find_sync_file("data/mouse_kidney_z_stack")
     'data/mouse_kidney_z_stack/Episode001.h5'
     """
-    return _find_file(directory, "Episode001.h5", "synchronization", most_recent=most_recent)
+    return _find_file(directory,
+                      "Episode001.h5",
+                      "synchronization",
+                      most_recent=most_recent)
 
 
 def find_optical_flow_file(directory, most_recent=False):
     """
-    This functions find the path to the optical flow file
+    This function finds the path to the optical flow file
     "OptFlow.txt" created by seven camera software and returns it.
     If multiple files with this name are found, it throws
     an exception unless `most_recent` is `True`,in which case
@@ -1045,12 +1050,15 @@ def find_optical_flow_file(directory, most_recent=False):
     >>> utils2p.find_optical_flow_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/behData/OptFlowData/OptFlow.txt'
     """
-    return _find_file(directory, "OptFlow.txt", "optical flow", most_recent=most_recent)
+    return _find_file(directory,
+                      "OptFlow.txt",
+                      "optical flow",
+                      most_recent=most_recent)
 
 
 def find_raw_file(directory, most_recent=False):
     """
-    This functions find the path to the raw file
+    This function finds the path to the raw file
     "Image_0001_0001.raw" created by ThorImage and returns it.
     If multiple files with this name are found, it throws
     an exception unless `most_recent` is `True`, in which case
@@ -1076,12 +1084,15 @@ def find_raw_file(directory, most_recent=False):
     >>> utils2p.find_raw_file("data/mouse_kidney_raw")
     'data/mouse_kidney_raw/2p/Untitled_001/Image_0001_0001.raw'
     """
-    return _find_file(directory, "Image_0001_0001.raw", "raw", most_recent=most_recent)
+    return _find_file(directory,
+                      "Image_0001_0001.raw",
+                      "raw",
+                      most_recent=most_recent)
 
 
 def find_sync_metadata_file(directory, most_recent=False):
     """
-    This function ifn the path to the synchonization
+    This function finds the path to the synchronization
     metadata file "ThorRealTimeDataSettings.xml" created
     by ThorSync. If multiple files with this name are found,
     it throws an exception unless `most_recent` is `True`,
@@ -1109,12 +1120,15 @@ def find_sync_metadata_file(directory, most_recent=False):
     'data/mouse_kidney_raw/2p/Sync-025/ThorRealTimeDataSettings.xml'
 
     """
-    return _find_file(directory, "ThorRealTimeDataSettings.xml", "synchronization metadata", most_recent=most_recent)
+    return _find_file(directory,
+                      "ThorRealTimeDataSettings.xml",
+                      "synchronization metadata",
+                      most_recent=most_recent)
 
 
 def find_fictrac_file(directory, camera=3, most_recent=False):
     """
-    This function ifn the path to the output file of
+    This function finds the path to the output file of
     fictrac of the form `camera_{cam}*.dat`, where
     `{cam}` is the values specified in the `camera`
     argument. If multiple files with this name are found,
@@ -1148,19 +1162,25 @@ def find_fictrac_file(directory, camera=3, most_recent=False):
     >>> utils2p.find_fictrac_file("data", most_recent=True)
     'data/camera_3-20210803_103010.dat'
     """
-    return _find_file(directory, f"camera_{camera}*.dat", "fictrac output", most_recent=most_recent)
+    return _find_file(directory,
+                      f"camera_{camera}*.dat",
+                      "fictrac output",
+                      most_recent=most_recent)
 
 
-def load_optical_flow(
-    path: str, gain_0_x: float, gain_0_y: float, gain_1_x: float, gain_1_y: float, smoothing_kernel=None
-):
+def load_optical_flow(path: str,
+                      gain_0_x: float,
+                      gain_0_y: float,
+                      gain_1_x: float,
+                      gain_1_y: float,
+                      smoothing_kernel=None):
     """
     This function loads the optical flow data from
     the file specified in path. By default it is
     directly converted into ball rotation. Gain values
     have to be determined with the calibration of the
     optical flow sensors.
-    
+
     Parameters
     ----------
     path : str
@@ -1224,7 +1244,7 @@ def load_optical_flow(
     <class 'dict'>
     >>> optical_flow["sensor0"].keys()
     dict_keys(['x', 'y', 'gain_x', 'gain_y'])
-    
+
     >>> optical_flow = utils2p.load_optical_flow(optical_flow_file, gain_0_x, gain_0_y, gain_1_x, gain_1_y, smoothing_kernel=np.ones(300) / 300)
     >>> optical_flow["vel_pitch"].shape
     (1408,)
@@ -1232,8 +1252,13 @@ def load_optical_flow(
     raw_data = np.genfromtxt(path, delimiter=",")
     if smoothing_kernel is not None:
         if len(smoothing_kernel) >= raw_data.shape[0]:
-            raise ValueError(f"smoothing_kernel of shape {smoothing_kernel.shape} is longer than optical flow data of shape {raw_data.shape}.")
-        raw_data = np.apply_along_axis(lambda m: np.convolve(m, smoothing_kernel, mode="same"), axis=0, arr=raw_data)
+            raise ValueError(
+                f"smoothing_kernel of shape {smoothing_kernel.shape} " +
+                f"is longer than optical flow data of shape {raw_data.shape}.")
+        raw_data = np.apply_along_axis(
+            lambda m: np.convolve(m, smoothing_kernel, mode="same"),
+            axis=0,
+            arr=raw_data)
     data = {
         "sensor0": {
             "x": raw_data[:, 0],
@@ -1250,54 +1275,70 @@ def load_optical_flow(
         "time_stamps": raw_data[:, 4],
     }
 
-    data["vel_pitch"] = -(
-        data["sensor0"]["y"] * data["sensor0"]["gain_y"]
-        + data["sensor1"]["y"] * data["sensor1"]["gain_y"]
-    ) * np.cos(np.deg2rad(45))
-    data["vel_yaw"] = (
-        data["sensor0"]["x"] * data["sensor0"]["gain_x"]
-        + data["sensor1"]["x"] * data["sensor1"]["gain_x"]
-    ) / 2.0
-    data["vel_roll"] = (
-        data["sensor0"]["y"] * data["sensor0"]["gain_y"]
-        - data["sensor1"]["y"] * data["sensor1"]["gain_y"]
-    ) * np.sin(np.deg2rad(45))
+    data["vel_pitch"] = -(data["sensor0"]["y"] * data["sensor0"]["gain_y"] +
+                          data["sensor1"]["y"] *
+                          data["sensor1"]["gain_y"]) * np.cos(np.deg2rad(45))
+    data["vel_yaw"] = (data["sensor0"]["x"] * data["sensor0"]["gain_x"] +
+                       data["sensor1"]["x"] * data["sensor1"]["gain_x"]) / 2.0
+    data["vel_roll"] = (data["sensor0"]["y"] * data["sensor0"]["gain_y"] -
+                        data["sensor1"]["y"] *
+                        data["sensor1"]["gain_y"]) * np.sin(np.deg2rad(45))
 
     return data
 
 
-def load_fictrac(path, ball_radius=10, fps=100, camera=3):
-    col_names = ["Frame_counter",
-                 "delta_rot_cam_right", "delta_rot_cam_down", "delta_rot_cam_forward",
-                 "delta_rot_error",
-                 "delta_rot_lab_side", "delta_rot_lab_forward", "delta_rot_lab_turn",
-                 "abs_rot_cam_right", "abs_rot_cam_down", "abs_rot_cam_forward",
-                 "abs_rot_lab_side", "abs_rot_lab_forward", "abs_rot_lab_turn",
-                 "integrated_lab_x", "integrated_lab_y",
-                 "integrated_lab_heading",
-                 "animal_movement_direction_lab",
-                 "animal_movement_speed",
-                 "integrated_forward_movement", "integrated_side_movement",
-                 "timestamp",
-                 "seq_counter",
-                 "delta_time",
-                 "alt_time"
-                ]
-    
+def load_fictrac(path, ball_radius=5, fps=100):
+    """
+    This functions loads the fictrac data from file.
+
+    Parameters
+    ----------
+    path : str
+        Path to fictrac output file (.dat).
+    ball_radius : int
+        Radius of the spherical treadmill.
+    fps : float
+        Number of frames per second.
+
+    Returns
+    -------
+    data : dictionary
+        A dictionary with the following keys:
+        Speed, x, y, forward_pos, side_pos, delta_rot_lab_side,
+        delta_rot_lab_forward, delta_rot_lab_turn, integrated_forward_movement,
+        integrated_side_movement, Time
+        All speeds are in mm/s and all positions are in mm.
+    """
+    col_names = [
+        "Frame_counter", "delta_rot_cam_right", "delta_rot_cam_down",
+        "delta_rot_cam_forward", "delta_rot_error", "delta_rot_lab_side",
+        "delta_rot_lab_forward", "delta_rot_lab_turn", "abs_rot_cam_right",
+        "abs_rot_cam_down", "abs_rot_cam_forward", "abs_rot_lab_side",
+        "abs_rot_lab_forward", "abs_rot_lab_turn", "integrated_lab_x",
+        "integrated_lab_y", "integrated_lab_heading",
+        "animal_movement_direction_lab", "animal_movement_speed",
+        "integrated_forward_movement", "integrated_side_movement", "timestamp",
+        "seq_counter", "delta_time", "alt_time"
+    ]
+
     dat_table = np.genfromtxt(path, delimiter=",")
     data = {}
     for i, col in enumerate(col_names):
-        data[col] = dat_table[:, i] 
+        data[col] = dat_table[:, i]
     data["Speed"] = data["animal_movement_speed"] * ball_radius * fps
     data["x"] = data["integrated_lab_x"] * ball_radius
     data["y"] = data["integrated_lab_y"] * ball_radius
     data["forward_pos"] = data["integrated_forward_movement"] * ball_radius
     data["side_pos"] = data["integrated_side_movement"] * ball_radius
     data["delta_rot_lab_side"] = data["delta_rot_lab_side"] * ball_radius * fps
-    data["delta_rot_lab_forward"] = data["delta_rot_lab_forward"] * ball_radius * fps
-    data["delta_rot_lab_turn"] = data["delta_rot_lab_turn"] / 2 / np.pi * 360 * fps
-    data["integrated_forward_movement"] = data["integrated_forward_movement"] * ball_radius
-    data["integrated_side_movement"] = data["integrated_side_movement"] * ball_radius
+    data["delta_rot_lab_forward"] = data[
+        "delta_rot_lab_forward"] * ball_radius * fps
+    data["delta_rot_lab_turn"] = data[
+        "delta_rot_lab_turn"] / 2 / np.pi * 360 * fps
+    data["integrated_forward_movement"] = data[
+        "integrated_forward_movement"] * ball_radius
+    data["integrated_side_movement"] = data[
+        "integrated_side_movement"] * ball_radius
     data["Time"] = data["Frame_counter"] / fps
 
     return data

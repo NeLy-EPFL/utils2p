@@ -1,17 +1,21 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Building regressors synchronized to the 2p frames &#8212; utils2p  documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <link rel="stylesheet" href="_static/css/functions.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/methods.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/classes.css" type="text/css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Synchronization of 2p data to behaviour frames for videos" href="synchronization_for_videos_example.html" />
@@ -32,7 +36,7 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="building-regressors-synchronized-to-the-2p-frames">
+  <section id="building-regressors-synchronized-to-the-2p-frames">
 <h1>Building regressors synchronized to the 2p frames<a class="headerlink" href="#building-regressors-synchronized-to-the-2p-frames" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -59,14 +63,14 @@
 
 
 <span class="c1"># Load metadata files</span>
-<span class="n">capture_json</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
+<span class="n">seven_camera_metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_seven_camera_metadata_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
 
 <span class="n">metadata_2p</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">find_metadata_file</span><span class="p">(</span><span class="n">experiment_dir</span><span class="p">)</span>
 <span class="n">metadata</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">Metadata</span><span class="p">(</span><span class="n">metadata_2p</span><span class="p">)</span>
 
 
 <span class="c1"># Pre-process synchronization information</span>
-<span class="n">cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">capture_json</span><span class="p">)</span>
+<span class="n">cam_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_cam_line</span><span class="p">(</span><span class="n">cam_line</span><span class="p">,</span> <span class="n">seven_camera_metadata</span><span class="p">)</span>
 
 <span class="n">opt_flow_line</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">process_optical_flow_line</span><span class="p">(</span><span class="n">opt_flow_line</span><span class="p">)</span>
 
@@ -88,7 +92,7 @@
 <span class="n">regressors</span><span class="p">[</span><span class="s2">&quot;yaw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">utils2p</span><span class="o">.</span><span class="n">synchronization</span><span class="o">.</span><span class="n">reduce_during_frame</span><span class="p">(</span><span class="n">frame_counter</span><span class="p">,</span> <span class="n">optical_flow</span><span class="p">[</span><span class="s2">&quot;vel_yaw&quot;</span><span class="p">][</span><span class="n">opt_flow_line</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
+</section>
 
 
           </div>
@@ -107,7 +111,7 @@
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="main.html">Core functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="synchronization.html">Synchronization functions</a></li>
@@ -135,7 +139,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -157,7 +161,7 @@
       &copy;2020, Florian Aymanns.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.4</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
