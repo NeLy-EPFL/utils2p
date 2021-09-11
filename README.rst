@@ -4,6 +4,8 @@ utils2p
 .. image:: https://travis-ci.com/NeLy-EPFL/utils2p.svg?token=snip9q1Tczja5zRZ7RGJ&branch=master
 .. image:: https://codecov.io/gh/NeLy-EPFL/utils2p/branch/master/graph/badge.svg?token=Y5TJHHYYFT
   :target: https://codecov.io/gh/NeLy-EPFL/utils2p
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5501119.svg
+  :target: https://doi.org/10.5281/zenodo.5501119
 
 .. contents Topics
 

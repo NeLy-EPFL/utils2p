@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
     <link rel="stylesheet" href="../../_static/css/functions.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/methods.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/css/classes.css" type="text/css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
@@ -519,11 +521,11 @@
     <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">steps_per_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;metadata argument will be ignored &quot;</span> <span class="o">+</span>
                       <span class="s2">&quot;because steps_per_frame argument was set.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">main</span><span class="o">.</span><span class="n">Metadata</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">main</span><span class="o">.</span><span class="n">Metadata</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;metadata argument must be of type utils2p.Metadata or None.&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">steps_per_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps_per_frame</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;steps_per_frame has to be of type int&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">steps_per_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">steps_per_frame</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;steps_per_frame has to be of type int not </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">steps_per_frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">steps_per_frame</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;Streaming&quot;</span><span class="p">,</span> <span class="s2">&quot;zFastEnable&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span><span class="p">:</span>
@@ -979,7 +981,7 @@
 <span class="sd">    &gt;&gt;&gt; metadata_file = utils2p.find_metadata_file(experiment_dir)</span>
 <span class="sd">    &gt;&gt;&gt; sync_metadata_file = utils2p.find_sync_metadata_file(experiment_dir)</span>
 <span class="sd">    &gt;&gt;&gt; seven_camera_metadata_file = utils2p.find_seven_camera_metadata_file(experiment_dir)</span>
-<span class="sd">    &gt;&gt;&gt; processed_lines = utils2p.synchronization.processed_lines(sync_file, sync_metadata_file, metadata_file, seven_camera_metadata_file)</span>
+<span class="sd">    &gt;&gt;&gt; processed_lines = utils2p.synchronization.get_processed_lines(sync_file, sync_metadata_file, metadata_file, seven_camera_metadata_file)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">processed_lines</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">processed_lines</span><span class="p">[</span><span class="s2">&quot;Capture On&quot;</span><span class="p">],</span> <span class="n">processed_lines</span><span class="p">[</span>
