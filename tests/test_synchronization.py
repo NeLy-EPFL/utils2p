@@ -280,6 +280,13 @@ def test_beh_idx_to_2p_idx():
     expected = np.array([1, 2])
     np.allclose(expected, utils2p.synchronization.beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter))
 
+    # With cropped lines
+    beh_indices = np.array([4, 7])
+    cam_line = np.array([3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7])
+    frame_counter = np.array([1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3])
+    expected = np.array([1, 3])
+    np.allclose(expected, utils2p.synchronization.beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter))
+
 
 def test_reduce_during_2p_frame():
     frame_counter = np.array([0, 1, 1, 1, 2, 2, 3, 3, 3, 3])

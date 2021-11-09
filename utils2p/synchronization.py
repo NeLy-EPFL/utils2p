@@ -716,7 +716,15 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
 
     indices_2p = np.ones(len(beh_indices), dtype=np.int) * np.nan
 
+    first_frame_of_cam_line = np.min(cam_line[np.where(cam_line >= 0)])
+
     for i, frame_num in enumerate(beh_indices):
+
+        # This is necessary for cropped lines that don't start at 0
+        frame_num = frame_num - first_frame_of_cam_line
+        if frame_num < 0:
+            raise ValueError(f"{frame_num + first_frame_of_cam_line} is smaller than first frame in cam_line ({first_frame_of_cam_line})")
+
         thor_sync_index = thor_sync_indices[frame_num]
         indices_2p[i] = frame_counter[thor_sync_index]
 
