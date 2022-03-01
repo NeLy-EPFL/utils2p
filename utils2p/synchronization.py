@@ -1106,7 +1106,17 @@ def process_odor_line(line,
     for index in np.unique(indices):
         mask = (indices == index)
         filtered_mask = epoch_length_filter(mask, freq)
-        indices[mask & ~filtered_mask] = 0
+        bad_epochs = (mask & ~filtered_mask)
+        event_frame_indices, event_numbers = event_based_frame_indices(bad_epochs)
+        for event_number in np.unique(event_numbers):
+            event_number_mask = (event_numbers == event_number)
+            frame_number_mask = (event_frame_indices >= 0)
+            event_mask = event_number_mask & frame_number_mask
+            previous_event_mask = event_number_mask & ~frame_number_mask
+            if np.any(previous_event_mask):
+                indices[event_mask] = indices[previous_event_mask][-1]
+            else:
+                indices[event_mask] = 0
     return np.array(arduino_commands)[indices]
 
 
