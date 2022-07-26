@@ -369,7 +369,7 @@ def test_process_odor_line():
     result = utils2p.synchronization.process_odor_line(line, freq=freq, arduino_commands=("None", "One", "Two"), step_size=1.25)
     expected_result = np.array(["None",] * 10 * freq)
     expected_result[59902 : 89997] = "One"
-    expected_result[150307 : 209746] = "Two"
+    expected_result[150307 : 210493] = "Two"
     assert np.all(result == expected_result)
 
 
