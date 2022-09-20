@@ -26,7 +26,7 @@ setup(
     version="0.1.0",
     packages=["utils2p", "utils2p.external", "utils2p.external.tifffile"],
     author="Florian Aymanns",
-    author_email="florian.ayamnns@epfl.ch",
+    author_email="florian.aymanns@epfl.ch",
     description="Basic utility functions for 2 photon image data generated using ThorImage and ThorSync.",
     long_description=long_description,
     long_description_content_type="text/x-rst",
