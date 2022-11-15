@@ -74,6 +74,17 @@ class Metadata(_XMLFile):
     >>> type(metadata)
     <class 'utils2p.main.Metadata'>
     """
+
+    def __repr__(self):
+        # self.root.getchildren() will list all the datatypes, but here we just
+        # show ones containing data that is most often useful.
+        datatypes = ['LSM', 'Timelapse', 'ZStage', 'Wavelengths', 'Streaming',
+                      'PowerRegulator', 'PMT', 'Date']
+        return ('<' +
+                ',\n\n'.join(['{}: {}'.format(x, self.root.find(x).attrib)
+                              for x in datatypes])
+                + '>')
+
     def get_metadata_value(self, *args):
         """
         This function returns a value from the metadata file 'Experiment.xml'.
@@ -881,6 +892,34 @@ def save_img(path,
         # TODO add meta data like metadata={'xresolution':'4.25','yresolution':'0.0976','PixelAspectRatio':'43.57'}
         # tifffile.imsave(path, img, imagej=imagej, metadata={})
         raise NotImplementedError("Saving of metadata is not yet implemented")
+
+
+def create_tiffs(directory):
+    """
+    Given a folder containing .raw data and .xml metadata,
+    load the raw data, then save it as a single tiff stack.
+
+    This implements the example given in the docstring of :func:`load_raw`
+
+    Parameters
+    ----------
+    directory : str
+        Path to directory containing files
+    """
+    raw_path = find_raw_file(directory)
+    raw_directory = os.path.dirname(raw_path)
+    metadata_path = find_metadata_file(directory)
+    metadata_directory = os.path.dirname(metadata_path)
+    assert raw_directory == metadata_directory, (
+        'Found .raw and .xml files in different directories:'
+        ' {} vs {}'.format(raw_directory, metadata_directory)
+    )
+    metadata = Metadata(metadata_path)
+
+    stack1, stack2 = load_raw(raw_path, metadata)
+
+    save_img(os.path.join(raw_directory, 'stack1.tif'), stack1)
+    save_img(os.path.join(raw_directory, 'stack2.tif'), stack2)
 
 
 def _find_file(directory, name, file_type, most_recent=True):
