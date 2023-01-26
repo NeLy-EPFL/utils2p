@@ -265,12 +265,12 @@ def test_get_power(metadata_obj, power):
 
 @pytest.mark.parametrize("gain_a", [0, 1, 10])
 def test_get_gain_a(metadata_obj, gain_a):
-    assert metadata_obj(gain_a=gain_a).get_gainA() == gain_a
+    assert metadata_obj(gain_a=gain_a).get_gain_a() == gain_a
 
 
 @pytest.mark.parametrize("gain_b", [0, 1, 10])
 def test_get_gain_b(metadata_obj, gain_b):
-    assert metadata_obj(gain_b=gain_b).get_gainB() == gain_b
+    assert metadata_obj(gain_b=gain_b).get_gain_b() == gain_b
 
 
 @pytest.mark.parametrize("date", ["12/20/2018 18:33:52", "05/04/2018 07:05:34"])

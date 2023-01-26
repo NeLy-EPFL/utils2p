@@ -23,14 +23,14 @@ co2_line, cam_line, opt_flow_line, frame_counter, capture_on = utils2p.synchroni
 
 
 # Load metadata files
-capture_json = utils2p.find_seven_camera_metadata_file(experiment_dir)
+seven_camera_metadata = utils2p.find_seven_camera_metadata_file(experiment_dir)
 
 metadata_2p = utils2p.find_metadata_file(experiment_dir)
 metadata = utils2p.Metadata(metadata_2p)
 
 
 # Pre-process synchronization information
-cam_line = utils2p.synchronization.process_cam_line(cam_line, capture_json)
+cam_line = utils2p.synchronization.process_cam_line(cam_line, seven_camera_metadata)
 
 opt_flow_line = utils2p.synchronization.process_optical_flow_line(opt_flow_line)
 
