@@ -838,7 +838,7 @@ def save_img(
     >>> import numpy as np
     >>> 
     """
-    if img.dtype == np.bool:
+    if img.dtype == bool:  # used to be np.bool
         img = img.astype(np.uint8) * 255
     path = os.path.expanduser(os.path.expandvars(path))
     if color:

@@ -617,7 +617,7 @@ def crop_lines(mask, lines):
     >>> len(frame_counter), len(capture_on), len(stimulus_line), len(optical_flow_line)
     (105869, 105869, 105869, 105869)
     >>> line = np.arange(10)
-    >>> mask = np.ones(10, dtype=np.bool)
+    >>> mask = np.ones(10, dtype=bool)
     >>> mask[0] = False
     >>> mask[-1] = False
     >>> mask[4] = False
@@ -1066,14 +1066,14 @@ def event_based_frame_indices(event_indicator):
     for event in np.arange(1, n_events + 1):
         i = np.where(event_numbers == event)
         event_frame_indices[i] = event_frame_indices[i] - event_frame_indices[i[0][0]] 
-    event_frame_indices[~mask.astype(np.bool)] = 0
+    event_frame_indices[~mask.astype(bool)] = 0
     
     # Count down from zero before each event
     n_inv_event = max(inv_event_numbers)
     for inv_event in np.arange(1, n_inv_event + 1):
         i = np.where(inv_event_numbers == inv_event)
         inv_event_frame_indices[i] = inv_event_frame_indices[i] - inv_event_frame_indices[i[0][0]]
-    inv_event_frame_indices[~inv_mask.astype(np.bool)] = 0
+    inv_event_frame_indices[~inv_mask.astype(bool)] = 0
     inv_event_frame_indices = -inv_event_frame_indices[::-1]
     
     event_frame_indices[~mask.astype(bool)] = inv_event_frame_indices[~mask.astype(bool)]
