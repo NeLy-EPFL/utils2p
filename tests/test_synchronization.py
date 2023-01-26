@@ -251,7 +251,7 @@ def test_process_stimulus_line():
 
 
 def test_crop_lines():
-    mask = np.array([0, 0, 0, 1, 1, 1, 1, 0, 0], dtype=np.bool)
+    mask = np.array([0, 0, 0, 1, 1, 1, 1, 0, 0], dtype=bool)
     line1 = np.arange(len(mask))
     line2 = line1[::-1].copy()
     cropped_line1 = np.arange(3, 7)

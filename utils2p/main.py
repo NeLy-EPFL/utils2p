@@ -844,7 +844,7 @@ def save_img(path,
         max value of the output image is the max of uint8,
         i.e. the image uses the full dynamic range available.
     """
-    if img.dtype == np.bool:
+    if img.dtype == bool:  # used to be np.bool
         img = img.astype(np.uint8) * 255
     path = os.path.expanduser(os.path.expandvars(path))
     if color:
