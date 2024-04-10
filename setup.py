@@ -23,7 +23,7 @@ external = Extension(
 
 setup(
     name="utils2p",
-    version="1.0.0",
+    version="1.0.1",
     packages=["utils2p", "utils2p.external", "utils2p.external.tifffile"],
     author="Florian Aymanns",
     author_email="florian.aymanns@epfl.ch",
