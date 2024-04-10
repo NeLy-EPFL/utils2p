@@ -567,8 +567,8 @@ def test_find_raw_file(default_exp_dir):
 
 def test_load_optical_flow(tmpdir):
     n_timepoints = 10
-    opt_flow_data = np.zeros((n_timepoints, 5), dtype=np.int)
-    opt_flow_data[:, 4] = np.arange(n_timepoints, dtype=np.int)
+    opt_flow_data = np.zeros((n_timepoints, 5), dtype=int)
+    opt_flow_data[:, 4] = np.arange(n_timepoints, dtype=int)
     opt_flow_data[1, 0] = -1
     opt_flow_data[3, 1] = 1
     opt_flow_data[6, 2] = 2
