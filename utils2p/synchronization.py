@@ -421,7 +421,7 @@ def process_cam_line(line, seven_camera_metadata):
                                                                1)] <= i:
             current_frame += 1
         processed_line[start:stop] = current_frame
-    return processed_line.astype(np.int)
+    return processed_line.astype(int)
 
 
 def process_frame_counter(line, metadata=None, steps_per_frame=None):
@@ -514,7 +514,7 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
     # Case of one frame/volume only
     if len(rising_edges) <= steps_per_frame:
         processed_frame_counter[rising_edges[0]:] = 0
-        return processed_frame_counter.astype(np.int)
+        return processed_frame_counter.astype(int)
 
     for i, index in enumerate(
             range(0,
@@ -523,7 +523,7 @@ def process_frame_counter(line, metadata=None, steps_per_frame=None):
             rising_edges[index]:rising_edges[index + steps_per_frame]] = i
     processed_frame_counter[rising_edges[-1 * steps_per_frame]:] = (
         processed_frame_counter[rising_edges[-1 * steps_per_frame] - 1] + 1)
-    return processed_frame_counter.astype(np.int)
+    return processed_frame_counter.astype(int)
 
 
 def process_stimulus_line(line):
@@ -559,7 +559,7 @@ def process_stimulus_line(line):
     processed_stimulus_line = np.zeros_like(line)
     indices = np.where(line > 0)
     processed_stimulus_line[indices] = 1
-    return processed_stimulus_line.astype(np.int)
+    return processed_stimulus_line.astype(int)
 
 
 def process_optical_flow_line(line):
@@ -610,7 +610,7 @@ def process_optical_flow_line(line):
         processed_optical_flow_line[rising_edges[i]:rising_edges[i + 1]] = i
     processed_optical_flow_line[rising_edges[-1]:] = (
         processed_optical_flow_line[rising_edges[-1] - 1] + 1)
-    return processed_optical_flow_line.astype(np.int)
+    return processed_optical_flow_line.astype(int)
 
 
 def crop_lines(mask, lines):
@@ -714,7 +714,7 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
     if not cam_line[0] < 0:
         thor_sync_indices = np.append(np.array([0]), thor_sync_indices)
 
-    indices_2p = np.ones(len(beh_indices), dtype=np.int) * np.nan
+    indices_2p = np.ones(len(beh_indices), dtype=int) * np.nan
 
     first_frame_of_cam_line = np.min(cam_line[np.where(cam_line >= 0)])
 
@@ -728,7 +728,7 @@ def beh_idx_to_2p_idx(beh_indices, cam_line, frame_counter):
         thor_sync_index = thor_sync_indices[frame_num]
         indices_2p[i] = frame_counter[thor_sync_index]
 
-    return indices_2p.astype(np.int)
+    return indices_2p.astype(int)
 
 
 def reduce_during_2p_frame(frame_counter, values, function):
