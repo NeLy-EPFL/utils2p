@@ -371,12 +371,12 @@ class Metadata(_XMLFile):
         Returns the frame rate for a given experiment metadata.
         When the frame rate is calculated flyback frames and
         steps in z are not considered frames.
-
+    
         Returns
         -------
         frame_rate : float
             Frame rate of the experiment.
-
+    
         Examples
         --------
         >>> import utils2p
@@ -387,9 +387,12 @@ class Metadata(_XMLFile):
         frame_rate_without_flybacks = float(
             self.get_metadata_value("LSM", "frameRate"))
         flyback_frames = self.get_n_flyback_frames()
-        number_of_slices = self.get_n_z()
+        
+        enable_z_stage = float(self.get_metadata_value("ZStage", "enable"))
+        number_of_slices = self.get_n_z() if enable_z_stage else 0
+        
         return frame_rate_without_flybacks / (flyback_frames +
-                                              number_of_slices)
+                                                number_of_slices)
 
     def get_width(self):
         """
