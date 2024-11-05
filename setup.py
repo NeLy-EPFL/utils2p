@@ -31,7 +31,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/NeLy-EPFL/utils2p",
-    setup_requires=["numpy"],
     install_requires=["numpy",
                       "pytest",
                       "scipy",
