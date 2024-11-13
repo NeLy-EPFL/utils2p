@@ -23,7 +23,7 @@ external = Extension(
 
 setup(
     name="utils2p",
-    version="1.0.1",
+    version="1.0.2",
     packages=["utils2p", "utils2p.external", "utils2p.external.tifffile"],
     author="Florian Aymanns",
     author_email="florian.aymanns@epfl.ch",
@@ -31,7 +31,6 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/NeLy-EPFL/utils2p",
-    setup_requires=["numpy"],
     install_requires=["numpy",
                       "pytest",
                       "scipy",
